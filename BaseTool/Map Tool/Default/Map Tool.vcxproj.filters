@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="00. Core">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="00. Core\BaseResources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="00. Core\ImGui">
+      <UniqueIdentifier>{4f2b02c6-7d9c-4fa6-8d1b-30b9a4e8c73e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Base">
+      <UniqueIdentifier>{ff492302-8a9f-48bb-aa0b-e9d473836a70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Window">
+      <UniqueIdentifier>{57601839-566c-4151-bac5-36269fccf1ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. Core\JSON">
+      <UniqueIdentifier>{8171523b-ff8b-47c0-93a3-f39cb2ab55ed}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>00. Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Map Tool.h">
+      <Filter>00. Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>00. Core</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>00. Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImGui\imgui_impl_dx11.h">
+      <Filter>00. Core\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImGui\imgui_impl_win32.h">
+      <Filter>00. Core\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImGui\imgui_internal.h">
+      <Filter>00. Core\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImGui\imstb_rectpack.h">
+      <Filter>00. Core\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImGui\imstb_textedit.h">
+      <Filter>00. Core\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImGui\imstb_truetype.h">
+      <Filter>00. Core\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImGui\imconfig.h">
+      <Filter>00. Core\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImGui\imgui.h">
+      <Filter>00. Core\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CFileExplorerWindow.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CHierarchyWindow.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CJsonIO.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CMainViewCamera.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CMonitoringWindow.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CPropertyWindow.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CResourceWindow.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CTextureWindow.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CTimeManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CToolCamera.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CVariableReader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CCamera.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ToolMain.h">
+      <Filter>01. Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BasicWindow.h">
+      <Filter>02. Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ConsoleWindow.h">
+      <Filter>02. Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GlobalArea.h">
+      <Filter>01. Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\json.hpp">
+      <Filter>00. Core\JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MainViewWindow.h">
+      <Filter>02. Window</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>01. Base</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Map Tool.cpp">
+      <Filter>00. Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ImGui\imgui_impl_dx11.cpp">
+      <Filter>00. Core\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ImGui\imgui_impl_win32.cpp">
+      <Filter>00. Core\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ImGui\imgui_tables.cpp">
+      <Filter>00. Core\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ImGui\imgui_widgets.cpp">
+      <Filter>00. Core\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ImGui\imgui.cpp">
+      <Filter>00. Core\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ImGui\imgui_demo.cpp">
+      <Filter>00. Core\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ImGui\imgui_draw.cpp">
+      <Filter>00. Core\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CHierarchyWindow.cpp">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CJsonIO.cpp">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CMainViewCamera.cpp">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CMonitoringWindow.cpp">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CPropertyWindow.cpp">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CResourceWindow.cpp">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CTextureWindow.cpp">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CTimeManager.cpp">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CToolCamera.cpp">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CVariableReader.cpp">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CCamera.cpp">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CFileExplorerWindow.cpp">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ToolMain.cpp">
+      <Filter>01. Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BasicWindow.cpp">
+      <Filter>02. Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ConsoleWindow.cpp">
+      <Filter>02. Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GlobalArea.cpp">
+      <Filter>01. Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MainViewWindow.cpp">
+      <Filter>02. Window</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>01. Base</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Map Tool.rc">
+      <Filter>00. Core\BaseResources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>00. Core\BaseResources</Filter>
+    </Image>
+    <Image Include="Map Tool.ico">
+      <Filter>00. Core\BaseResources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\ImGui\imgui.ini">
+      <Filter>00. Core\ImGui</Filter>
+    </None>
+    <None Include="..\ImGui\imgui.natstepfilter">
+      <Filter>00. Core\ImGui</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\ImGui\imgui.natvis">
+      <Filter>00. Core\ImGui</Filter>
+    </Natvis>
+  </ItemGroup>
+</Project>
