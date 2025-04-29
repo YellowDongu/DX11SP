@@ -47,6 +47,7 @@ private:
 	AISpec aiSpec;
 
 	class FlightMovement* flightModule = nullptr;
+	class FlightMovement* leaderFlightModule = nullptr;
 	class AircraftBoneHandler* boneHandler = nullptr;
 	class FireControlSystem* fcs = nullptr;
 	class AutoPilot* autoPilot = nullptr;

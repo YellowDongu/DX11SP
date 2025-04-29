@@ -61,7 +61,7 @@ void AltitudeIndicator::Update(void)
 void AltitudeIndicator::LateUpdate(void)
 {
 	AddRenderObject(RenderType::UI, this);
-	altitude = static_cast<INT>(position->y * 30.2f / 50.0f);
+	altitude = static_cast<INT>(ConvertWorldToFeet(position->y));
 }
 
 void AltitudeIndicator::Render(void)

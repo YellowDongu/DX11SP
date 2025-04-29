@@ -154,7 +154,7 @@ HRESULT Player::Start(void)
 
     womgTrail = WingTrailParticle::Create(dxDevice, dxDeviceContext);
     AddComponent(womgTrail, L"WingTrailParticle");
-
+    womgTrail->Awake();
     AddComponent(comTest = RMWR::Create(dxDevice, dxDeviceContext), L"RMWR");
     playerPilot = PlayerPilot::Create(dxDevice, dxDeviceContext, metaData);
     AddComponent(playerPilot, L"PlayerPilot");

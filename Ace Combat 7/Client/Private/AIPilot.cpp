@@ -63,6 +63,9 @@ void AIPilot::Update(void)
 	timer -= DeltaTime();
 	defend = rmwr->ClosedWarning();
 
+	if (gameObject->transform()->Position().y <= minimumAltitude)
+		return;
+
 	if (defend)
 	{
 		Evade();
@@ -77,19 +80,12 @@ void AIPilot::Update(void)
 		else
 		{
 			NonCombat();
-			towardEnemy = target->transform()->Position() - gameObject->transform()->Position();
-			direction = towardEnemy.normalize();
-			enemyDistance = towardEnemy.magnitude();
-			if (enemyDistance < ConvertFeetToWorld(500.0f))
-			flightModule->ThrottleIdle();
-			else
-				flightModule->throttle = 1.0f;
 
 			return;
 			towardEnemy = target->transform()->Position() - gameObject->transform()->Position();
 			direction = towardEnemy.normalize();
 			enemyDistance = towardEnemy.magnitude();
-			if (enemyDistance < ConvertFeetToWorld(7000.0f))
+			if (enemyDistance < ConvertFeetToWorld(7000.0f) * 5.0f)
 			{
 				ChaseEnemy();
 
@@ -110,10 +106,9 @@ void AIPilot::FixedUpdate(void)
 
 void AIPilot::LateUpdate(void)
 {
-	if (!target->IsActive())
-		target = nullptr;
-
-
+	//if (!target->IsActive())
+	//	target = nullptr;
+	//
 }
 
 void AIPilot::NonCombat(void)
@@ -131,10 +126,13 @@ void AIPilot::LeadFlight(void)
 
 void AIPilot::FormationFlight(void)
 {
-	FLOAT offsetZ = (15.0f * static_cast<FLOAT>(1 + (squadNumber / 2))) * 50.0f;
+	if (leaderFlightModule == nullptr)
+		leaderFlightModule = static_cast<FlightMovement*>(leader->GetComponent(L"FlightMovement"));
+
+	FLOAT offsetZ = (10.0f * static_cast<FLOAT>(1 + (squadNumber / 2))) * -1.0f;
 	FLOAT offsetX = offsetZ * static_cast<FLOAT>(1 - 2 * (squadNumber % 2));
 
-	Vector3 position = Vector3{ offsetX, 0.0f, offsetZ };
+	Vector3 position = Vector3{ offsetX * 0.75f, 0.0f, offsetZ * 0.01f };
 	
 	DirectX::XMStoreFloat3(&position, DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat3(&position), DirectX::XMLoadFloat4x4(&leader->transform()->WorldMatrix())));
 
@@ -143,7 +141,28 @@ void AIPilot::FormationFlight(void)
 
 	autoPilot->SetDestination(position);
 
+	FLOAT distanceValue = (position - gameObject->transform()->Position()).magnitude();
+	distanceValue /= ConvertFeetToWorld(500.0f) * 5.0f;
+	if (distanceValue >= 1.0f)
+		distanceValue = 1.0f;
+
+	static const FLOAT& leaderVelocity = leaderFlightModule->Velocity();
+	FLOAT targetVelocity = leaderVelocity * (0.9f + distanceValue * distanceValue);
+	if (flightModule->Velocity() > targetVelocity)
+	{
+		flightModule->throttle = 0.0f;
+		flightModule->airbreakActive = true;
+	}
+	else
+	{
+		flightModule->throttle = targetVelocity / leaderVelocity - 1.0f;
+		flightModule->throttle += flightModule->IdleThrottle();
+		if (flightModule->throttle > 1.0f)
+			flightModule->throttle = 1.0f;
+		flightModule->airbreakActive = false;
+	}
 }
+
 
 void AIPilot::Evade(void)
 {
