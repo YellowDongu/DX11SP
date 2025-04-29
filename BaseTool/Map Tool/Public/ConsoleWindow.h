@@ -15,8 +15,8 @@ public:
 	virtual HRESULT CreateFrame(void) override;
 	void Write(std::string stringLine);
 	void WriteLine(std::string stringLine);
-
 private:
 	bool newLine;
+	bool clipScroll{ false };
 	std::list<std::pair<bool, std::string>> line;
 };

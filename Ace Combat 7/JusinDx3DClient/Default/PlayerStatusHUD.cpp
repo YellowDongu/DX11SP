@@ -61,19 +61,19 @@ void PlayerStatusHUD::Render(void)
     float winY = static_cast<FLOAT>(windowSizeY);
     position.x *= 0.20f;
     position.y *= -0.35f;
-    text->RenderText(L"GUN", position, float2{ 0.8f, 1.25f }, { 0.0f, 1.0f, 0.0f, 1.0f }, 0.0f);
+    text->RenderText(L"GUN", position, textSize, textColor, 0.0f);
 
     position.y += winY  * -0.05f;
-    text->RenderText(L"MSL", position, float2{ 0.8f, 1.25f }, { 0.0f, 1.0f, 0.0f, 1.0f }, 0.0f);
+    text->RenderText(L"MSL", position, textSize, textColor, 0.0f);
 
     position.y += winY * -0.035f;
-    text->RenderText(L"SPCL", position, float2{ 0.8f, 1.25f }, { 0.0f, 1.0f, 0.0f, 1.0f }, 0.0f);
+    text->RenderText(L"SPCL", position, textSize, textColor, 0.0f);
 
     position.y += winY * -0.05f;
-    text->RenderText(L"FLR", position, float2{ 0.8f, 1.25f }, { 0.0f, 1.0f, 0.0f, 1.0f }, 0.0f);
+    text->RenderText(L"FLR", position, textSize, textColor, 0.0f);
 
     position.y += winY * -0.05f;
-    text->RenderText(L"DMG", position, float2{ 0.8f, 1.25f }, { 0.0f, 1.0f, 0.0f, 1.0f }, 0.0f);
+    text->RenderText(L"DMG", position, textSize, textColor, 0.0f);
 }
 
 

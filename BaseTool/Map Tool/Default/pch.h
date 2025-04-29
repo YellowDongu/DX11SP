@@ -7,11 +7,17 @@
 #ifndef PCH_H
 #define PCH_H
 
+#ifndef ColliderDebug
+#define ColliderDebug
+#endif
 // 여기에 미리 컴파일하려는 헤더 추가
+
+#define NOMINMAX
+#define DBG_NEW
 #include "framework.h"
-
+#pragma comment (lib, "Engine.lib")
+#include "Engine.h"
 #pragma region ThirdPartyLibrary
-
 
 #pragma region imgui
 #include "imgui.h"
@@ -19,12 +25,9 @@
 #include "imgui_impl_win32.h"
 #pragma endregion
 
-#pragma region d3dx11
-#include "d3d11.h"
-#include "DirectXMath.h"
-#pragma comment(lib, "d3d11.lib")
+#pragma region JSON
+#include "json.hpp"
 #pragma endregion
-
 
 #pragma endregion
 
@@ -34,14 +37,12 @@
 #include <fstream>
 
 #include <commdlg.h>
-#include <shlwapi.h>
 #pragma comment(lib, "Shlwapi.lib")
+#include <shlwapi.h>
 #include <shlobj.h>
+#include <set>
 
-
-#include "json.hpp"
-//#include "GlobalArea.h"
-
+#undef DBG_NEW 
 #ifdef _DEBUG
 
 #define _CRTDBG_MAP_ALLOC
@@ -54,8 +55,13 @@
 
 #endif
 #endif
+
+#undef NOMINMAX
+#include "GlobalArea.h"
+#include "DefineArea.h"
+#include "AircraftMetaData.h"
+
+
+
 #endif //PCH_H
 
-
-
-#include "GlobalArea.h"

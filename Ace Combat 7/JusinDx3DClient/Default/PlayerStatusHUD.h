@@ -22,7 +22,8 @@ public:
 
 private:
     Engine::Text* text;
-
+    float2 textSize{ 0.8f, 1.25f };
+    float4 textColor{ 0.0f, 1.0f, 0.0f, 1.0f };
 };
 
 

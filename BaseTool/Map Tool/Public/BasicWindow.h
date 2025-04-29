@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Base.h"
 
 
 class BasicWindow abstract : public Base

@@ -1,0 +1,70 @@
+#include "pch.h"
+#include "MS01TerrainC.h"
+#include "StaticModel.h"
+
+MS01TerrainC::MS01TerrainC(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::GameObject(dxDevice, dxDeviceContext)
+{
+}
+
+MS01TerrainC::MS01TerrainC(const MS01TerrainC& other) : Engine::GameObject(other)
+{
+	model = static_cast<Engine::StaticModel*>(GetComponent(L"StaticModel"));
+}
+
+void MS01TerrainC::Free(void)
+{
+	Engine::GameObject::Free();
+}
+
+MS01TerrainC* MS01TerrainC::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext)
+{
+	MS01TerrainC* newInstance = new MS01TerrainC(dxDevice, dxDeviceContext);
+	if (FAILED(newInstance->Start()))
+	{
+		Base::Destroy(newInstance);
+		return nullptr;
+	}
+	return newInstance;
+}
+
+Engine::GameObject* MS01TerrainC::Clone(void)
+{
+	return new MS01TerrainC(*this);
+}
+
+HRESULT MS01TerrainC::Start(void)
+{
+	if (FAILED(CreateTransform()))
+		return E_FAIL;
+	transformComponent->Scale() = Vector3::one() * 0.5f;
+
+	::LoadStaticModel(L"../Bin/Resources/Environment/SouthernIsland/Terrain/SOU_TERRAIN_C.model", model);
+	if (model == nullptr)
+		return E_FAIL;
+	Engine::GameObject::AddComponent(model, L"StaticModel");
+
+
+	return S_OK;
+}
+
+void MS01TerrainC::Update(void)
+{
+	Engine::GameObject::Update();
+}
+
+void MS01TerrainC::LateUpdate(void)
+{
+	Engine::GameObject::LateUpdate();
+	AddRenderObject(RenderType::NonBlend, this);
+}
+
+void MS01TerrainC::FixedUpdate(void)
+{
+	Engine::GameObject::FixedUpdate();
+}
+
+void MS01TerrainC::Render(void)
+{
+	transformComponent->Render();
+	model->Render();
+}

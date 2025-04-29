@@ -81,14 +81,20 @@ ENGINEDLL Engine::GameInstance* EngineInstance(void);
 ENGINEDLL void DestroyGameInstance(void);
 ENGINEDLL inline Engine::SoundManager* Sound(void) { return EngineInstance()->Sound(); }
 
-
 #pragma region DXDevice
+ENGINEDLL inline Engine::DXDevice* Device(void) { return EngineInstance()->Device(); }
+ENGINEDLL ID3D11Device* DxDevice(void);
+ENGINEDLL ID3D11DeviceContext* DxDeviceContext(void);
+ENGINEDLL IDXGISwapChain* GetDXSwapChain(void);
+#pragma endregion
+
+#pragma region Model
 ENGINEDLL inline HRESULT LoadModel(std::wstring filePath) { if (EngineInstance() == nullptr) return E_FAIL; return EngineInstance()->ModelManager()->LoadModel(filePath); }
 ENGINEDLL inline HRESULT LoadModel(std::wstring filePath, Engine::Model*& model) { if (EngineInstance() == nullptr) return E_FAIL; return EngineInstance()->ModelManager()->LoadModel(filePath, model);}
 ENGINEDLL inline Engine::Model* GetModel(std::wstring filePath) { if (EngineInstance() == nullptr) return nullptr; return EngineInstance()->ModelManager()->GetModel(filePath);}
 #pragma endregion
 
-#pragma region Model
+#pragma region Input
 ENGINEDLL inline Engine::InputManager* Input(void) { if (EngineInstance() == nullptr) return nullptr; return EngineInstance()->Input(); }
 //ENGINEDLL inline bool GetButton(KeyType key) { if (EngineInstance() == nullptr) return false; return EngineInstance()->Input()->getButton(key); }
 //ENGINEDLL inline bool GetButtonDown(KeyType key) { if (EngineInstance() == nullptr) return false; return EngineInstance()->Input()->getButtonDown(key); }
@@ -98,12 +104,6 @@ ENGINEDLL inline Engine::InputManager* Input(void) { if (EngineInstance() == nul
 //ENGINEDLL inline const int getMouseWheel(void) { if (EngineInstance() == nullptr) return 0; return EngineInstance()->Input()->getMouseWheel(); }
 #pragma endregion
 
-#pragma region Input
-ENGINEDLL inline Engine::DXDevice* Device(void) { return EngineInstance()->Device(); }
-ENGINEDLL ID3D11Device* DxDevice(void);
-ENGINEDLL ID3D11DeviceContext* DxDeviceContext(void);
-
-#pragma endregion
 
 #pragma region Time
 ENGINEDLL inline Engine::TimeManager* Time(void) { return EngineInstance()->Time(); }

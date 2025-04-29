@@ -25,6 +25,9 @@
     <Filter Include="00. Core\JSON">
       <UniqueIdentifier>{8171523b-ff8b-47c0-93a3-f39cb2ab55ed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="99. References">
+      <UniqueIdentifier>{814b7729-39f3-4662-8fb6-ba6128fd1101}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -66,19 +69,10 @@
     <ClInclude Include="..\Public\CFileExplorerWindow.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\CHierarchyWindow.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\CJsonIO.h">
+    <ClInclude Include="..\Public\JsonIO.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\CMainViewCamera.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\CMonitoringWindow.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\CPropertyWindow.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\CResourceWindow.h">
@@ -87,16 +81,10 @@
     <ClInclude Include="..\Public\CTextureWindow.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\CTimeManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\CToolCamera.h">
+    <ClInclude Include="..\Public\NaviMeshCreatorWindow.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\CVariableReader.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\CCamera.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ToolMain.h">
@@ -119,6 +107,24 @@
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>01. Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ToolCamera.h">
+      <Filter>02. Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MonitoringWindow.h">
+      <Filter>02. Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Ace Combat 7\EngineSDK\Include\DXDevice.h">
+      <Filter>00. Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ObjectManager.h">
+      <Filter>02. Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HierarchyWindow.h">
+      <Filter>02. Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PropertyWindow.h">
+      <Filter>02. Window</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -146,19 +152,10 @@
     <ClCompile Include="..\ImGui\imgui_draw.cpp">
       <Filter>00. Core\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\CHierarchyWindow.cpp">
-      <Filter>헤더 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\CJsonIO.cpp">
+    <ClCompile Include="..\Private\JsonIO.cpp">
       <Filter>헤더 파일</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\CMainViewCamera.cpp">
-      <Filter>헤더 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\CMonitoringWindow.cpp">
-      <Filter>헤더 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\CPropertyWindow.cpp">
       <Filter>헤더 파일</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\CResourceWindow.cpp">
@@ -167,16 +164,10 @@
     <ClCompile Include="..\Private\CTextureWindow.cpp">
       <Filter>헤더 파일</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\CTimeManager.cpp">
-      <Filter>헤더 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\CToolCamera.cpp">
+    <ClCompile Include="..\Private\NaviMeshCreatorWindow.cpp">
       <Filter>헤더 파일</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\CVariableReader.cpp">
-      <Filter>헤더 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\CCamera.cpp">
       <Filter>헤더 파일</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\CFileExplorerWindow.cpp">
@@ -199,6 +190,168 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>01. Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ToolCamera.cpp">
+      <Filter>02. Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MonitoringWindow.cpp">
+      <Filter>02. Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\ActiveRadarHomingMissile.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\AIPilot.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\AircraftBoneHandler.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\AircraftMetaData.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\AltitudeIndicator.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\AttitudeIndicator.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\AutoPilot.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\BackGround.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\Compass.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\DefineArea.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\F14DHandler.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\F15E.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\F15EHandler.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\F16CHandler.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\FCSHUD.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\FireControlSystem.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\FlightMovement.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\FlightPathMarker.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\GunReticle.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\IFFHud.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MainApp.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MainCamera.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MainMenu.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\Missile.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MissileLockUI.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MS01.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MS01Terrain.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\OceanTile.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\Player.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\PlayerEar.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\PlayerPilot.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\PlayerStatusHUD.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\RaderUI.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\RMWR.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\SkyBox.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\SpeedIndicator.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\StandardMissile.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\SU33Handler.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\TargetDummy.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\Title.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\TitleBackground.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\UIShader.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ObjectManager.cpp">
+      <Filter>02. Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HierarchyWindow.cpp">
+      <Filter>02. Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PropertyWindow.cpp">
+      <Filter>02. Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\NavMesh.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MS01TerrainA.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MS01TerrainB.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MS01TerrainC.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MS01TerrainD.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MS01TerrainE.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\SimpleBullet.cpp">
+      <Filter>99. References</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

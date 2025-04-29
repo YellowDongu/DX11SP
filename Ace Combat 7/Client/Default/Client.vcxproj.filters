@@ -1,0 +1,477 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="99. Default">
+      <UniqueIdentifier>{82f323a5-e15b-4609-b85c-9bfe2dfdb43d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99. Default\리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="00. Core">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="01. Act">
+      <UniqueIdentifier>{41b319f2-30f6-43d8-bb9b-69ab42088b86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98. Define">
+      <UniqueIdentifier>{f8e11b33-8299-48f5-864e-1ecd18d13429}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Temp">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="03. Component">
+      <UniqueIdentifier>{a9c78eef-58f6-49bd-9649-d0dae6c642a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Act\MS01">
+      <UniqueIdentifier>{120887ea-eed7-4f61-817b-f62c3882472f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Act\MainMenu">
+      <UniqueIdentifier>{80a14528-db8a-4b92-81d7-5c1c3eb070b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Act\MS01\GameObject">
+      <UniqueIdentifier>{350b6d07-8efd-4cec-9d3e-be6acc704535}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. CommonGameObject">
+      <UniqueIdentifier>{25bae4ae-0fab-4835-a95f-ccb1cc03831c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Act\Title">
+      <UniqueIdentifier>{d243051a-217d-401b-8ce0-30a9d0b7cc79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Act\Title\TitleBackground">
+      <UniqueIdentifier>{7822e15c-4c22-454e-b8ca-9c6e3ad7248d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Act\MainMenu\BackGround">
+      <UniqueIdentifier>{c6e28133-47a8-437e-83b1-631267a4bfcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. CommonGameObject\Vehicle">
+      <UniqueIdentifier>{f0c14f28-a587-421b-b3c0-eb99fa89531f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. CommonGameObject\Vehicle\F15E">
+      <UniqueIdentifier>{d08589c6-870d-431f-a580-adc5d7b7a566}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. CommonGameObject\Vehicle\F16C">
+      <UniqueIdentifier>{a573a5b4-7993-44be-9013-0a0dae70de0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. CommonGameObject\Vehicle\F14D">
+      <UniqueIdentifier>{0bff4ef1-af25-4051-929d-72d3259bbaf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. UIObject">
+      <UniqueIdentifier>{c2516cf2-48c7-4a60-890e-ce0e6ebc761e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. UIObject\HUD">
+      <UniqueIdentifier>{61686b3d-0dca-4204-bc3c-e662adb8df0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. UIObject\AdditionalIndicator">
+      <UniqueIdentifier>{b1df74da-afbd-498d-9e60-b854b7c748cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05. Shader">
+      <UniqueIdentifier>{ad0664e2-8fbe-4c28-b240-a885a1e96191}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Act\Layer">
+      <UniqueIdentifier>{350fe48d-cf61-423f-bbb6-51444cf00815}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. CommonGameObject\Vehicle\SU33">
+      <UniqueIdentifier>{7daa92b4-b4b8-4e34-a2be-1dc367911b75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. CommonGameObject\Weapon">
+      <UniqueIdentifier>{8430e080-e537-4387-bd94-a76655ee4343}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. CommonGameObject\Weapon\Missile">
+      <UniqueIdentifier>{7bfaf817-e5cd-49e2-a234-eeaee6032e75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. CommonGameObject\Weapon\Missile\Standard">
+      <UniqueIdentifier>{552a773b-f491-437f-9eac-a05e8aa81ea4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. CommonGameObject\Weapon\Missile\RaderTraceMissile">
+      <UniqueIdentifier>{f220d1a7-e620-4c42-835c-54a8d114d93f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. CommonGameObject\Vehicle\tu160">
+      <UniqueIdentifier>{c87d824e-6fff-4c7e-bc70-5a21312d811b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>99. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>00. Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AltitudeIndicator.h">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AttitudeIndicator.h">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Compass.h">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FlightPathMarker.h">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MissileLockUI.h">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerStatusHUD.h">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\RaderUI.h">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SpeedIndicator.h">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Player.h">
+      <Filter>02. CommonGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DefineArea.h">
+      <Filter>98. Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GunReticle.h">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MS01.h">
+      <Filter>01. Act\MS01</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MS01Terrain.h">
+      <Filter>01. Act\MS01\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MainApp.h">
+      <Filter>00. Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AircraftBoneHandler.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AircraftMetaData.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FlightMovement.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerPilot.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MainMenu.h">
+      <Filter>01. Act\MainMenu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SkyBox.h">
+      <Filter>02. CommonGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BackGround.h">
+      <Filter>01. Act\MainMenu\BackGround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Title.h">
+      <Filter>01. Act\Title</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TitleBackground.h">
+      <Filter>01. Act\Title\TitleBackground</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MainCamera.h">
+      <Filter>02. CommonGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\F15E.h">
+      <Filter>02. CommonGameObject\Vehicle\F15E</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\F15EHandler.h">
+      <Filter>02. CommonGameObject\Vehicle\F15E</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\F16CHandler.h">
+      <Filter>02. CommonGameObject\Vehicle\F16C</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UIShader.h">
+      <Filter>05. Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TargetDummy.h">
+      <Filter>02. CommonGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FCSHUD.h">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IFFHud.h">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\F14DHandler.h">
+      <Filter>02. CommonGameObject\Vehicle\F14D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\OceanTile.h">
+      <Filter>01. Act\MS01\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Missile.h">
+      <Filter>02. CommonGameObject\Weapon\Missile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\StandardMissile.h">
+      <Filter>02. CommonGameObject\Weapon\Missile\Standard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AutoPilot.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FireControlSystem.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\RMWR.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerEar.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ActiveRadarHomingMissile.h">
+      <Filter>02. CommonGameObject\Weapon\Missile\RaderTraceMissile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SU33Handler.h">
+      <Filter>02. CommonGameObject\Vehicle\SU33</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AIPilot.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NavMesh.h">
+      <Filter>01. Act</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MS01TerrainA.h">
+      <Filter>01. Act\MS01\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MS01TerrainB.h">
+      <Filter>01. Act\MS01\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MS01TerrainC.h">
+      <Filter>01. Act\MS01\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MS01TerrainD.h">
+      <Filter>01. Act\MS01\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MS01TerrainE.h">
+      <Filter>01. Act\MS01\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SimpleBullet.h">
+      <Filter>02. CommonGameObject\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SuperClassPilot.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TU160.h">
+      <Filter>02. CommonGameObject\Vehicle\tu160</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Trigger.h">
+      <Filter>02. CommonGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\WingVaporTrail.h">
+      <Filter>02. CommonGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\WingTrailParticle.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>99. Default\리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Client.cpp">
+      <Filter>99. Default</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>00. Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AltitudeIndicator.cpp">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AttitudeIndicator.cpp">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Compass.cpp">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FlightPathMarker.cpp">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MissileLockUI.cpp">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerStatusHUD.cpp">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RaderUI.cpp">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SpeedIndicator.cpp">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Player.cpp">
+      <Filter>02. CommonGameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DefineArea.cpp">
+      <Filter>98. Define</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GunReticle.cpp">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MS01.cpp">
+      <Filter>01. Act\MS01</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MS01Terrain.cpp">
+      <Filter>01. Act\MS01\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MainApp.cpp">
+      <Filter>00. Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AircraftBoneHandler.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AircraftMetaData.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FlightMovement.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerPilot.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MainMenu.cpp">
+      <Filter>01. Act\MainMenu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SkyBox.cpp">
+      <Filter>02. CommonGameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BackGround.cpp">
+      <Filter>01. Act\MainMenu\BackGround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Title.cpp">
+      <Filter>01. Act\Title</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TitleBackground.cpp">
+      <Filter>01. Act\Title\TitleBackground</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MainCamera.cpp">
+      <Filter>02. CommonGameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\F15E.cpp">
+      <Filter>02. CommonGameObject\Vehicle\F15E</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\F15EHandler.cpp">
+      <Filter>02. CommonGameObject\Vehicle\F15E</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\F16CHandler.cpp">
+      <Filter>02. CommonGameObject\Vehicle\F16C</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UIShader.cpp">
+      <Filter>05. Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TargetDummy.cpp">
+      <Filter>02. CommonGameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FCSHUD.cpp">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IFFHud.cpp">
+      <Filter>04. UIObject\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\F14DHandler.cpp">
+      <Filter>02. CommonGameObject\Vehicle\F14D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\OceanTile.cpp">
+      <Filter>01. Act\MS01\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Missile.cpp">
+      <Filter>02. CommonGameObject\Weapon\Missile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\StandardMissile.cpp">
+      <Filter>02. CommonGameObject\Weapon\Missile\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AutoPilot.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FireControlSystem.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RMWR.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerEar.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ActiveRadarHomingMissile.cpp">
+      <Filter>02. CommonGameObject\Weapon\Missile\RaderTraceMissile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SU33Handler.cpp">
+      <Filter>02. CommonGameObject\Vehicle\SU33</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AIPilot.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NavMesh.cpp">
+      <Filter>01. Act</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MS01TerrainA.cpp">
+      <Filter>01. Act\MS01\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MS01TerrainB.cpp">
+      <Filter>01. Act\MS01\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MS01TerrainC.cpp">
+      <Filter>01. Act\MS01\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MS01TerrainD.cpp">
+      <Filter>01. Act\MS01\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MS01TerrainE.cpp">
+      <Filter>01. Act\MS01\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SimpleBullet.cpp">
+      <Filter>02. CommonGameObject\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SuperClassPilot.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TU160.cpp">
+      <Filter>02. CommonGameObject\Vehicle\tu160</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Trigger.cpp">
+      <Filter>02. CommonGameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\WingVaporTrail.cpp">
+      <Filter>02. CommonGameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\WingTrailParticle.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ModelVSShader.hlsl">
+      <Filter>05. Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\PixelShader.hlsl">
+      <Filter>05. Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\StaticModelShader.hlsl">
+      <Filter>05. Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\UIShader.hlsl">
+      <Filter>05. Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\VertexShader.hlsl">
+      <Filter>05. Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\CubeShader.hlsl">
+      <Filter>05. Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\DefaultShader.hlsl">
+      <Filter>05. Shader</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Bin\ShaderHeader.hlsli">
+      <Filter>05. Shader</Filter>
+    </None>
+  </ItemGroup>
+</Project>

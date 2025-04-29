@@ -1,40 +1,108 @@
 #include "pch.h"
 #include "MainViewWindow.h"
+#include "ToolCamera.h"
+#include "DefaultModelShader.h"
+#include "DefaultUIShader.h"
+#include "DefaultCubeShader.h"
+
 
 MainViewWindow::MainViewWindow(ID3D11Device* _device, ID3D11DeviceContext* _context) : BasicWindow(), device(_device), context(_context)
 {
+    device->AddRef();
+    context->AddRef();
 }
 
 void MainViewWindow::Free(void)
 {
-}
+    Base::DestroyInstance(camera);
+    Base::DestroyInstance(lineDrawer);
 
+
+    if (mainView != nullptr) { mainView->Release(); mainView = nullptr; }
+    if (mainViewRenderTarget != nullptr) { mainViewRenderTarget->Release(); mainViewRenderTarget = nullptr; }
+    if (backBufferTexture != nullptr) { backBufferTexture->Release(); backBufferTexture = nullptr; }
+    if (renderTexture != nullptr) { renderTexture->Release(); renderTexture = nullptr;  }
+    if (renderRTV != nullptr) { renderRTV->Release(); renderRTV = nullptr; }
+    if (renderSRV != nullptr) { renderSRV->Release(); renderSRV = nullptr; }
+
+
+
+
+    if (device != nullptr)
+    {
+        device->Release();
+        device = nullptr;
+    }
+    if (context != nullptr)
+    {
+        context->Release();
+        context = nullptr;
+    }
+    viewPort = nullptr;
+    dxDevice = nullptr;
+}
+Engine::Shader* shader;
 HRESULT MainViewWindow::Start(void)
 {
+    if (dxDevice == nullptr)
+        return E_FAIL;
+
+    viewPort = &dxDevice->ViewPortInfomation();
+    //if(FAILED(dxDevice->CreateImGuiView(mainView)))
+    //    return E_FAIL;
+    //if (FAILED(CreateView(dxDevice->GetDXSwapChain(), mainView, backBufferTexture)))
+    //    return E_FAIL;
+    //CreateView();
+    AddShader(L"DefaultUIShader", Engine::DefaultUIShader::Create(device, context));
+    AddShader(L"DefaultCubeShader", Engine::DefaultCubeShader::Create(device, context));
+    AddShader(L"DefaultModelShader", shader = Engine::DefaultModelShader::Create(device, context));
+    camera = ToolCamera::Create(device, context);
+    if (camera == nullptr)
+        return E_FAIL;
+
+    lineDrawer = Engine::LineDrawer::Create(device, context);
     return S_OK;
-    return E_FAIL;
 }
 
 void MainViewWindow::Update()
 {
+    camera->Update();
 }
 
 void MainViewWindow::Render()
 {
-    const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
-    context->OMSetRenderTargets(1, &mainRenderTargetView, nullptr);
-    context->ClearRenderTargetView(mainRenderTargetView, clear_color_with_alpha);
+    lineDrawer->AddPosition(Vector3{FLT_MIN, 0.0f, 0.0f});
+    lineDrawer->AddPosition(Vector3{FLT_MAX, 0.0f, 0.0f});
+    lineDrawer->SetColor(float4(1.0f,0.0f,0.0f,1.0f));
+    lineDrawer->Render();
+    lineDrawer->PopFrontPosition();
+    lineDrawer->PopFrontPosition();
+    lineDrawer->AddPosition(Vector3{ 0.0f, FLT_MIN, 0.0f});
+    lineDrawer->AddPosition(Vector3{ 0.0f, FLT_MAX, 0.0f});
+    lineDrawer->SetColor(float4(0.0f,1.0f,0.0f,1.0f));
+    lineDrawer->Render();
+    lineDrawer->PopFrontPosition();
+    lineDrawer->PopFrontPosition();
+    lineDrawer->AddPosition(Vector3{ 0.0f, 0.0f, FLT_MIN });
+    lineDrawer->AddPosition(Vector3{ 0.0f, 0.0f, FLT_MAX });
+    lineDrawer->SetColor(float4(0.0f,0.0f,1.0f,1.0f));
+    lineDrawer->Render();
+    lineDrawer->PopFrontPosition();
+    lineDrawer->PopFrontPosition();
 }
 
 HRESULT MainViewWindow::CreateFrame()
 {
     HRESULT result = E_FAIL;
+
+    //dxDevice->Render(std::bind(&MainViewWindow::Render, this));
+
     ImGui::Begin("View");
+    //ImGui::Begin("View", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    mouseHovering = ImGui::IsWindowHovered(ImGuiHoveredFlags_None);
+    focused = ImGui::IsWindowFocused();
     if (mainView)
     {
-        //ImGui::Begin("View", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-        mouseHovering = ImGui::IsWindowHovered(ImGuiHoveredFlags_None);
-        focused = ImGui::IsWindowFocused();
         ImVec2 outputSize = windowSize = ImGui::GetWindowSize();
         outputSize.x -= 15.0f;
         outputSize.y -= 35.0f;
@@ -42,24 +110,35 @@ HRESULT MainViewWindow::CreateFrame()
         result = S_OK;
     }
     ImGui::End();
+    camera->Render();
     return result;
 }
 
-
-MainViewWindow* MainViewWindow::Create(ID3D11Device* device, ID3D11DeviceContext* context, ID3D11ShaderResourceView* shaderResourceView, ID3D11RenderTargetView* mainRenderTargetView)
+HRESULT MainViewWindow::CreateView(IDXGISwapChain* swapChain, ID3D11ShaderResourceView*& mainView, ID3D11Texture2D*& backBufferTexture)
 {
-    MainViewWindow* newInstance = new MainViewWindow(device, context);
+    HRESULT result = S_OK;
+    if (swapChain == nullptr)
+        return E_FAIL;
 
-    newInstance->mainView = shaderResourceView;
-    newInstance->mainRenderTargetView = mainRenderTargetView;
+    if (FAILED(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBufferTexture)))
+        return E_FAIL;
+    
+    if (FAILED(device->CreateShaderResourceView(backBufferTexture, nullptr, &mainView)))
+        result = E_FAIL;
+    return result;
+}
 
+MainViewWindow* MainViewWindow::Create(Engine::DXDevice* deviceInstance)
+{
+    MainViewWindow* newInstance = new MainViewWindow(deviceInstance->GetDevice(), deviceInstance->GetDeviceContext());
+
+    newInstance->dxDevice = deviceInstance;
     if (FAILED(newInstance->Start()))
     {
         Base::DestroyInstance(newInstance);
         return nullptr;
     }
 
-    newInstance->mainView->AddRef();
     return newInstance;
 }
 /*
@@ -72,15 +151,15 @@ void CMainViewWindow::DrawAxes(IDirect3DDevice9* device)
     if (!axisBuffer)
     {
         std::vector<Vertex> vertices = {
-            // X축 (빨간색)
+            // X red
             { D3DXVECTOR3(-65535.0f, 0.0f, 0.0f), D3DCOLOR_XRGB(255, 0, 0) },
             { D3DXVECTOR3( 65535.0f, 0.0f, 0.0f), D3DCOLOR_XRGB(255, 0, 0) },
 
-            // Y축 (초록색)
+            // Y green
             { D3DXVECTOR3(0.0f, -65535.0f, 0.0f), D3DCOLOR_XRGB(0, 255, 0) },
             { D3DXVECTOR3(0.0f,  65535.0f, 0.0f), D3DCOLOR_XRGB(0, 255, 0) },
 
-            // Z축 (파란색)
+            // Z blue
             { D3DXVECTOR3(0.0f, 0.0f, -65535.0f), D3DCOLOR_XRGB(0, 0, 255) },
             { D3DXVECTOR3(0.0f, 0.0f,  65535.0f), D3DCOLOR_XRGB(0, 0, 255) },
         };

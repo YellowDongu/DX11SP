@@ -4,8 +4,8 @@
 F15EMetaData::F15EMetaData()
 {
     modelFilePath = L"../Bin/f15e.model";
-    modelFilePathA = "../Bin/f15e.model";
-    gearModelfilePathA = "../Bin/f15eGear.model";
+    modelFilePathA = "../Bin/f15e.fbx";
+    gearModelfilePathA = "../Bin/f15eGear.fbx";
     gearModelfilePath = L"../Bin/f15eGear.model";
     flightSpec.airbreakPower = 0.0f;
     flightSpec.dragCoefficient = 0.05f;
@@ -26,9 +26,9 @@ F16CMetaData::F16CMetaData()
     //filePath = L"..\\Bin\\f16c\\f16c.fbx";
     //filePathA = "..\\Bin\\f16c\\f16c.fbx";
     modelFilePath = L"../Bin/f16c/f16c.model";
-    modelFilePathA = "../Bin/f16c/f16c.model";
-    gearModelfilePathA = "../Bin/f15eGear.model";
-    gearModelfilePath = L"../Bin/f15eGear.model";
+    modelFilePathA = "../Bin/f16c/f16c.fbx";
+    gearModelfilePathA = "../Bin/f16c/f16cGear.fbx";
+    gearModelfilePath = L"../Bin/f16c/f16cGear.model";
     flightSpec.airbreakPower = 0.0f;
     flightSpec.dragCoefficient = 0.05f;
     flightSpec.liftCoefficient = 0.05f;

@@ -1,0 +1,313 @@
+#include "pch.h"
+#include "PlayerPilot.h"
+
+#include "FlightMovement.h"
+#include "MainCamera.h"
+#include "FireControlSystem.h"
+#include "StandardMissile.h"
+#include "ActiveRadarHomingMissile.h"
+#include "AircraftMetaData.h"
+#include "RMWR.h"
+
+#include "WingTrailParticle.h"
+WingTrailParticle* test;
+PlayerPilot::PlayerPilot(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::Component(dxDevice, dxDeviceContext), flightModule(nullptr)
+{
+}
+
+PlayerPilot::PlayerPilot(const Component& other) : Engine::Component(other), flightModule(nullptr)
+{
+}
+
+void PlayerPilot::Free(void)
+{
+}
+
+PlayerPilot* PlayerPilot::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, AircraftMetaData& data)
+{
+	PlayerPilot* newInstance = new PlayerPilot(dxDevice, dxDeviceContext);
+    newInstance->metaData = &data;
+	//if (FAILED(newInstance->Start()))
+	//{
+	//	Base::Destroy(newInstance);
+	//	return nullptr;
+	//}
+	return newInstance;
+}
+
+Engine::Component* PlayerPilot::Clone(void)
+{
+	return new PlayerPilot(*this);
+}
+
+HRESULT PlayerPilot::Awake(void)
+{
+    transformComponent = gameObject->transform();
+    flightModule = static_cast<FlightMovement*>(gameObject->GetComponent(L"FlightMovement"));
+    fcs = static_cast<FireControlSystem*>(gameObject->GetComponent(L"FCS"));
+    rmwr = static_cast<RMWR*>(gameObject->GetComponent(L"RMWR"));
+    test = static_cast<WingTrailParticle*>(gameObject->GetComponent(L"WingTrailParticle"));
+    cameraTrdViewOffset = metaData->cameraTrdViewOffset * 50.0f;
+    cameraFstViewOffset = metaData->cameraFstViewOffset * 50.0f;
+    cameraTrdViewOffset = metaData->cameraTrdViewOffset;
+    cameraFstViewOffset = metaData->cameraFstViewOffset;
+
+    cameraState = 0;
+
+    return S_OK;
+}
+FMOD::Channel* warningChannel = nullptr;
+void PlayerPilot::Update(void)
+{
+    testEnemy = *testEnemyPointer;
+    rmwr->Update();
+    if (Input()->getButtonDown(KeyType::Space))
+         fcs->weaponRelease = true;
+    fcs->gunFire = Input()->getButton(KeyType::LCtrl);
+    if (Input()->getButtonDown(KeyType::R))
+        cameraState++;
+    if (Input()->getButtonDown(KeyType::E))
+        fcs->ChangeWeapon();
+
+    if (camera == nullptr)
+        return;
+
+
+    fcs->Update();
+    fcs->ChangeTarget();
+
+    switch (cameraState)
+    {
+    case -1:
+    {
+        camera->FOV(45.0f);
+        if (Input()->getButton(KeyType::W))
+        {
+            if (Input()->getButton(KeyType::LShift))
+                camera->transform()->Translate(camera->transform()->Forward());
+            else
+                camera->transform()->Translate(camera->transform()->Forward() * 0.05f);
+        }
+        if (Input()->getButton(KeyType::S))
+        {
+            if (Input()->getButton(KeyType::LShift))
+                camera->transform()->Translate(camera->transform()->Forward() * -1.0f);
+            else
+                camera->transform()->Translate(camera->transform()->Forward() * -0.05f);
+        }
+
+        if (Input()->getButton(KeyType::A))
+        {
+            if (Input()->getButton(KeyType::LShift))
+                camera->transform()->Translate(camera->transform()->Right() * -1.0f);
+            else
+                camera->transform()->Translate(camera->transform()->Right() * -0.05f);
+        }
+        if (Input()->getButton(KeyType::D))
+        {
+            if (Input()->getButton(KeyType::LShift))
+                camera->transform()->Translate(camera->transform()->Right());
+            else
+                camera->transform()->Translate(camera->transform()->Right() * 0.05f);
+        }
+
+
+        if (Input()->getButton(KeyType::Q))
+        {
+            camera->transform()->RelativeRotate({ 0.0f, 0.0f, 1.0f });
+        }
+        if (Input()->getButton(KeyType::E))
+        {
+            camera->transform()->RelativeRotate({ 0.0f, 0.0f, -1.0f });
+        }
+
+
+
+        if (Input()->getButton(KeyType::I))
+        {
+            camera->transform()->RelativeRotate({ 0.1f, 0.0f, 0.0f });
+        }
+        if (Input()->getButton(KeyType::K))
+        {
+            camera->transform()->RelativeRotate({ -0.1f, 0.0f, 0.0f });
+        }
+
+        if (Input()->getButton(KeyType::J))
+        {
+            camera->transform()->RelativeRotate({ 0.0f, -0.01f, 0.0f });
+        }
+        if (Input()->getButton(KeyType::L))
+        {
+            camera->transform()->RelativeRotate({ 0.0f, 0.01f, 0.0f });
+        }
+
+    }
+        break;
+    case 0:
+    {
+        camera->FOV(45.0f);
+        if (Input()->getButton(KeyType::W))
+            flightModule->throttle = 1.0f;
+        else if (Input()->getButton(KeyType::S))
+            flightModule->throttle = 0.0f;
+        else
+            flightModule->ThrottleIdle();
+
+
+        flightModule->yoke.x = static_cast<FLOAT>(Input()->getButton(KeyType::UP)) - static_cast<FLOAT>(Input()->getButton(KeyType::DOWN));
+        flightModule->yoke.y = static_cast<FLOAT>(Input()->getButton(KeyType::A)) - static_cast<FLOAT>(Input()->getButton(KeyType::D));
+        flightModule->yoke.z = static_cast<FLOAT>(Input()->getButton(KeyType::LEFT)) - static_cast<FLOAT>(Input()->getButton(KeyType::RIGHT));
+        flightModule->airbreakActive = Input()->getButton(KeyType::S);
+        flightModule->Update();
+        test->AddMatrix(transformComponent->WorldMatrix());
+    }
+        break;
+    case 1:
+    {
+        camera->FOV(60.0f);
+        if (Input()->getButton(KeyType::W))
+            flightModule->throttle = 1.0f;
+        else if (Input()->getButton(KeyType::S))
+            flightModule->throttle = 0.0f;
+        else
+            flightModule->ThrottleIdle();
+
+
+        flightModule->yoke.x = static_cast<FLOAT>(Input()->getButton(KeyType::UP)) - static_cast<FLOAT>(Input()->getButton(KeyType::DOWN));
+        flightModule->yoke.y = static_cast<FLOAT>(Input()->getButton(KeyType::A)) - static_cast<FLOAT>(Input()->getButton(KeyType::D));
+        flightModule->yoke.z = static_cast<FLOAT>(Input()->getButton(KeyType::LEFT)) - static_cast<FLOAT>(Input()->getButton(KeyType::RIGHT));
+        flightModule->airbreakActive = Input()->getButton(KeyType::S);
+        flightModule->Update();
+        test->AddMatrix(transformComponent->WorldMatrix());
+    }
+        break;
+    case 2:
+    {
+        camera->FOV(45.0f);
+        if (Input()->getButton(KeyType::W))
+            flightModule->throttle = 1.0f;
+        else if (Input()->getButton(KeyType::S))
+            flightModule->throttle = 0.0f;
+        else
+            flightModule->ThrottleIdle();
+
+
+        flightModule->yoke.x = static_cast<FLOAT>(Input()->getButton(KeyType::UP)) - static_cast<FLOAT>(Input()->getButton(KeyType::DOWN));
+        flightModule->yoke.y = static_cast<FLOAT>(Input()->getButton(KeyType::A)) - static_cast<FLOAT>(Input()->getButton(KeyType::D));
+        flightModule->yoke.z = static_cast<FLOAT>(Input()->getButton(KeyType::LEFT)) - static_cast<FLOAT>(Input()->getButton(KeyType::RIGHT));
+        flightModule->airbreakActive = Input()->getButton(KeyType::S);
+        flightModule->Update();
+        test->AddMatrix(transformComponent->WorldMatrix());
+    }
+        break;
+    default:
+    {
+        camera->transform()->Synchronization(*transformComponent);
+        Vector3 position = transformComponent->Forward() * cameraTrdViewOffset.z + transformComponent->Up() * cameraTrdViewOffset.y;
+        camera->transform()->Position() += position;
+
+        xmMatrix transform = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+        camera->transform()->WorldMatrix(DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&transformComponent->WorldMatrix()), transform));
+
+        cameraState = -1;
+    }
+        break;
+    }
+	// get input
+}
+
+void PlayerPilot::LateUpdate(void)
+{
+    switch (cameraState)
+    {
+    case -1:
+        camera->transform()->UpdateWorldMatrix();
+        break;
+    case 0:
+    {
+        camera->transform()->Synchronization(*transformComponent);
+        Vector3 position = transformComponent->Forward() * cameraTrdViewOffset.z + transformComponent->Up() * cameraTrdViewOffset.y;
+        camera->transform()->Position() += position;
+
+
+        xmMatrix transform = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+        camera->transform()->WorldMatrix(DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&transformComponent->WorldMatrix()), transform));
+        break;
+    }
+    case 1:
+    {
+        camera->transform()->Synchronization(*transformComponent);
+        Vector3 position = transformComponent->Forward() * cameraFstViewOffset.z + transformComponent->Up() * cameraFstViewOffset.y;
+        camera->transform()->Position() += position;
+
+
+        xmMatrix transform = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+        camera->transform()->WorldMatrix(DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&transformComponent->WorldMatrix()), transform));
+        break;
+    }
+    case 2:
+    {
+        if (testEnemy == nullptr)
+        {
+            cameraState = -1;
+            break;
+        }
+        
+        Vector3 position;
+        camera->transform()->Synchronization(*testEnemy->transform());
+        position = transformComponent->Forward() * cameraTrdViewOffset.z + transformComponent->Up() * cameraTrdViewOffset.y;
+        camera->transform()->Position() += position;
+        
+        camera->transform()->UpdateWorldMatrix();
+        
+        break;
+        Missile* launchedMissile = fcs->GetLastMissile();
+        if (launchedMissile == nullptr || launchedMissile->Detonated())
+        {
+            camera->transform()->Synchronization(*transformComponent);
+            Vector3 position = transformComponent->Forward() * cameraTrdViewOffset.z + transformComponent->Up() * cameraTrdViewOffset.y;
+            camera->transform()->Position() += position;
+
+            xmMatrix transform = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+            camera->transform()->WorldMatrix(DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&transformComponent->WorldMatrix()), transform));
+            cameraState = -1;
+            break;
+        }
+
+
+        camera->transform()->Synchronization(*launchedMissile->transform());
+        position = launchedMissile->transform()->Forward() * -100.0f + launchedMissile->transform()->Up() * 25.0f;
+        //Vector3 position = launchedMissile->transform()->Forward() * cameraFstViewOffset.z * 3.0f;
+        camera->transform()->Position() += position;
+        if(fcs->WeaponSelectedStatus() == 0)
+            camera->transform()->SetAngle(static_cast<StandardMissile*>(launchedMissile)->Rotation());
+        else
+            camera->transform()->SetAngle(static_cast<ARHM*>(launchedMissile)->Rotation());
+
+        camera->transform()->UpdateWorldMatrix();
+        break;
+    }
+    default:
+    {
+        camera->transform()->Synchronization(*transformComponent);
+        Vector3 position = transformComponent->Forward() * cameraTrdViewOffset.z + transformComponent->Up() * cameraTrdViewOffset.y;
+        camera->transform()->Position() += position;
+
+        xmMatrix transform = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+        camera->transform()->WorldMatrix(DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&transformComponent->WorldMatrix()), transform));
+        cameraState = -1;
+
+    }
+        break;
+    }
+    //std::cout << transformComponent->Position().x << " :   " << transformComponent->Position().y << " :   " << transformComponent->Position().z << std::endl;
+    //std::cout << camera->transform()->Position().x << " :   " << camera->transform()->Position().y << " :   " << camera->transform()->Position().z << std::endl;
+    //std::cout << transformComponent->Quaternion().x << " :   " << transformComponent->Quaternion().y << " :   " << transformComponent->Quaternion().z << " :   " << transformComponent->Quaternion().w << std::endl;
+    //std::cout << camera->transform()->Quaternion().x << " :   " << camera->transform()->Quaternion().y << " :   " << camera->transform()->Quaternion().z << " :   " << camera->transform()->Quaternion().w << std::endl;
+}
+
+void PlayerPilot::FixedUpdate(void)
+{
+	//if (flightModule == nullptr)
+	//	return;
+}

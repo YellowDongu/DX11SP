@@ -13,6 +13,8 @@ HWND hwnd = nullptr;
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 
+HWND hWnd = nullptr;
+HINSTANCE hInstance = nullptr;
 ToolMain* mainApp = nullptr;
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
@@ -99,9 +101,9 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-    instance = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
+    hInstance = instance = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
-    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+    hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
                               CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
     if (!hWnd)

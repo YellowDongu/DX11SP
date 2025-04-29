@@ -1,0 +1,26 @@
+{
+    "GameObjectList": [
+        {
+            "layerName": "",
+            "name": "MS01Terrain",
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "presetName": "MS01Terrain",
+            "renderType": 2,
+            "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 0.009999999776482582,
+                "y": 0.009999999776482582,
+                "z": 0.009999999776482582
+            }
+        }
+    ]
+}

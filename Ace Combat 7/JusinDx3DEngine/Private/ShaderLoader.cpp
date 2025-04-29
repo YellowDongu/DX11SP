@@ -38,12 +38,12 @@ Shader* ShaderLoader::GetShader(const std::wstring& key)
 
 HRESULT ShaderLoader::SetShader(const std::wstring& key)
 {
-	if (currentShaderName == key)
-		return S_OK;
-
 	auto shader = shaders.find(key);
 	if (shader == shaders.end())
 		return E_FAIL;
+
+	if (currentShader == shader->second)
+		return S_OK;
 
 	currentShader = shader->second;
 	currentShaderName = shader->first;

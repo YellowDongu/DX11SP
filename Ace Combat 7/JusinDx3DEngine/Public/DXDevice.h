@@ -10,6 +10,7 @@ namespace Engine
 		DXDevice(void);
 		DXDevice(DXDevice& other) = delete;
 		virtual ~DXDevice(void) = default;
+		virtual void Free(void);
 	public:
 		static DXDevice* Create(DeviceInfomation& deviceInfo);
 
@@ -17,6 +18,7 @@ namespace Engine
 		HRESULT StartSwapChain(ID3D11Device*& dxDevice, IDXGISwapChain*& swapChain, DeviceInfomation deviceInfo);
 		HRESULT StartBackBufferRenderTargetView(ID3D11Device*& dxDevice, ID3D11RenderTargetView*& backBuffer, IDXGISwapChain*& swapChain);
 		HRESULT StartDepthStencilView(ID3D11Device*& dxDevice, ID3D11DepthStencilView*& depthStencilView, UINT windowWidth, UINT windowHeight);
+		HRESULT CreateImGuiView(ID3D11ShaderResourceView*& mainView);
 
 		void Render(std::function<void(void)> renderFunction);
 		void RestartDevice(void);
@@ -27,8 +29,8 @@ namespace Engine
 		ID3D11Device* GetDevice(void) { return dxDevice; }
 		ID3D11DeviceContext* GetDeviceContext(void) { return dxDeviceContext; }
 		const D3D11_VIEWPORT& ViewPortInfomation(void) const { return viewPortDesc; }
+		IDXGISwapChain* GetDXSwapChain(void) { return swapChain; }
 	private:
-		virtual void Free(void);
 
 		ID3D11Device* dxDevice;
 		ID3D11DeviceContext* dxDeviceContext;

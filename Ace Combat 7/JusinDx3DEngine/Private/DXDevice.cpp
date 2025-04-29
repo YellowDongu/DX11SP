@@ -89,6 +89,7 @@ HRESULT DXDevice::StartSwapChain(ID3D11Device*& dxDevice, IDXGISwapChain*& swapC
 	swapChainDesc.SampleDesc.Quality = 0;
 	swapChainDesc.SampleDesc.Count = 1;
 
+	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 	swapChainDesc.OutputWindow = deviceInfo.hWnd;
 	swapChainDesc.Windowed = deviceInfo.isWindowed;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
@@ -152,6 +153,23 @@ HRESULT DXDevice::StartDepthStencilView(ID3D11Device*& dxDevice, ID3D11DepthSten
 
 	pDepthStencilTexture->Release();
 	pDepthStencilTexture = nullptr;
+
+	return S_OK;
+}
+
+HRESULT DXDevice::CreateImGuiView(ID3D11ShaderResourceView*& mainView)
+{
+	if (swapChain == nullptr)
+		return E_FAIL;
+
+	ID3D11Texture2D* backBufferTexture;
+	if (FAILED(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBufferTexture)))
+		return E_FAIL;
+
+	if (FAILED(dxDevice->CreateShaderResourceView(backBufferTexture, nullptr, &mainView)))
+		return E_FAIL;
+
+	backBufferTexture->Release();
 
 	return S_OK;
 }

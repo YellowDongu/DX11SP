@@ -1,12 +1,14 @@
 #pragma once
-//#include "CPropertyWindow.h"
-//#include "CHierarchyWindow.h"
+#include "Base.h"
+#include "PropertyWindow.h"
+#include "HierarchyWindow.h"
 //#include "CResourceWindow.h"
 #include "MainViewWindow.h"
 #include "ConsoleWindow.h"
 //#include "CTextureWindow.h"
-//#include "CMonitoringWindow.h"
+#include "MonitoringWindow.h"
 //#include "CFileExplorerWindow.h"
+#include "NaviMeshCreatorWindow.h"
 
 
 class ToolMain : public Base
@@ -28,27 +30,32 @@ public:
 	void Render(void);
 
 	HRESULT CheckWindow(void);
-
 	ConsoleWindow* consoleInstance(void) { return consoleWindow; }
+
 private:
 	HRESULT ImGuiStart(void);
+	HRESULT CreateWindows(void);
 	void MainMenuBar(void);
 	HRESULT DeviceRestart(void);
 
-	bool show_demo_window = true;
-	bool show_another_window = false;
-	int windowSizeX, windowSizeY;
 
-	RECT windowRect;
-	std::wstring currentFilePath;
-	DirectX::XMFLOAT4 backBufferColor;
-	ImVec4 clear_color = {};
-	//CPropertyWindow* propertyWindow;
-	//CHierarchyWindow* hierarchyWindow;
+	bool show_demo_window{ true };
+	bool show_another_window{ false };
+	int windowSizeX{ 0 }, windowSizeY{ 0 };
+
+	RECT windowRect{};
+	std::wstring currentFilePath{};
+	DirectX::XMFLOAT4 backBufferColor{};
+	ImVec4 clear_color{};
+	ObjectManager* objectManager{ nullptr };
+
 	//CResourceWindow* resourceWindow;
 	//CTextureWindow* textureWindow;
-	//CMonitoringWindow* monitoringWindow;
 	//CFileExplorerWindow* explorerWindow;
-	MainViewWindow* mainViewWindow;
-	ConsoleWindow* consoleWindow;
+	PropertyWindow* propertyWindow{ nullptr };
+	HierarchyWindow* hierarchyWindow{ nullptr };
+	MonitoringWindow* monitoringWindow{nullptr};
+	MainViewWindow* mainViewWindow{nullptr};
+	ConsoleWindow* consoleWindow{nullptr};
+	NaviMeshCreatorWindow* naviWindow{nullptr};
 };

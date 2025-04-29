@@ -12,9 +12,11 @@ private:
 	virtual void Free(void);
 public:
 	static F16CHandler* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, Engine::Model* F16C, Engine::Model* F16CGear);
+	static F16CHandler* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext);
 	Engine::Component* Clone(void) override;
 
 	HRESULT Start(void);
+	virtual HRESULT Awake(void);
 	virtual void Update(void) override;
 	virtual void FixedUpdate(void) override;
 	virtual void LateUpdate(void) override;

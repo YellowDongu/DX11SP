@@ -8,6 +8,7 @@ ConsoleWindow::ConsoleWindow() : newLine(true), line{}
 
 HRESULT ConsoleWindow::CreateFrame(void)
 {
+	static bool test;
 	ImGui::Begin("Console", &active, ImGuiWindowFlags_MenuBar);
 
 	if (ImGui::BeginMenuBar())
@@ -16,7 +17,11 @@ HRESULT ConsoleWindow::CreateFrame(void)
 		{
 			line.clear();
 		}
+		if (ImGui::MenuItem("ClippingScroll"))
+		{
+			clipScroll = !clipScroll;
 
+		}
 		ImGui::EndMenuBar();
 	}
 	for (auto& str : line)

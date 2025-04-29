@@ -44,6 +44,11 @@ ENGINEDLL ID3D11DeviceContext* DxDeviceContext(void)
 	CheckInstance(nullptr);
 	return EngineInstance()->DxDeviceContext();
 }
+ENGINEDLL IDXGISwapChain* GetSwapChain(void)
+{
+	CheckInstance(nullptr);
+	return EngineInstance()->Device()->GetDXSwapChain();
+}
 #pragma endregion
 
 #pragma region Timer

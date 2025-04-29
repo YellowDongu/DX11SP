@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{879c4549-17dd-4623-817a-29976a1bae7f}</ProjectGuid>
+    <ProjectGuid>{d365e4a7-587d-4873-aa9f-d04f6c83eb76}</ProjectGuid>
     <RootNamespace>JusinDx3DEngine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>Engine</ProjectName>

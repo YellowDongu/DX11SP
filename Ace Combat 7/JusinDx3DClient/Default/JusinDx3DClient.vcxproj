@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{34388860-ae9c-4ca8-bd07-5de1c3383a49}</ProjectGuid>
+    <ProjectGuid>{34388860-AE9C-4CA8-BD07-5DE1C3383A49}</ProjectGuid>
     <RootNamespace>JusinDx3DClient</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>Client</ProjectName>

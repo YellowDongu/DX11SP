@@ -29,6 +29,13 @@ F16CHandler* F16CHandler::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dx
 	return newInstance;
 }
 
+F16CHandler* F16CHandler::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext)
+{
+	F16CHandler* newInstance = new F16CHandler(dxDevice, dxDeviceContext);
+
+	return newInstance;
+}
+
 #define defineBoneSet(targetStruct, name, nodeIndex, boneIndexNumber)	\
 targetStruct.SetName = name;											\
 targetStruct.animationNodeIndex = nodeIndex;							\
@@ -80,6 +87,52 @@ HRESULT F16CHandler::Start(void)
 	//defineBoneSet(newStruct, "Front_Flap_02", 18, 22);
 	//defineBoneSet(newStruct, "Front_Flap_01", 17, 23);
 
+
+	aileronLParts.push_back(&boneSets.find("L_Aileron")->second);
+	aileronRParts.push_back(&boneSets.find("R_Aileron")->second);
+
+	elevatorParts.push_back(&boneSets.find("L_Tail")->second);
+	elevatorParts.push_back(&boneSets.find("R_Tail")->second);
+
+	rudderParts.push_back(&boneSets.find("Rudder")->second);
+
+	flapParts.push_back(&boneSets.find("Front_Flap_01")->second);
+	flapParts.push_back(&boneSets.find("Front_Flap_02")->second);
+
+	airbreakParts.push_back(&boneSets.find("AirBrake_01")->second);
+	airbreakParts.push_back(&boneSets.find("AirBrake_02")->second);
+	airbreakParts.push_back(&boneSets.find("AirBrake_03")->second);
+	airbreakParts.push_back(&boneSets.find("AirBrake_04")->second);
+	airbreakParts.push_back(&boneSets.find("AirBrake_05")->second);
+	airbreakParts.push_back(&boneSets.find("AirBrake_06")->second);
+	airbreakParts.push_back(&boneSets.find("AirBrake_07")->second);
+	airbreakParts.push_back(&boneSets.find("AirBrake_08")->second);
+	airbreakParts.push_back(&boneSets.find("AirBrake_09")->second);
+	airbreakParts.push_back(&boneSets.find("AirBrake_10")->second);
+	airbreakParts.push_back(&boneSets.find("AirBrake_11")->second);
+	airbreakParts.push_back(&boneSets.find("AirBrake_12")->second);
+	airbreakParts.push_back(&boneSets.find("AirBrake_13")->second);
+	airbreakParts.push_back(&boneSets.find("AirBrake_14")->second);
+	airbreakParts.push_back(&boneSets.find("AirBrake_15")->second);
+	airbreakParts.push_back(&boneSets.find("AirBrake_16")->second);
+
+	for (auto& gearSet : gearSets)
+		landingGearParts.push_back(&gearSet.second);
+
+	return S_OK;
+}
+HRESULT F16CHandler::Awake(void)
+{
+	body = static_cast<Engine::Model*>(gameObject->GetComponent(L"FullModel"));
+	landingGear = static_cast<Engine::Model*>(gameObject->GetComponent(L"GearModel"));
+	model = body;
+
+	if (body == nullptr || landingGear == nullptr)
+		return E_FAIL;
+
+	boneSets.clear(); gearSets.clear();
+	AircraftBoneHandler::CreateBoneSets(boneSets, body, body->DefaultAnimation());
+	AircraftBoneHandler::CreateBoneSets(gearSets, landingGear, landingGear->DefaultAnimation());
 
 	aileronLParts.push_back(&boneSets.find("L_Aileron")->second);
 	aileronRParts.push_back(&boneSets.find("R_Aileron")->second);
