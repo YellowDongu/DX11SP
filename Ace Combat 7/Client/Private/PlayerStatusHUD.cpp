@@ -4,7 +4,7 @@
 #include "Player.h"
 #include "FireControlSystem.h"
 #include "RMWR.h"
-
+#include "PlayerPilot.h"
 PlayerStatusHeadUpDisplay::PlayerStatusHeadUpDisplay(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::UIObject(dxDevice, dxDeviceContext), text(nullptr)
 {
 }
@@ -184,7 +184,10 @@ void PlayerStatusHeadUpDisplay::Render(void)
 
 void PlayerStatusHeadUpDisplay::LinkData(Player* player)
 {
-    metaData = &player->AircraftData();
+    PlayerPilot* pilot = static_cast<PlayerPilot*>(player->GetComponent(L"PlayerPilot"));
+    if (pilot == nullptr)
+        return;
+    metaData = &pilot->LinkObjectInfomation().aircraftInfomation;
     fcs = static_cast<FCS*>(player->GetComponent(L"FCS"));
     rmwr = static_cast<RMWR*>(player->GetComponent(L"RMWR"));
 }

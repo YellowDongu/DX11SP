@@ -37,3 +37,46 @@ void Polygon::Render(void)
 	::Render(indexBuffer, vertexBuffer, stride, offset, DXGI_FORMAT_R32_UINT, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	dxDeviceContext->DrawIndexed(indexCount, 0, 0);
 }
+
+HRESULT Polygon::CreateIndexBuffer(ID3D11Device* dxDevice, ID3D11Buffer*& buffer, UINT& indexCount, std::vector<UINT>& indices)
+{
+	UINT indexStride = sizeof(UINT);
+	indexCount = static_cast<UINT>(indices.size());
+
+	D3D11_BUFFER_DESC indexBufferDesc = {};
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.ByteWidth = (UINT)(indexStride * indices.size());
+	indexBufferDesc.StructureByteStride = indexStride;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA indexData = {};
+	ZeroMemory(&indexData, sizeof(indexData));
+	indexData.pSysMem = indices.data();
+
+	if (FAILED(dxDevice->CreateBuffer(&indexBufferDesc, &indexData, &buffer)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT Polygon::CreateDefaultVertexBuffer(ID3D11Device* dxDevice, ID3D11Buffer*& buffer, UINT& vertexStride, std::vector<StaticModelVertex>& vertices)
+{
+	vertexStride = static_cast<UINT>(sizeof(StaticModelVertex));
+	D3D11_BUFFER_DESC vertexBufferDesc = {};
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.ByteWidth = vertexStride * static_cast<UINT>(vertices.size());
+	vertexBufferDesc.StructureByteStride = vertexStride;
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.CPUAccessFlags = 0;
+	vertexBufferDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA vertexData = {};
+	ZeroMemory(&vertexData, sizeof(vertexData));
+	vertexData.pSysMem = vertices.data();
+
+	if (FAILED(dxDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &buffer)))
+		return E_FAIL;
+	return S_OK;
+}

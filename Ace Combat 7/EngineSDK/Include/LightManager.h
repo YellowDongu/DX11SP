@@ -36,8 +36,11 @@ namespace Engine
 
 		HRESULT Add_Light(Light& lightStruct, const std::wstring& key);
 
+		HRESULT BindLight(class Shader* shader, Light& light);
+		HRESULT BindWorldLight(class Shader* shader);
 	private:
 		std::map<std::wstring, Light> lights;
+		Light worldLights;
 
 		ID3D11Device* device;
 		ID3D11DeviceContext* context;

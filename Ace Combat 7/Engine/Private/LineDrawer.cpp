@@ -62,8 +62,8 @@ void LineDrawer::Render(void)
 
     dxDeviceContext->IASetInputLayout(inputLayout.Get());
 
-    basicEffect->SetProjection(DirectX::XMLoadFloat4x4(&EngineInstance()->ProjectionMatrix()));
-    basicEffect->SetView(DirectX::XMLoadFloat4x4(&EngineInstance()->ViewMatrix()));
+    basicEffect->SetProjection(DirectX::XMLoadFloat4x4(&EngineInstance()->RenderManager()->ProjectionMatrix()));
+    basicEffect->SetView(DirectX::XMLoadFloat4x4(&EngineInstance()->RenderManager()->ViewMatrix()));
     basicEffect->SetWorld(DirectX::XMMatrixIdentity());
 
     basicEffect->Apply(dxDeviceContext);

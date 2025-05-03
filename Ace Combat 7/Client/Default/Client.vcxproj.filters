@@ -189,9 +189,6 @@
     <ClInclude Include="..\Public\F16CHandler.h">
       <Filter>02. CommonGameObject\Vehicle\F16C</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\UIShader.h">
-      <Filter>05. Shader</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\TargetDummy.h">
       <Filter>02. CommonGameObject</Filter>
     </ClInclude>
@@ -255,7 +252,7 @@
     <ClInclude Include="..\Public\SimpleBullet.h">
       <Filter>02. CommonGameObject\Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\SuperClassPilot.h">
+    <ClInclude Include="..\Public\SuperClassAutoPilot.h">
       <Filter>03. Component</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\TU160.h">
@@ -268,6 +265,18 @@
       <Filter>02. CommonGameObject</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\WingTrailParticle.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MS01OceanModel.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\RaderSystem.h">
+      <Filter>Temp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SuperClassAIPilot.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TerrainCollision.h">
       <Filter>03. Component</Filter>
     </ClInclude>
   </ItemGroup>
@@ -364,9 +373,6 @@
     <ClCompile Include="..\Private\F16CHandler.cpp">
       <Filter>02. CommonGameObject\Vehicle\F16C</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UIShader.cpp">
-      <Filter>05. Shader</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\TargetDummy.cpp">
       <Filter>02. CommonGameObject</Filter>
     </ClCompile>
@@ -430,7 +436,7 @@
     <ClCompile Include="..\Private\SimpleBullet.cpp">
       <Filter>02. CommonGameObject\Weapon</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\SuperClassPilot.cpp">
+    <ClCompile Include="..\Private\SuperClassAutoPilot.cpp">
       <Filter>03. Component</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\TU160.cpp">
@@ -443,6 +449,18 @@
       <Filter>02. CommonGameObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\WingTrailParticle.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MS01OceanModel.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RaderSystem.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\SuperClassAIPilot.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TerrainCollision.cpp">
       <Filter>03. Component</Filter>
     </ClCompile>
   </ItemGroup>

@@ -7,27 +7,45 @@ using namespace Engine;
 
 void SceneLoader::Update(void)
 {
-	if (loadingThread)
-	{
-		if (!loadingThread->joinable())
-		{
-			loadEnd = true;
-			loadingThread->join();
-			// delete loadingThread;
-			loadingThread = nullptr;
-		}
 
+	if (!threadDone)
+		return;
+
+	if (loadingThread != nullptr)
+	{
+		delete loadingThread;
+		loadingThread = nullptr;
 	}
 
 }
 
 void SceneLoader::BeginLoading(Scene* scene)
 {
-	CreateThread(std::bind(&Scene::Start, scene));
+	if (loadingThread != nullptr)
+	{
+		if(loadingThread->joinable())
+			loadingThread->join();
+
+		delete loadingThread;
+		loadingThread = nullptr;
+	}
+
+
+	loadingThread = new std::thread(&SceneLoader::LoadScene, this, scene);
 }
 
-void SceneLoader::CreateThread(std::function<void(void)> loadingFunction)
-{
-	loadingThread = new std::thread(loadingFunction);
 
+void SceneLoader::LoadScene(Scene* scene)
+{
+	try
+	{
+		scene->Start();
+		scene->Awake();
+
+		threadDone = true;
+	}
+	catch (...)
+	{
+		ErrMsg(L"Failed to load scene");
+	}
 }

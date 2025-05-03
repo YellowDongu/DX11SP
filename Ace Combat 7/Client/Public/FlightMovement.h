@@ -35,6 +35,8 @@ public:
 	const FLOAT& Velocity(void) const { return velocity; }
 	const FLOAT& MinimumSpeed(void) const { return stallSpeed; }
 	const Vector3& LinkFinalMenuverForce(void) const { return finalMenuverForce; }
+
+	void SetSuper(void) { isSuper = true; }
 private:
 	bool isOnGround;
 
@@ -64,7 +66,7 @@ private:
 	Vector3 Drag;
 	FLOAT velocity;
 
-
+	bool isSuper{false};
 
 public:
 	// Inputs -> interface

@@ -6,9 +6,9 @@
 #include "ModelLoader.h"
 #include "MainCamera.h"
 #include "FireControlSystem.h"
-#include "SuperClassPilot.h"
+#include "SuperClassAIPilot.h"
+#include "SuperClassAutoPilot.h"
 #include "RMWR.h"
-#include "AIPilot.h"
 #include "StandardMissile.h"
 
 #include "Collider.h"
@@ -46,7 +46,7 @@ TU160* TU160::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContex
     return newInstance;
 }
 
-TU160* TU160::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, PilotInfomation& metaData)
+TU160* TU160::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ObjectInfomation& metaData)
 {
     TU160* newInstance = new TU160(dxDevice, dxDeviceContext);
     newInstance->metaData = metaData;
@@ -63,8 +63,8 @@ Engine::GameObject* TU160::Clone(void)
     return nullptr;
 }
 
-#define aircraftGlobalMatrix(matrix) DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 0.0f), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-0.0f), DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(0.0f)), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)))
-#define gearGlobalMatrix(matrix) DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 0.0f), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(0.0f), DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(0.0f)), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)))
+#define aircraftGlobalMatrix(matrix) DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 0.0f), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(0.0f)), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)))
+#define gearGlobalMatrix(matrix) DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 0.0f), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(0.0f)), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)))
 
 
 HRESULT TU160::Start(void)
@@ -96,15 +96,16 @@ HRESULT TU160::Start(void)
 
     flightModule = FlightMovement::Create(dxDevice, dxDeviceContext, transformComponent, metaData.aircraftInfomation.flightSpec);
     if (flightModule == nullptr) return E_FAIL;
+    flightModule->SetSuper();
     AddComponent(flightModule, L"FlightMovement");
-    static_cast<AircraftBoneHandler*>(boneHandler)->LinkYoke(flightModule->yoke);
+    //static_cast<AircraftBoneHandler*>(boneHandler)->LinkYoke(flightModule->yoke);
 
     fcs = FireControlSystem::Create(dxDevice, dxDeviceContext, metaData.aircraftInfomation);
     if (fcs == nullptr) return E_FAIL;
     fcs->SetStandardMissile(StandardMissile::Create(dxDevice, dxDeviceContext));
     fcs->SetUniqueMissile(nullptr);
     AddComponent(fcs, L"FCS");
-    autoPilot = SuperClassPilot::Create(dxDevice, dxDeviceContext);
+    autoPilot = SuperClassAutoPilot::Create(dxDevice, dxDeviceContext);
     if (autoPilot == nullptr) return E_FAIL;
     AddComponent(autoPilot, L"AutoPilot");
     autoPilot->Awake();
@@ -122,25 +123,45 @@ HRESULT TU160::Start(void)
     AddComponent(collider, L"Collider");
     AddComponent(RMWR::Create(dxDevice, dxDeviceContext), L"RMWR");
 
-    AIPilot* pilot = AIPilot::Create(dxDevice, dxDeviceContext);
+    SuperClassAIPilot* pilot = SuperClassAIPilot::Create(dxDevice, dxDeviceContext, metaData);
     AddComponent(pilot, L"AIPilot");
     pilot->Awake();
 
     return S_OK;
 }
 
+HRESULT TU160::Awake(void)
+{
+    //for (auto& component : components)
+    //{
+    //    component.second->Awake();
+    //}
+
+    Vector3 wayPoint = { 0.0f, ConvertFeetToWorld(10000.0f), 0.0f};
+    autoPilot->SetDestination(wayPoint); 
+    return S_OK;
+
+}
+
 void TU160::Update(void)
 {
+    if (!active)
+        return;
+    Engine::GameObject::Update();
 }
 
 void TU160::LateUpdate(void)
 {
+    if (!active)
+        return;
     Engine::GameObject::LateUpdate();
     AddRenderObject(RenderType::NonBlend, this);
 }
 
 void TU160::FixedUpdate(void)
 {
+    if (!active)
+        return;
     Engine::GameObject::FixedUpdate();
 }
 

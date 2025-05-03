@@ -14,16 +14,16 @@
 #include "StandardMissile.h"
 #include "ActiveRadarHomingMissile.h"
 #include "PlayerEar.h"
+#include "TerrainCollision.h"
 
-#include "WingTrailParticle.h"
 Engine::Transform* testtransform = nullptr;
 
 Engine::GameObject* testEnemy = nullptr;
-Player::Player(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::GameObject(dxDevice, dxDeviceContext), model(nullptr), boneHandler(nullptr), flightModule(nullptr), metaData{}
+Player::Player(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::GameObject(dxDevice, dxDeviceContext), model(nullptr), boneHandler(nullptr), flightModule(nullptr)
 {
 }
 
-Player::Player(const Player& other) : Engine::GameObject(other), model(nullptr), boneHandler(nullptr), flightModule(nullptr), metaData{}
+Player::Player(const Player& other) : Engine::GameObject(other), model(nullptr), boneHandler(nullptr), flightModule(nullptr)
 {
 }
 
@@ -33,12 +33,23 @@ void Player::Free(void)
     GameObject::Free();
 }
 
-Player* Player::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, AircraftMetaData* metaData)
+Player* Player::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext)
 {
     ::EngineInstance()->CreateConsole();
     Player* newInstance = new Player(dxDevice, dxDeviceContext);
-    if (metaData != nullptr)
-        newInstance->metaData = *metaData;
+
+    if (FAILED(newInstance->Start()))
+    {
+        Base::Destroy(newInstance);
+        return nullptr;
+    }
+    return newInstance;
+}
+
+Player* Player::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ObjectInfomation& metaData)
+{
+    Player* newInstance = new Player(dxDevice, dxDeviceContext);
+    newInstance->objectInfomation = metaData;
     if (FAILED(newInstance->Start()))
     {
         Base::Destroy(newInstance);
@@ -66,7 +77,6 @@ Engine::GameObject* Player::Clone(void)
 #include "F15EHandler.h"
 #include "F14DHandler.h"
 #include "SU33Handler.h"
-WingTrailParticle* womgTrail;
 #ifdef useAssimp
 //#define aircraftGlobalXMMatrix() DirectX::XMMatrixAffineTransformation(DirectX::XMVectorSet(0.5f, 0.5f, 0.5f, 0.0f), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(0.0f)), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f))
 //#define aircraftGlobalMatrix(matrix) DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(DirectX::XMVectorSet(0.5f, 0.5f, 0.5f, 0.0f), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(0.0f)), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)))
@@ -88,20 +98,20 @@ HRESULT Player::Start(void)
     CreateTransform();
     transformComponent->Position() = Vector3(1643.0f, 2.0f, 405.0f);
     transformComponent->Scale() = Vector3::one();
-    transformComponent->SetAngle(Vector3{ 0.0f, -45.0f, 0.0f });
+    //transformComponent->SetAngle(Vector3{ 0.0f, -45.0f, 0.0f });
     //transformComponent->Scale() = Vector3::one() * 0.01f;
     
     // model setting
     #if defined(f16c)
     metaData = F16CMetaData();
     #elif defined(f14d)
-    metaData = F14DMetaData();
+    objectInfomation.aircraftInfomation = F14DMetaData();
     #elif defined(su33)
     metaData = SU33MetaData();
     #else
     metaData = F15EMetaData();
     #endif
-
+    AircraftMetaData& metaData = objectInfomation.aircraftInfomation;
 
     Matrix matrix;
     aircraftGlobalMatrix(matrix);
@@ -152,11 +162,8 @@ HRESULT Player::Start(void)
         return E_FAIL;
     AddComponent(collider, L"Collider");
 
-    womgTrail = WingTrailParticle::Create(dxDevice, dxDeviceContext);
-    AddComponent(womgTrail, L"WingTrailParticle");
-    womgTrail->Awake();
     AddComponent(comTest = RMWR::Create(dxDevice, dxDeviceContext), L"RMWR");
-    playerPilot = PlayerPilot::Create(dxDevice, dxDeviceContext, metaData);
+    playerPilot = PlayerPilot::Create(dxDevice, dxDeviceContext, objectInfomation);
     AddComponent(playerPilot, L"PlayerPilot");
     playerPilot->Awake();
     playerPilot->testEnemyPointer = &testEnemy;
@@ -165,13 +172,14 @@ HRESULT Player::Start(void)
     cameraState = 0;
 
     Sound()->LoadSound("../Bin/Resources/Sounds/Effects/", "MissileFired.wav");
+    TerrainCollision* terrainCollision = TerrainCollision::Create(dxDevice, dxDeviceContext);
+    AddComponent(terrainCollision, L"TerrainCollision");
+    terrainCollision->Awake();
+
     return S_OK;
 }
 HRESULT Player::Awake(void)
 {
-    if (FAILED(LoadModel(metaData.modelFilePath, model)))
-        return E_FAIL;
-
     for (auto& component : components)
         component.second->Awake();
 
@@ -184,7 +192,7 @@ void Player::Update(void)
     std::cout << DeltaTime() << "   : " << Time()->FPS() << std::endl;
     if (testEnemy == nullptr)
     {
-        testEnemy = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"MainTargetEnemy")->GetGameObject(L"MainTargetEnemy");
+        testEnemy = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"MainTargetEnemy")->GetGameObject(L"MainTarget");
     }
     boneHandler->Update();
     playerPilot->Update();
@@ -202,6 +210,7 @@ void Player::LateUpdate(void)
 
 void Player::FixedUpdate(void)
 {
+    Engine::GameObject::FixedUpdate();
 }
 
 void Player::Render(void)
@@ -210,7 +219,6 @@ void Player::Render(void)
     model->Render();
     gearModel->Render();
     collider->Render();
-    womgTrail->Render();
 }
 
 

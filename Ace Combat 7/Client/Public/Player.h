@@ -14,7 +14,8 @@ private:
 	virtual ~Player(void) = default;
 	virtual void Free(void);
 public:
-	static Player* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, AircraftMetaData* metaData = nullptr);
+	static Player* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext);
+	static Player* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ObjectInfomation& metaData);
 	virtual GameObject* Clone(void);
 
 	HRESULT Start(void);
@@ -26,12 +27,11 @@ public:
 	
 	void LinkCamera(MainCamera* object);
 	int& LinkCameraState(void) { return cameraState; }
-	const AircraftMetaData& AircraftData(void) const { return metaData; }
 	virtual void Collide(Engine::GameObject* target, Engine::Collider* targetCollision) override;
 
 private:
 	//std::wstring selectedModel;
-	AircraftMetaData metaData;
+	ObjectInfomation objectInfomation;
 	Engine::Model* model;
 	Engine::Model* gearModel;
 	class AircraftBoneHandler* boneHandler;

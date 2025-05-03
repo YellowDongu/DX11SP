@@ -20,6 +20,7 @@ Title* Title::Create(void)
 
 void Title::Start(void)
 {
+	TitleBackground* title = TitleBackground::Create(DxDevice(), DxDeviceContext());
 }
 
 void Title::Awake(void)

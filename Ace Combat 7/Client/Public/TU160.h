@@ -10,17 +10,17 @@ private:
 	virtual void Free(void) override;
 public:
 	static TU160* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext);
-	static TU160* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, PilotInfomation& metaData);
+	static TU160* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ObjectInfomation& metaData);
 	virtual Engine::GameObject* Clone(void) override;
 
 	HRESULT Start(void);
-	virtual HRESULT Awake(void) { return S_OK; }
+	virtual HRESULT Awake(void);
 	virtual void Update(void);
 	virtual void LateUpdate(void);
 	virtual void FixedUpdate(void);
 	virtual void Render(void);
 private:
-	PilotInfomation metaData;
+	ObjectInfomation metaData;
 
 	Engine::Model* model;
 	Engine::Model* gearModel;

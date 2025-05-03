@@ -9,8 +9,6 @@
 #include "AircraftMetaData.h"
 #include "RMWR.h"
 
-#include "WingTrailParticle.h"
-WingTrailParticle* test;
 PlayerPilot::PlayerPilot(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::Component(dxDevice, dxDeviceContext), flightModule(nullptr)
 {
 }
@@ -23,10 +21,10 @@ void PlayerPilot::Free(void)
 {
 }
 
-PlayerPilot* PlayerPilot::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, AircraftMetaData& data)
+PlayerPilot* PlayerPilot::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ObjectInfomation& objectInfomation)
 {
 	PlayerPilot* newInstance = new PlayerPilot(dxDevice, dxDeviceContext);
-    newInstance->metaData = &data;
+    newInstance->objectInfomation = objectInfomation;
 	//if (FAILED(newInstance->Start()))
 	//{
 	//	Base::Destroy(newInstance);
@@ -46,11 +44,10 @@ HRESULT PlayerPilot::Awake(void)
     flightModule = static_cast<FlightMovement*>(gameObject->GetComponent(L"FlightMovement"));
     fcs = static_cast<FireControlSystem*>(gameObject->GetComponent(L"FCS"));
     rmwr = static_cast<RMWR*>(gameObject->GetComponent(L"RMWR"));
-    test = static_cast<WingTrailParticle*>(gameObject->GetComponent(L"WingTrailParticle"));
-    cameraTrdViewOffset = metaData->cameraTrdViewOffset * 50.0f;
-    cameraFstViewOffset = metaData->cameraFstViewOffset * 50.0f;
-    cameraTrdViewOffset = metaData->cameraTrdViewOffset;
-    cameraFstViewOffset = metaData->cameraFstViewOffset;
+    //cameraTrdViewOffset = metaData->cameraTrdViewOffset * 50.0f;
+    //cameraFstViewOffset = metaData->cameraFstViewOffset * 50.0f;
+    cameraTrdViewOffset = objectInfomation.aircraftInfomation.cameraTrdViewOffset;
+    cameraFstViewOffset = objectInfomation.aircraftInfomation.cameraFstViewOffset;
 
     cameraState = 0;
 
@@ -159,12 +156,11 @@ void PlayerPilot::Update(void)
         flightModule->yoke.z = static_cast<FLOAT>(Input()->getButton(KeyType::LEFT)) - static_cast<FLOAT>(Input()->getButton(KeyType::RIGHT));
         flightModule->airbreakActive = Input()->getButton(KeyType::S);
         flightModule->Update();
-        test->AddMatrix(transformComponent->WorldMatrix());
     }
         break;
     case 1:
     {
-        camera->FOV(60.0f);
+        camera->FOV(45.0f);
         if (Input()->getButton(KeyType::W))
             flightModule->throttle = 1.0f;
         else if (Input()->getButton(KeyType::S))
@@ -178,7 +174,6 @@ void PlayerPilot::Update(void)
         flightModule->yoke.z = static_cast<FLOAT>(Input()->getButton(KeyType::LEFT)) - static_cast<FLOAT>(Input()->getButton(KeyType::RIGHT));
         flightModule->airbreakActive = Input()->getButton(KeyType::S);
         flightModule->Update();
-        test->AddMatrix(transformComponent->WorldMatrix());
     }
         break;
     case 2:
@@ -197,7 +192,6 @@ void PlayerPilot::Update(void)
         flightModule->yoke.z = static_cast<FLOAT>(Input()->getButton(KeyType::LEFT)) - static_cast<FLOAT>(Input()->getButton(KeyType::RIGHT));
         flightModule->airbreakActive = Input()->getButton(KeyType::S);
         flightModule->Update();
-        test->AddMatrix(transformComponent->WorldMatrix());
     }
         break;
     default:

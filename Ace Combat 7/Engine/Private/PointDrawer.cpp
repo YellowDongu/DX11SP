@@ -56,7 +56,10 @@ void PointDrawer::FixedUpdate(void)
 
 void PointDrawer::Render(void)
 {
-	sphere->Draw(DirectX::XMMatrixTranslation(position.x, position.y, position.z), DirectX::XMLoadFloat4x4(&::EngineInstance()->ViewMatrix()), DirectX::XMLoadFloat4x4(&::EngineInstance()->ProjectionMatrix()), DirectX::XMLoadFloat4(&color));
+	std::unique_ptr<DirectX::CommonStates> states = std::make_unique<DirectX::CommonStates>(dxDevice);
+
+	dxDeviceContext->RSSetState(states->CullNone());
+	sphere->Draw(DirectX::XMMatrixTranslation(position.x, position.y, position.z), DirectX::XMLoadFloat4x4(&::EngineInstance()->RenderManager()->ViewMatrix()), DirectX::XMLoadFloat4x4(&::EngineInstance()->RenderManager()->ProjectionMatrix()), DirectX::XMLoadFloat4(&color));
 }
 
 void Engine::PointDrawer::ChangeRadius(FLOAT value)

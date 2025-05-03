@@ -96,8 +96,10 @@ namespace Engine
 
 		bool Inside(const Vector3& position, INT& cellIndex);
 		HRESULT LoadMesh(std::wstring& path);
+		HRESULT LoadMesh(std::wstring& path, std::vector<Vector3>& vertices, std::vector<UINT>& indices);
 		HRESULT SaveMesh(std::wstring& path, std::vector<Vector3> vertices, std::vector<UINT> indices);
-		UINT GetTriangleIndex(Vector3 position);
+		INT GetTriangleIndex(Vector3 position);
+		NaviNode* GetNode(INT index) { if (index == -1) return nullptr; return &nodes[index]; }
 
 		HRESULT ReadMeshFile(std::ifstream& fileStream, std::vector<Vector3>& verticesOut, std::vector<UINT>& indicesOut);
 		HRESULT WriteMeshFile(std::ofstream& fileStream, std::vector<Vector3>& verticesIn, std::vector<UINT>& indicesIn);

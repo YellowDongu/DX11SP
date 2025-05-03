@@ -107,11 +107,19 @@ struct LightData
     float4 specular;
 };
 
+struct SimpleVertex
+{
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT2 texcoord;
+
+	static const std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayout;
+};
+
 struct StaticModelVertex
 {
-    float3 position;
-    float3 normal;
-    float2 texcoord;
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT3 normal;
+	DirectX::XMFLOAT2 texcoord;
 };
 
 struct ENGINEDLL ModelVertex

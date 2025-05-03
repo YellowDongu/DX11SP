@@ -47,10 +47,10 @@ private:
 	const D3D11_VIEWPORT* viewPort{ nullptr };
 	class ToolCamera* camera{ nullptr };
 	class ObjectManager* manager{ nullptr };
-
 	Engine::PointDrawer* pointDrawer{nullptr};
 	Engine::LineDrawer* lineDrawer{nullptr};
 	ID3D11Device* device{ nullptr };
 	ID3D11DeviceContext* context{ nullptr };
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthDisabledState;
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> wireframeState;
 };

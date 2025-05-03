@@ -3,7 +3,6 @@
 
 using namespace Engine;
 
-
 HRESULT NavMesh::LoadMesh(const std::vector<Vector3>& vertices, const std::vector<UINT>& indices, std::vector<NaviNode>& nodes)
 {
 	nodes.clear();
@@ -26,7 +25,6 @@ HRESULT NavMesh::LoadMesh(const std::vector<Vector3>& vertices, const std::vecto
 		index++;
 	}
 	return S_OK;
-
 }
 
 void NavMesh::TriangleAdjacency(const std::vector<UINT>& indices, std::vector<NavMesh::Triangle>& nodes)
@@ -135,12 +133,20 @@ bool NavMesh::Inside(const Vector3& position, INT& cellIndex)
 {
 	NaviNode& currentNode = nodes[cellIndex];
 	bool inside = true;
-	while (currentNode.Inside(position, cellIndex))
+	static int maxTryCount = 25;
+	int tryCount = 0;
+	while (!currentNode.Inside(position, cellIndex))
 	{
+		if(tryCount >= maxTryCount)
+		{
+			cellIndex = -1;
+			return false;
+		}
 		inside = false;
 		if (cellIndex == -1)
 			return inside;
 		currentNode = nodes[cellIndex];
+		tryCount++;
 	}
 	return inside;
 }
@@ -159,6 +165,42 @@ HRESULT NavMesh::LoadMesh(std::wstring& path)
 	{
 		std::vector<Vector3> vertices;
 		std::vector<UINT> indices;
+		result = ReadMeshFile(fileStream, vertices, indices);
+		fileStream.close();
+		if (FAILED(result))
+		{
+			ErrMsg((std::wstring(L"File currupted : ") + path).c_str());
+			return E_FAIL;
+		}
+		result = LoadMesh(vertices, indices);
+		if (FAILED(result))
+		{
+			ErrMsg((std::wstring(L"File currupted : ") + path).c_str());
+			return E_FAIL;
+		}
+
+	}
+	catch (...)
+	{
+		fileStream.close();
+		ErrMsg((std::wstring(L"File Error : ") + path).c_str());
+		return E_FAIL;
+	}
+
+	return result;
+}
+HRESULT NavMesh::LoadMesh(std::wstring& path, std::vector<Vector3>& vertices, std::vector<UINT>& indices)
+{
+	std::ifstream fileStream(path, std::ios::binary);
+	HRESULT result = E_FAIL;
+	if (!fileStream.is_open())
+	{
+		ErrMsg((std::wstring(L"File cannot open : ") + path).c_str());
+		return result;
+	}
+
+	try
+	{
 		result = ReadMeshFile(fileStream, vertices, indices);
 		fileStream.close();
 		if (FAILED(result))
@@ -214,7 +256,7 @@ HRESULT NavMesh::SaveMesh(std::wstring& path, std::vector<Vector3> vertices, std
 	return S_OK;
 }
 
-UINT NavMesh::GetTriangleIndex(Vector3 position)
+INT NavMesh::GetTriangleIndex(Vector3 position)
 {
 	int index = 0;
 	for (auto& triangle : nodes)
@@ -238,8 +280,16 @@ HRESULT NavMesh::ReadMeshFile(std::ifstream& fileStream, std::vector<Vector3>& v
 	fileStream.read(reinterpret_cast<char*>(indicesOut.data()), sizeof(UINT) * size);
 
 	fileStream.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-	verticesOut.resize(size);
-	fileStream.read(reinterpret_cast<char*>(verticesOut.data()), sizeof(Vector3) * size);
+	std::vector<DirectX::XMFLOAT3> tempStorage;
+	tempStorage.resize(size);
+	fileStream.read(reinterpret_cast<char*>(tempStorage.data()), sizeof(Vector3) * size);
+	//fileStream.read(reinterpret_cast<char*>(tempStorage.data()), sizeof(DirectX::XMFLOAT3) * size);
+
+	verticesOut.reserve(tempStorage.size());
+	for (auto& vector : tempStorage)
+	{
+		verticesOut.push_back(vector);
+	}
 
 	return S_OK;
 }
@@ -247,14 +297,20 @@ HRESULT NavMesh::ReadMeshFile(std::ifstream& fileStream, std::vector<Vector3>& v
 HRESULT NavMesh::WriteMeshFile(std::ofstream& fileStream, std::vector<Vector3>& verticesIn, std::vector<UINT>& indicesIn)
 {
 	size_t size;
+	std::vector<DirectX::XMFLOAT3> tempStorage;
+	tempStorage.reserve(verticesIn.size());
+	for (auto& vector : verticesIn)
+	{
+		tempStorage.push_back(vector);
+	}
 
 	size = indicesIn.size();
 	fileStream.write(reinterpret_cast<const char*>(&size), sizeof(size_t));
 	fileStream.write(reinterpret_cast<const char*>(indicesIn.data()), sizeof(UINT) * size);
 
-	size = verticesIn.size();
+	size = tempStorage.size();
 	fileStream.write(reinterpret_cast<const char*>(&size), sizeof(size_t));
-	fileStream.write(reinterpret_cast<const char*>(verticesIn.data()), sizeof(Vector3) * size);
+	fileStream.write(reinterpret_cast<const char*>(tempStorage.data()), sizeof(DirectX::XMFLOAT3) * size);
 
 	return S_OK;
 }

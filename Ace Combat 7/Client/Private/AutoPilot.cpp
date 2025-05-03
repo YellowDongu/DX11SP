@@ -668,5 +668,7 @@ void AutoPilot::LinkInfomation(FlightMovement* component)
 {
 	yoke = &component->yoke;
 	throttle = &component->throttle;
+	airBreak = &component->airbreakActive;
 	throttleIdle = component->IdleThrottle();
+	currentVelocity = &component->Velocity();
 }

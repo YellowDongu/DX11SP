@@ -19,6 +19,9 @@ namespace Engine
 
 		void BorrowBuffer(ID3D11Buffer** index, ID3D11Buffer** vertex) { index = &indexBuffer; vertex = &vertexBuffer; }
 
+		HRESULT CreateIndexBuffer(ID3D11Device* dxDevice, ID3D11Buffer*& buffer, UINT& indexCount, std::vector<UINT>& indices);
+		HRESULT CreateDefaultVertexBuffer(ID3D11Device* dxDevice, ID3D11Buffer*& buffer, UINT& vertexStride, std::vector<StaticModelVertex>& vertex);
+
 	protected:
 		bool saveVertex{ false };
 		bool original{ false };
@@ -28,5 +31,7 @@ namespace Engine
 		UINT stride{ 0 };
 		UINT offset{ 0 };
 		UINT indexCount{ 0 };
+
+		std::vector<UINT> savedIndices;
 	};
 }

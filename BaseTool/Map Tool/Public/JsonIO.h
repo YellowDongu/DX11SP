@@ -20,7 +20,6 @@ public:
 	//static HRESULT OverrideLoad_GameObject(std::list<GameObjectMetaData*>* targetList, std::vector<nlohmann::json>& JSONObject);
 	//static HRESULT OverrideLoad_UIObject(std::list<GameObjectMetaData*>* targetList, std::vector<nlohmann::json>& JSONObject);
 
-
 	static HRESULT Load(ObjectManager* objectManager);
 	static HRESULT Load_Scene(ObjectManager* objectManager, std::wstring saveFilePath);
 	static HRESULT LoadGameObjects(ObjectManager* objectManager, std::list<GameObjectMetaData*>& targetList, nlohmann::json& JSONObject);

@@ -1,16 +1,44 @@
 #pragma once
 
+enum class TriggerType
+{
+	KillSpawnTrigger,
+	TimeSpawnTrigger,
+	PositionSpawnTrigger,
+	End
+};
+
+struct GameObjectSpawnInfomation
+{
+	Vector3 position;
+	Vector3 angle;
+	std::wstring name;
+	std::wstring layerName;
+	Engine::GameObject* gameObject;
+};
+
 class Trigger abstract : public Base
 {
+protected:
+	struct TriggerDescription
+	{
+		std::wstring triggerName;
+		TriggerType triggerType;
+		bool standByStatus = false;
+
+		TriggerDescription() : triggerType(TriggerType::End) {}
+	};
 public:
 	Trigger(void) = default;
 	virtual ~Trigger(void) = default;
 
-	virtual HRESULT Awake(void) {}
+	virtual HRESULT Awake(void) { return S_OK; }
 	virtual void Update(void) {}
 	virtual void LateUpdate(void) {}
 	virtual void FixedUpdate(void) {}
 	virtual void ActiveTrigger(void) {}
+
+	void SetBaseInfomation(Trigger::TriggerDescription* description);
 
 	virtual void SetStandBy(void) { standby = true; }
 	virtual void SetSleep(void) { standby = false; }
@@ -20,11 +48,10 @@ public:
 	bool Delete(void) { return deleteThis; }
 	void LinkTrigger(Trigger* target) { linkedTrigger.push_back(target); }
 	const std::wstring& Name(void) const { return name; }
-private:
+protected:
 	bool standby{ false }, deleteThis{false};
 	std::wstring name;
 	std::vector<Trigger*> linkedTrigger;
-	std::vector<Engine::GameObject*> effectedTargets;
 };
 
 
@@ -41,7 +68,7 @@ public:
 	virtual Engine::GameObject* Clone(void) override;
 
 	HRESULT Start(void);
-	virtual HRESULT Awake(void)  override{ return S_OK; }
+	virtual HRESULT Awake(void) override;
 	virtual void Update(void) override;
 	virtual void LateUpdate(void) override;
 	virtual void FixedUpdate(void) override;
@@ -53,4 +80,94 @@ public:
 
 private:
 	std::map<std::wstring, Trigger*> triggers;
+};
+
+
+// 해당 레이어의 모든 객체들이 비활성화 상태일때 작동
+class KillSpawnTrigger : public Trigger
+{
+	KillSpawnTrigger(void) = default;
+	virtual ~KillSpawnTrigger(void) = default;
+public:
+	struct TriggerDescription : public Trigger::TriggerDescription
+	{
+		std::wstring targetLayer;
+		std::vector<GameObjectSpawnInfomation> spawnTargets;
+
+		TriggerDescription() { triggerType = TriggerType::KillSpawnTrigger; }
+	};
+	static KillSpawnTrigger* Create(KillSpawnTrigger::TriggerDescription& triggerDescription);
+
+	virtual HRESULT Awake(void) override;
+	virtual void Update(void) override;
+	virtual void LateUpdate(void) override;
+	virtual void FixedUpdate(void) override;
+	virtual void ActiveTrigger(void) override;
+
+
+protected:
+	Engine::Layer* targetLayer{nullptr};
+	std::vector<GameObjectSpawnInfomation> spawnTargets;
+};
+
+
+// 타이머가 특정 시간일때 발동
+class TimeSpawnTrigger : public Trigger
+{
+	TimeSpawnTrigger(void) = default;
+	virtual ~TimeSpawnTrigger(void) = default;
+public:
+	struct TriggerDescription : public Trigger::TriggerDescription
+	{
+		FLOAT* missionTimer;
+		std::vector<GameObjectSpawnInfomation> spawnTargets;
+
+		TriggerDescription() { triggerType = TriggerType::TimeSpawnTrigger; }
+	};
+	static KillSpawnTrigger* Create(TimeSpawnTrigger::TriggerDescription& triggerDescription);
+
+	virtual HRESULT Awake(void) override;
+	virtual void Update(void) override;
+	virtual void LateUpdate(void) override;
+	virtual void ActiveTrigger(void) override;
+
+
+protected:
+	FLOAT* Timer;
+	std::vector<GameObjectSpawnInfomation> spawnTargets;
+};
+
+
+// 플레이어의 위치가 근처일때 작동
+class PositionSpawnTrigger : public Trigger
+{
+	PositionSpawnTrigger(void) = default;
+	virtual ~PositionSpawnTrigger(void) = default;
+	virtual void Free(void) override;
+public:
+	struct TriggerDescription : public Trigger::TriggerDescription
+	{
+		Vector3 position;
+		FLOAT arrivalDistance = ConvertFeetToWorld(100.0f) * 5.0f;
+		std::vector<Engine::GameObject*> surveillanceTarget;
+		bool altitudeActive{ false };
+		std::vector<GameObjectSpawnInfomation> spawnTargets;
+
+		TriggerDescription() { triggerType = TriggerType::PositionSpawnTrigger; }
+	};
+	static PositionSpawnTrigger* Create(PositionSpawnTrigger::TriggerDescription& triggerDescription);
+
+	HRESULT Start(PositionSpawnTrigger::TriggerDescription& description);
+	virtual HRESULT Awake(void) override;
+	virtual void Update(void) override;
+	virtual void LateUpdate(void) override;
+	virtual void ActiveTrigger(void) override;
+
+
+protected:
+	Vector3 position;
+	FLOAT arrivalDistance = ConvertFeetToWorld(100.0f) * 5.0f;
+	std::vector<Engine::GameObject*> surveillanceTarget;
+	std::vector<GameObjectSpawnInfomation> spawnTargets;
+	bool altitudeActive{ false };
 };

@@ -43,6 +43,16 @@ HRESULT TriggerBox::Start(void)
 	return S_OK;
 }
 
+HRESULT TriggerBox::Awake(void)
+{
+	for (auto& trigger : triggers)
+	{
+		if (FAILED(trigger.second->Awake()))
+			return E_FAIL;
+	}
+	return S_OK;
+}
+
 void TriggerBox::Update(void)
 {
 	Trigger* trigger = nullptr;
@@ -55,7 +65,10 @@ void TriggerBox::Update(void)
 			iterator = triggers.erase(iterator);
 			continue;
 		}
-
+		else if (trigger->StandBy())
+		{
+			trigger->Update();
+		}
 		iterator++;
 	}
 }
@@ -99,4 +112,103 @@ void TriggerBox::ForceActiveTrigger(wchar_t* triggerName)
 	Trigger* target = FindTrigger(triggerName);
 	if (target != nullptr)
 		target->ActiveTrigger();
+}
+
+void PositionSpawnTrigger::Free(void)
+{
+	for (auto& object : spawnTargets)
+	{
+		Base::DestroyInstance(object.gameObject);
+	}
+	spawnTargets.clear();
+}
+
+PositionSpawnTrigger* PositionSpawnTrigger::Create(PositionSpawnTrigger::TriggerDescription& triggerDescription)
+{
+	PositionSpawnTrigger* newInstance = new PositionSpawnTrigger();
+	if (FAILED(newInstance->Start(triggerDescription)))
+	{
+		Base::Destroy(newInstance);
+		return nullptr;
+	}
+	return newInstance;
+}
+
+HRESULT PositionSpawnTrigger::Start(PositionSpawnTrigger::TriggerDescription& description)
+{
+	SetBaseInfomation(&description);
+
+	position = description.position;
+	arrivalDistance = description.arrivalDistance;
+	for (auto& target : description.surveillanceTarget)
+	{
+		surveillanceTarget.push_back(target);
+	}
+	for (auto& target : description.spawnTargets)
+	{
+		spawnTargets.push_back(target);
+	}
+	altitudeActive = description.altitudeActive;
+	return S_OK;
+}
+
+HRESULT PositionSpawnTrigger::Awake(void)
+{
+	return S_OK;
+}
+
+void PositionSpawnTrigger::Update(void)
+{
+}
+
+void PositionSpawnTrigger::LateUpdate(void)
+{
+	FLOAT distance = 0.0f;
+	Vector3 targetPostion, objectPosition;
+	targetPostion = position;
+	targetPostion.y = 0.0f;
+
+	for (auto& object : surveillanceTarget)
+	{
+		if(altitudeActive)
+			distance = (position - object->transform()->Position()).magnitude();
+		else
+		{
+			objectPosition = object->transform()->Position();
+			objectPosition.y = 0.0f;
+			distance = (targetPostion - objectPosition).magnitude();
+		}
+		if (distance <= arrivalDistance)
+		{
+			ActiveTrigger();
+			return;
+		}
+	}
+}
+
+void PositionSpawnTrigger::ActiveTrigger(void)
+{
+	std::wstring layerName;
+	Engine::Layer* layer = nullptr;
+	for (auto& object : spawnTargets)
+	{
+		if (object.layerName != layerName)
+		{
+			layer = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(object.layerName);
+			layerName = object.layerName;
+		}
+
+		if (layer == nullptr)
+			continue;
+		layer->AddGameObject(object.name, object.gameObject);
+		object.gameObject->transform()->Position() = object.position;
+		object.gameObject->transform()->SetAngle(object.angle);
+	}
+	deleteThis = true;
+}
+
+void Trigger::SetBaseInfomation(Trigger::TriggerDescription* description)
+{
+	standby = description->standByStatus;
+	name = description->triggerName;
 }

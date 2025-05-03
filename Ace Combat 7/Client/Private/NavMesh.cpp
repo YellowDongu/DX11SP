@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "NavMesh.h"
+/*
 
 HRESULT NavMesh::LoadMesh(const std::vector<Vector3>& vertices, const std::vector<UINT>& indices, std::vector<NaviNode>& nodes)
 {
@@ -181,7 +182,44 @@ HRESULT NavMesh::LoadMesh(std::wstring& path)
 	return result;
 }
 
-HRESULT NavMesh::SaveMesh(std::wstring& path, std::vector<Vector3> vertices, std::vector<UINT> indices)
+HRESULT NavMesh::LoadMesh(std::wstring& path, std::vector<Vector3>& vertices, std::vector<UINT>& indices)
+{
+	std::ifstream fileStream(path, std::ios::binary);
+	HRESULT result = E_FAIL;
+	if (!fileStream.is_open())
+	{
+		ErrMsg((std::wstring(L"File cannot open : ") + path).c_str());
+		return result;
+	}
+
+	try
+	{
+		result = ReadMeshFile(fileStream, vertices, indices);
+		fileStream.close();
+		if (FAILED(result))
+		{
+			ErrMsg((std::wstring(L"File currupted : ") + path).c_str());
+			return E_FAIL;
+		}
+		result = LoadMesh(vertices, indices);
+		if (FAILED(result))
+		{
+			ErrMsg((std::wstring(L"File currupted : ") + path).c_str());
+			return E_FAIL;
+		}
+
+	}
+	catch (...)
+	{
+		fileStream.close();
+		ErrMsg((std::wstring(L"File Error : ") + path).c_str());
+		return E_FAIL;
+	}
+
+	return result;
+}
+
+HRESULT NavMesh::SaveMesh(std::wstring& path, std::vector<Vector3>& vertices, std::vector<UINT>& indices)
 {
 	std::ofstream file;
 	try
@@ -255,3 +293,5 @@ HRESULT NavMesh::WriteMeshFile(std::ofstream& fileStream, std::vector<Vector3>& 
 
 	return S_OK;
 }
+
+*/

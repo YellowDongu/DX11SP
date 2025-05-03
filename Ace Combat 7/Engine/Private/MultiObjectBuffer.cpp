@@ -3,7 +3,7 @@
 #include "GameInstance.h"
 using namespace Engine;
 
-MultiObjectBuffer::MultiObjectBuffer(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Component(dxDevice, dxDeviceContext)
+MultiObjectBuffer::MultiObjectBuffer(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Component(dxDevice, dxDeviceContext), clone(false)
 {
 }
 
@@ -29,6 +29,11 @@ void MultiObjectBuffer::Free(void)
 	{
 		worldBuffer->Release();
 		worldBuffer = nullptr;
+	}
+	if (additionalBuffer != nullptr)
+	{
+		additionalBuffer->Release();
+		additionalBuffer = nullptr;
 	}
 }
 
@@ -105,7 +110,7 @@ void MultiObjectBuffer::BindAssembler(void)
 	std::vector<UINT> vertexStrides = { vertexStride, worldStride, additionalInfoStride };
 	std::vector<UINT> offsets = { 0, 0, 0 };
 
-	GetCurrentShader()->Render(indexBuffer, vertexBuffers, vertexStrides, vertexBuffers.size(), offsets, DXGI_FORMAT_R32_UINT, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+	GetCurrentShader()->Render(indexBuffer, vertexBuffers, vertexStrides, static_cast<UINT>(vertexBuffers.size()), offsets, DXGI_FORMAT_R32_UINT, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 }
 
 void Engine::MultiObjectBuffer::Render(void)
@@ -150,7 +155,6 @@ HRESULT MultiObjectBuffer::CreateIndexBuffer(ID3D11Device* dxDevice, ID3D11Buffe
 	{
 		memcpy(&indicesForBuffer[i * indexCount], indices.data(), indexStride * indexCount);
 	}
-
 
     D3D11_BUFFER_DESC indexBufferDesc = {};
     indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;

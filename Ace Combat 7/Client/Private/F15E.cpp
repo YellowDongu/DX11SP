@@ -62,16 +62,16 @@ HRESULT F15E::Start(void)
     transformComponent->Position().y /= 50.0f;
     transformComponent->SetAngle(Vector3(0.0f, 25.0f, 0.0f));
 
-    metaData = F15EMetaData();
+    metaData.aircraftInfomation = F15EMetaData();
     transformComponent->Scale() = Vector3::one() * 50.0f;
     transformComponent->Scale() = Vector3::one();
     Matrix matrix;
     gearGlobalMatrix(matrix);
-    ConvertModel(metaData.gearModelfilePathA, metaData.gearModelfilePath, matrix);
+    ConvertModel(metaData.aircraftInfomation.gearModelfilePathA, metaData.aircraftInfomation.gearModelfilePath, matrix);
     aircraftGlobalMatrix(matrix);
-    ConvertModel(metaData.modelFilePathA, metaData.modelFilePath, matrix);
-    if (FAILED(LoadModel(metaData.gearModelfilePath, gearModel))) return E_FAIL;
-    if (FAILED(LoadModel(metaData.modelFilePath, model))) return E_FAIL;
+    ConvertModel(metaData.aircraftInfomation.modelFilePathA, metaData.aircraftInfomation.modelFilePath, matrix);
+    if (FAILED(LoadModel(metaData.aircraftInfomation.gearModelfilePath, gearModel))) return E_FAIL;
+    if (FAILED(LoadModel(metaData.aircraftInfomation.modelFilePath, model))) return E_FAIL;
 
     gearModel->SetAnimation(0);
     model->SetAnimation(0);
@@ -85,12 +85,12 @@ HRESULT F15E::Start(void)
 
     // model setting
 
-    flightModule = FlightMovement::Create(dxDevice, dxDeviceContext, transformComponent, metaData.flightSpec);
+    flightModule = FlightMovement::Create(dxDevice, dxDeviceContext, transformComponent, metaData.aircraftInfomation.flightSpec);
     if (flightModule == nullptr) return E_FAIL;
     AddComponent(flightModule, L"FlightMovement");
     static_cast<AircraftBoneHandler*>(boneHandler)->LinkYoke(flightModule->yoke);
 
-    fcs = FireControlSystem::Create(dxDevice, dxDeviceContext, metaData);
+    fcs = FireControlSystem::Create(dxDevice, dxDeviceContext, metaData.aircraftInfomation);
     if (fcs == nullptr) return E_FAIL;
     fcs->SetStandardMissile(StandardMissile::Create(dxDevice, dxDeviceContext));
     fcs->SetUniqueMissile(nullptr);
@@ -102,9 +102,9 @@ HRESULT F15E::Start(void)
     Engine::OBB::Description description = Engine::OBB::Description();
     //description.center = Vector3{ 50.0f, 50.0f, 50.0f } * 50.0f;
     description.center = Vector3::zero();
-    description.center = metaData.colliderCenter;
+    description.center = metaData.aircraftInfomation.colliderCenter;
     description.extents = Vector3{ 1.0f, 1.0f, 1.0f };
-    description.extents = metaData.colliderExtent;
+    description.extents = metaData.aircraftInfomation.colliderExtent;
     DirectX::XMStoreFloat4(&description.quaternion, DirectX::XMQuaternionIdentity());
 
     collider = Engine::Collider::Create(dxDevice, dxDeviceContext, &description);
@@ -113,7 +113,7 @@ HRESULT F15E::Start(void)
     AddComponent(collider, L"Collider");
     AddComponent(RMWR::Create(dxDevice, dxDeviceContext), L"RMWR");
 
-    AIPilot* pilot = AIPilot::Create(dxDevice, dxDeviceContext);
+    AIPilot* pilot = AIPilot::Create(dxDevice, dxDeviceContext, metaData);
     AddComponent(pilot, L"AIPilot");
     pilot->Awake();
 

@@ -16,23 +16,25 @@ namespace Engine
 		static Act* Create(void);
 		static Act* Create(Scene* baseScene, Scene* loadingScene);
 
-		inline void Update(void) { if(currentScene) currentScene->Update(); }
-		inline void LateUpdate(void);
-		inline void FixedUpdate(void) { if(currentScene) currentScene->FixedUpdate(); }
+		void Update(void);
+		void LateUpdate(void);
+		void FixedUpdate(void);
 		void Render(void);
 
-
-
 		UINT AddScene(Scene* scene);
-		HRESULT ChangeScene(UINT sceneNumber);
+		Scene* GetScene(UINT sceneNumber);
 		void CompleteLoadingScene(void);
+		void ChangeLoadingScene(UINT loadingSceneNumber);
+		void ReadyOtherScene(UINT loadingSceneNumber, UINT targetSceneNumber);
+		void ForceSetCurrentScene(UINT sceneNumber) { currentScene = scenes[sceneNumber]; }
 		Scene* CurrentScene(void) { return currentScene; }
+		Scene* LoadingScene(void) { return loadingScene; }
 
 	private:
+		bool Loading = false, loadEnd = false;
 		std::vector<Scene*> scenes;
 		Scene* currentScene;
 		Scene* loadingScene;
-		Scene* nextScene;
 	};
 
 }

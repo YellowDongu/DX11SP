@@ -9,7 +9,7 @@ FireControlSystem::FireControlSystem(ID3D11Device* dxDevice, ID3D11DeviceContext
 {
 }
 
-FireControlSystem::FireControlSystem(const FireControlSystem& other) : Engine::Component(other), gunFired(false), standardMissileFired(false),  uniqueMissileFired(false), index(other.index), metaData(other.metaData), targeted(nullptr), targetedRMWR(nullptr), forward(other.forward), lock(other.lock), directionMax(other.directionMax), lockSpeed(other.lockSpeed), selectedWeapon(other.selectedWeapon), standardMissileCount(other.standardMissileCount), uniqueMissileCount(), coolDownLStandardMissile(), coolDownRStandardMissile(), coolDownLStandardMissileSpeed(), coolDownRStandardMissileSpeed(), uniqueMissileCoolTime()
+FireControlSystem::FireControlSystem(const FireControlSystem& other) : Engine::Component(other), gunFired(false), standardMissileFired(false), uniqueMissileFired(false), index(other.index), metaData(other.metaData), targeted(nullptr), targetedRMWR(nullptr), forward(other.forward), lock(other.lock), directionMax(other.directionMax), lockSpeed(other.lockSpeed), selectedWeapon(other.selectedWeapon), standardMissileCount(other.standardMissileCount), uniqueMissileCount(), coolDownLStandardMissile(), coolDownRStandardMissile(), coolDownLStandardMissileSpeed(), coolDownRStandardMissileSpeed(), uniqueMissileCoolTime()
 {
 	if(other.standardMissile != nullptr)
 		standardMissile = static_cast<StandardMissile*>(other.standardMissile->Clone());

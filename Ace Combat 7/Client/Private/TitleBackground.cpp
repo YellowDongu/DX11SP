@@ -5,8 +5,13 @@ TitleBackground::TitleBackground(ID3D11Device* dxDevice, ID3D11DeviceContext* dx
 {
 }
 
+TitleBackground::TitleBackground(const TitleBackground& other) : Engine::UIObject(other)
+{
+}
+
 void TitleBackground::Free(void)
 {
+	Engine::GameObject::Free();
 }
 
 TitleBackground* TitleBackground::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext)
@@ -37,15 +42,21 @@ Engine::GameObject* TitleBackground::Clone(void)
 
 HRESULT TitleBackground::Start(void)
 {
-	std::wstring path = L"../Bin/UI/Menu/Boot/Assets/Title_bg.png";
-	HRESULT result = LoadTexture(path, path, backGroundTexture);
+	HRESULT result = CreateTransform();
 	if (FAILED(result))
 		return result;
 
-	scale = { 1.0f,1.0f };
-	if (FAILED(CreateVertex(vertexBuffer, indexBuffer, indexCount, scale)))
+
+	std::wstring path = L"../Bin/UI/Menu/Boot/Assets/Title_bg.png";
+	result = LoadTexture(path, path, backGroundTexture);
+	if (FAILED(result))
+		return result;
+
+	rectangle = Engine::RectanglePolygon::Create(dxDevice, dxDeviceContext);
+	if (rectangle == nullptr)
 		return E_FAIL;
 
+	AddComponent(rectangle, L"RectanglePolygon");
 
 	return S_OK;
 }
@@ -61,15 +72,18 @@ void TitleBackground::FixedUpdate(void)
 
 void TitleBackground::Update(void)
 {
+	const D3D11_VIEWPORT& viewPortSetting = Device()->ViewPortInfomation();
+	transformComponent->Scale() = Vector3{ viewPortSetting.Width, viewPortSetting.Height, 1.0f };
+
 }
 
 void TitleBackground::LateUpdate(void)
 {
+	AddRenderObject(RenderType::UI, this);
 }
 
 void TitleBackground::Render(void)
 {
-	SetTexture("diffuseTexture", backGroundTexture);
-	GetCurrentShader()->Render(indexBuffer, vertexBuffer, sizeof(UIVertex));
-	dxDeviceContext->DrawIndexed(indexCount,0,0);
+	transformComponent->Render();
+	rectangle->Render();
 }

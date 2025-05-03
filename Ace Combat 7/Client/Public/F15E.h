@@ -28,7 +28,7 @@ public:
 	virtual void Render(void);
 
 private:
-	AircraftMetaData metaData;
+	ObjectInfomation metaData;
 
 	Engine::Model* model;
 	Engine::Model* gearModel;

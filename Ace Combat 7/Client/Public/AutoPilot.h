@@ -36,8 +36,10 @@ protected:
 	Engine::Transform* transform{ nullptr };
 	Vector3* yoke{ nullptr };
 	float* throttle{nullptr};
+	bool* airBreak{ nullptr };
 	float throttleIdle{0.0f};
 	
+	const FLOAT* currentVelocity{ nullptr };
 	Vector3 destination;
 	std::list<Vector3> wayPoints;
 

@@ -114,7 +114,7 @@ inline Vector3 QuaternionToAngle(fxmVector quaternion)
 }
 
 
-inline ENGINEDLL DirectX::XMFLOAT2 WorldToScreen(const DirectX::XMFLOAT3& worldPos, const DirectX::XMMATRIX& viewProjectionMatrix, const D3D11_VIEWPORT* deviceInfomation, bool& insideScreen)
+inline ENGINEDLL DirectX::XMFLOAT2 WorldToScreen(const DirectX::XMFLOAT3& worldPos, const DirectX::XMMATRIX& viewProjectionMatrix, const D3D11_VIEWPORT* deviceInfomation, bool& insideScreen, bool checkOverFarPlane = true)
 {
     DirectX::XMVECTOR clipSpacePos = XMVector3TransformCoord(DirectX::XMLoadFloat3(&worldPos), viewProjectionMatrix);
 
@@ -127,7 +127,10 @@ inline ENGINEDLL DirectX::XMFLOAT2 WorldToScreen(const DirectX::XMFLOAT3& worldP
         ndcPos.y /= ndcPos.w;
         ndcPos.z /= ndcPos.w;
     }
-    insideScreen = std::abs(ndcPos.x) <= 1.0f && std::abs(ndcPos.y) <= 1.0f && ndcPos.z >= 0.0f && ndcPos.z <= 1.0f;
+    if (checkOverFarPlane)
+        insideScreen = std::abs(ndcPos.x) <= 1.0f && std::abs(ndcPos.y) <= 1.0f && ndcPos.z >= 0.0f && ndcPos.z <= 1.0f;
+    else
+        insideScreen = std::abs(ndcPos.x) <= 1.0f && std::abs(ndcPos.y) <= 1.0f && ndcPos.z >= 0.0f;
 
     return DirectX::XMFLOAT2(ndcPos.x, ndcPos.y);
 }

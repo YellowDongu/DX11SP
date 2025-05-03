@@ -148,6 +148,6 @@ HRESULT CubePolygon::CreateBuffer(std::vector<CubeVertex>& vertices, std::vector
 
 	stride = sizeof(CubeVertex);
 	offset = 0;
-	indexCount = indices.size();
+	indexCount = static_cast<UINT>(indices.size());
 	return S_OK;
 }

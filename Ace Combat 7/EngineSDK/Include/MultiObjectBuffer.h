@@ -36,16 +36,17 @@ namespace Engine
 		HRESULT CreateWorldBuffer(ID3D11Device* dxDevice, ID3D11Buffer*& worldBuffer, UINT instanceNumber, UINT& worldStride);
 
 	protected:
-		bool clone = false;
+		bool clone;
 		UINT instanceNumber{0};
 		ID3D11Buffer* vertexBuffer{nullptr};
 		ID3D11Buffer* indexBuffer{nullptr};
 		ID3D11Buffer* worldBuffer{nullptr};
 		ID3D11Buffer* additionalBuffer{nullptr};
 		std::vector<Matrix> matrixData;
-		UINT vertexStride;
-		UINT worldStride;
-		UINT additionalInfoStride;
-		UINT indexCount, wholeIndexCount;
+		UINT vertexStride{0};
+		UINT worldStride{0};
+		UINT additionalInfoStride{0};
+		UINT indexCount{0};
+		UINT wholeIndexCount{0};
 	};
 }

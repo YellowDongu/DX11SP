@@ -16,3 +16,13 @@ HRESULT Engine::LightManager::Add_Light(Light& lightStruct, const std::wstring& 
 {
 	return E_NOTIMPL;
 }
+
+HRESULT Engine::LightManager::BindLight(Shader* shader, Light& light)
+{
+	return E_NOTIMPL;
+}
+
+HRESULT Engine::LightManager::BindWorldLight(Shader* shader)
+{
+	return E_NOTIMPL;
+}

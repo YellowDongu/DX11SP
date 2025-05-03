@@ -12,6 +12,7 @@
 #include "Text.h"
 #include "DebugConsole.h"
 #include "ColliderManager.h"
+#include "Camera.h"
 
 namespace Engine
 {
@@ -64,18 +65,6 @@ namespace Engine
 
 		ColliderManager* ColliderSystem(void);
 
-
-		Matrix WorldMatrix(void){return worldMatrix;}
-		Matrix ViewProjectionMatrix(void) { return viewProjectionMatrix; }
-		void WorldMatrix(const Matrix& matrix){ memcpy(&worldMatrix, &matrix, sizeof(Matrix)); }
-		void ViewProjectionMatrix(const Matrix& matrix) { memcpy(&viewProjectionMatrix, &matrix, sizeof(Matrix)); }
-
-		const Matrix& ProjectionMatrix(void) const { return projectionMatrix; }
-		void ProjectionMatrix(fxmMatrix matrix) { DirectX::XMStoreFloat4x4(&projectionMatrix, matrix); }
-		void ProjectionMatrix(const Matrix& matrix) { memcpy(&projectionMatrix, &matrix, sizeof(Matrix)); }
-		const Matrix& ViewMatrix(void) const { return viewMatrix; }
-		void ViewMatrix(const Matrix& matrix) { memcpy(&viewMatrix, &matrix, sizeof(Matrix)); }
-		void ViewMatrix(fxmMatrix matrix) { DirectX::XMStoreFloat4x4(&viewMatrix, matrix); }
 	private:
 		Act* act{nullptr};
 		DXDevice* dxDevice{nullptr};
@@ -95,11 +84,6 @@ namespace Engine
 		ID3D11DeviceContext* Context = nullptr;
 
 		DeviceInfomation infomation;
-
-		Matrix worldMatrix;
-		Matrix viewProjectionMatrix;
-		Matrix projectionMatrix;
-		Matrix viewMatrix;
 	};
 }
 
@@ -148,8 +132,20 @@ ENGINEDLL inline HRESULT ChangeFont(const std::wstring fontName, Engine::Text& t
 ENGINEDLL FLOAT DeltaTime(void);
 #pragma endregion
 
-#pragma region Renderer
+#pragma region Renderer/Pipeline
 ENGINEDLL void AddRenderObject(RenderType type, Engine::GameObject* object);
+ENGINEDLL HRESULT BindCamera(Engine::Camera* camera);
+ENGINEDLL const std::wstring& GetCurrentShaderName(void);
+ENGINEDLL HRESULT SetShader(Engine::Shader* shader);
+ENGINEDLL HRESULT SetShader(const std::wstring& key);
+ENGINEDLL HRESULT SetMatrix(const std::string& variableName, const Matrix& matrix);
+ENGINEDLL void SetWorldMatrix(const Matrix& matrix);
+ENGINEDLL void SetWorldMatrix(void);
+ENGINEDLL HRESULT SetViewProjectionMatrix(const Matrix& viewMatrix, const Matrix& projectionMatrix);
+ENGINEDLL HRESULT SetViewProjectionMatrix(fxmMatrix viewMatrix, fxmMatrix projectionMatrix);
+ENGINEDLL void SetViewProjectionMatrix(void);
+ENGINEDLL HRESULT BindConstantBuffer(const std::string& variableName, ID3D11Buffer* buffer);
+ENGINEDLL HRESULT SetTexture(const std::string& variableName, ID3D11ShaderResourceView* texture);
 #pragma endregion
 
 #pragma region texture
@@ -165,19 +161,7 @@ ENGINEDLL HRESULT Render(ID3D11Buffer* indexBuffer, ID3D11Buffer* vertexBuffer, 
 ENGINEDLL HRESULT SetShader(void);
 ENGINEDLL HRESULT ApplyShader(void);
 
-ENGINEDLL const std::wstring& GetCurrentShaderName(void);
-ENGINEDLL HRESULT SetShader(Engine::Shader* shader);
-ENGINEDLL HRESULT SetShader(const std::wstring& key);
 ENGINEDLL HRESULT AddShader(const std::wstring key, Engine::Shader* newShader);
-ENGINEDLL HRESULT SetMatrix(const std::string& variableName, const Matrix& matrix);
-ENGINEDLL void SetWorldMatrix(const Matrix& matrix);
-ENGINEDLL void SetWorldMatrix(void);
-ENGINEDLL void SetViewProjectionMatrix(const Matrix& matrix);
-ENGINEDLL void SetViewProjectionMatrix(void);
-ENGINEDLL void SetAllViewProjectionMatrix(const Matrix& matrix);
-ENGINEDLL void SetAllViewProjectionMatrix(void);
-ENGINEDLL HRESULT BindConstantBuffer(const std::string& variableName, ID3D11Buffer* buffer);
-ENGINEDLL HRESULT SetTexture(const std::string& variableName, ID3D11ShaderResourceView* texture);
 ENGINEDLL HRESULT SetConstantBuffer(const std::string& variableName, ID3D11Buffer* buffer);
 #pragma endregion
 

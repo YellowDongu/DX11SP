@@ -18,9 +18,10 @@ void AIPilot::Free(void)
 {
 }
 
-AIPilot* AIPilot::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext)
+AIPilot* AIPilot::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ObjectInfomation& objectInfomation)
 {
 	AIPilot* newInstance = new AIPilot(dxDevice, dxDeviceContext);
+	newInstance->objectInfomation = objectInfomation;
 	if (FAILED(newInstance->Start()))
 	{
 		Base::Destroy(newInstance);

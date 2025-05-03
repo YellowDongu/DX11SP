@@ -12,8 +12,10 @@ public:
 	static MonitoringWindow* Create(void) { return new MonitoringWindow(); }
 
 	HRESULT CreateFrame(void) override;
-private:
 
+	void LinkCamera(class ToolCamera* object) { viewCamera = object; }
+private:
+	class ToolCamera* viewCamera;
 
 
 };

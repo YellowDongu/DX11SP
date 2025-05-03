@@ -5,11 +5,6 @@
 class WingTrailParticle : public Engine::MultiObjectBuffer
 {
 private:
-	struct WingTrailParticleData : public Engine::VertexMatrix
-	{
-		FLOAT alpha;
-		FLOAT padding[2];
-	};
 	WingTrailParticle(void) = delete;
 	WingTrailParticle(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext);
 	WingTrailParticle(const WingTrailParticle& other);
@@ -29,10 +24,13 @@ public:
 	HRESULT BindAdditionalBuffer(void);
 	void AddMatrix(const Matrix& matrix) { matrixQueue.push_back(matrix); while (matrixQueue.size() > maxQueueSize) { matrixQueue.pop_front(); } }
 	void SetMaxQueueSize(size_t size) { maxQueueSize = size; }
+	void LinkTargetPoints(std::vector<Engine::VertexMatrix>* target) { targetPoints = target; }
+	bool update = true; // for test
 private:
 	void CreateVertex(std::vector<StaticModelVertex>& vertex, std::vector<UINT>& index);
 
 	size_t maxQueueSize = 100;
+	std::vector<Engine::VertexMatrix>* targetPoints{nullptr};
 	std::list<Matrix> matrixQueue;
 	std::vector<StaticModelVertex> squareVertex = {
 			{ {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f} },
@@ -43,4 +41,5 @@ private:
 	std::vector<Engine::VertexMatrix> points;
 	Engine::Transform* transform{nullptr};
 	FLOAT timer{0.0f};
+	//y = -3x^(2) + 2
 };

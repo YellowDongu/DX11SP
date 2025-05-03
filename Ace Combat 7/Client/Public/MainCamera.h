@@ -22,7 +22,7 @@ public:
 	virtual void Render(void);
 	
 	const Matrix& ViewProjectionMatrix(void) const { return camera->ViewProjectionMatrix(); }
-	xmMatrix ProjectionMatrix(void) const { return camera->ProjectionMatrix(); }
+	const Matrix& ProjectionMatrix(void) const { return camera->ProjectionMatrix(); }
 	FLOAT FOV(void) { return camera->FOV(); }
 	FLOAT AspectRaito(void) { return camera->AspectRaito(); }
 	FLOAT NearZ(void) { return camera->NearZ(); }

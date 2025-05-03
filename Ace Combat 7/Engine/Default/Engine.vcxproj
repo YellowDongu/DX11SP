@@ -176,6 +176,7 @@ call Apply.bat</Command>
     <ClInclude Include="..\Public\CubePolygon.h" />
     <ClInclude Include="..\Public\DebugConsole.h" />
     <ClInclude Include="..\Public\DebugDraw.h" />
+    <ClInclude Include="..\Public\DefaultDeferredShader.h" />
     <ClInclude Include="..\Public\DefaultModelShader.h" />
     <ClInclude Include="..\Public\DefaultParticleShader.h" />
     <ClInclude Include="..\Public\DefaultUIShader.h" />
@@ -210,6 +211,7 @@ call Apply.bat</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\public\RectanglePolygon.h" />
     <ClInclude Include="..\Public\Renderer.h" />
     <ClInclude Include="..\Public\ParticleBuffer.h" />
     <ClInclude Include="..\Public\Scene.h" />
@@ -243,6 +245,7 @@ call Apply.bat</Command>
     <ClCompile Include="..\private\CubePolygon.cpp" />
     <ClCompile Include="..\Private\DebugConsole.cpp" />
     <ClCompile Include="..\Private\DebugDraw.cpp" />
+    <ClCompile Include="..\Private\DefaultDeferredShader.cpp" />
     <ClCompile Include="..\Private\DefaultModelShader.cpp" />
     <ClCompile Include="..\Private\DefaultParticleShader.cpp" />
     <ClCompile Include="..\Private\DefaultUIShader.cpp" />
@@ -273,6 +276,7 @@ call Apply.bat</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\Private\RectanglePolygon.cpp" />
     <ClCompile Include="..\Private\Renderer.cpp" />
     <ClCompile Include="..\Private\ParticleBuffer.cpp" />
     <ClCompile Include="..\Private\Scene.cpp" />
@@ -301,6 +305,16 @@ call Apply.bat</Command>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Bin\Shaders\DefaultDeferredShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="..\Bin\Shaders\DefaultModelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>

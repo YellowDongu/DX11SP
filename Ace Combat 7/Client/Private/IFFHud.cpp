@@ -4,6 +4,9 @@
 #include "TargetDummy.h"
 #include "FireControlSystem.h"
 
+#include "AIPilot.h"
+#include "SuperClassAIPilot.h"
+
 IdentificationFriendorFoeHeadUpDisplay::IdentificationFriendorFoeHeadUpDisplay(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::UIObject(dxDevice, dxDeviceContext)
 {
 }
@@ -58,6 +61,7 @@ HRESULT IdentificationFriendorFoeHeadUpDisplay::Start(void)
 	return S_OK;
 }
 #undef innerErrorCheck
+
 HRESULT IdentificationFriendorFoeHeadUpDisplay::Awake(void)
 {
 	return E_NOTIMPL;
@@ -78,6 +82,10 @@ void IdentificationFriendorFoeHeadUpDisplay::LateUpdate(void)
 
 void IdentificationFriendorFoeHeadUpDisplay::Render(void)
 {
+	static std::wstring aiPilotComponentName = L"AIPilot";
+	static std::wstring aiSuperClassPilotComponentName = L"SuperClassAIPilot";
+	AIPilot* pilot = nullptr;
+
 	bool inScreen;
 	Vector2 screenPosition;
 	static const UINT SIUIstride = sizeof(UIVertex);
@@ -90,106 +98,93 @@ void IdentificationFriendorFoeHeadUpDisplay::Render(void)
 	{
 		for (auto& object : Enemy->GameObjectList())
 		{
-			distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&object.second->transform()->Position()), DirectX::XMLoadFloat3(&player->transform()->Position()))));
-			distance = ConvertWorldToFeet(distance) / 5.0f;
+			RenderHUD(object.second, aircraftMarker, markerScale, Vector2::one() * 0.65f);
 
-			//if (distance >= maxDistance)
-			//	continue;
-
-			screenPosition = Vector2(WorldToScreen(object.second->transform()->Position(), DirectX::XMLoadFloat4x4(&camera->ViewProjectionMatrix()), deviceInfomation, inScreen));
-			if (!inScreen)
-				continue;
-
-			screenPosition.x *= (deviceInfomation->Width * 0.5f);
-			screenPosition.y *= (deviceInfomation->Height * 0.5f);
-
-			DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(screenPosition, scale, 0.0f));
-			SetMatrix(world, worldMatrix);
-
-			SetTexture(diffuseTexture, aircraftMarker.texture);
-			GetCurrentShader()->Render(aircraftMarker.indexBuffer, aircraftMarker.vertexBuffer, SIUIstride);
-			dxDeviceContext->DrawIndexed(aircraftMarker.indexCount, 0, 0);
-			screenPosition.y += markerScale.y * 0.325f;
-			screenPosition.x -= markerScale.x * 0.7f;
-			text->RenderText(L"TGT", screenPosition, float2{0.55f, 0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}, 0.0f);
-
-			screenPosition.y -= markerScale.y * 0.325f;
-			screenPosition.x += markerScale.x * 0.7f;
-
-			//if (*targeted != object.second)
-			//	continue;
-
-			SetTexture(diffuseTexture, aircraftMarker.texture);
-			GetCurrentShader()->Render(aircraftMarker.indexBuffer, aircraftMarker.vertexBuffer, SIUIstride);
-			dxDeviceContext->DrawIndexed(aircraftMarker.indexCount, 0, 0);
-			screenPosition.y += markerScale.y * 0.325f;
-			screenPosition.x += markerScale.x * 0.25f;
-			text->RenderText(std::to_wstring(static_cast<INT>(distance)), screenPosition, float2{ 0.55f, 0.5f }, { 0.0f, 1.0f, 0.0f, 1.0f }, 0.0f);
-
-			//Test
-			if (*targeted != object.second)
-				continue;
-
-
-			screenPosition.y -= markerScale.y * 0.325f;
-
-			text->RenderText(L"CURRENTTARGET", screenPosition, float2{0.55f, 0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}, 0.0f);
 		}
 	}
 	if (MainTargetEnemy != nullptr)
 	{
 		for (auto& object : MainTargetEnemy->GameObjectList())
 		{
-			distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&object.second->transform()->Position()), DirectX::XMLoadFloat3(&player->transform()->Position()))));
-			distance = ConvertWorldToFeet(distance) / 5.0f;
-
-			//if (distance >= maxDistance)
-			//	continue;
-
-			screenPosition = Vector2(WorldToScreen(object.second->transform()->Position(), DirectX::XMLoadFloat4x4(&camera->ViewProjectionMatrix()), deviceInfomation, inScreen));
-			if (!inScreen)
-				continue;
-
-			screenPosition.x *= (deviceInfomation->Width * 0.5f);
-			screenPosition.y *= (deviceInfomation->Height * 0.5f);
-
-			DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(screenPosition, scale, 0.0f));
-			SetMatrix(world, worldMatrix);
-
-			SetTexture(diffuseTexture, aircraftMarker.texture);
-			GetCurrentShader()->Render(aircraftMarker.indexBuffer, aircraftMarker.vertexBuffer, SIUIstride);
-			dxDeviceContext->DrawIndexed(aircraftMarker.indexCount, 0, 0);
-			screenPosition.y += markerScale.y * 0.325f;
-			screenPosition.x -= markerScale.x * 0.7f;
-			//text->RenderText(L"TGT", screenPosition, float2{ 0.55f, 0.5f }, { 1.0f, 0.0f, 0.0f, 1.0f }, 0.0f);
-
-			screenPosition.y -= markerScale.y * 0.325f;
-			screenPosition.x += markerScale.x * 0.7f;
-
-			//if (*targeted != object.second)
-			//	continue;
-
-			SetTexture(diffuseTexture, aircraftMarker.texture);
-			GetCurrentShader()->Render(aircraftMarker.indexBuffer, aircraftMarker.vertexBuffer, SIUIstride);
-			dxDeviceContext->DrawIndexed(aircraftMarker.indexCount, 0, 0);
-			screenPosition.y += markerScale.y * 0.325f;
-			screenPosition.x += markerScale.x * 0.25f;
-			text->RenderText(std::to_wstring(static_cast<INT>(distance)), screenPosition, float2{ 0.55f, 0.5f }, { 0.0f, 1.0f, 0.0f, 1.0f }, 0.0f);
-
-			//Test
-			if (*targeted != object.second)
-				continue;
-
-
-			screenPosition.y -= markerScale.y * 0.325f;
-
-			text->RenderText(L"CURRENTTARGET", screenPosition, float2{ 0.55f, 0.5f }, { 1.0f, 0.0f, 0.0f, 1.0f }, 0.0f);
+			RenderHUD(object.second, aircraftMarker, markerScale, Vector2::one() * 0.65f, true);
 		}
 	}
 }
 
 void IdentificationFriendorFoeHeadUpDisplay::RenderUI(Engine::Layer* layer, UIParts& parts)
 {
+}
+
+void IdentificationFriendorFoeHeadUpDisplay::RenderHUD(Engine::GameObject* object, UIParts& parts, Vector2 markerScale, Vector2 scale, bool mainTarget)
+{
+	static std::wstring aiPilotComponentName = L"AIPilot";
+	static std::wstring aiSuperClassPilotComponentName = L"SuperClassAIPilot";
+	AIPilot* pilot = nullptr;
+
+	bool inScreen;
+	Vector2 screenPosition;
+	static const UINT SIUIstride = sizeof(UIVertex);
+	std::string diffuseTexture = "diffuseTexture";
+	std::string world = "worldMatrix";
+	Matrix worldMatrix;
+	float distance;
+
+	distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&object->transform()->Position()), DirectX::XMLoadFloat3(&player->transform()->Position()))));
+	distance = ConvertWorldToFeet(distance) / 5.0f;
+
+	//if (distance >= maxDistance)
+	//	continue;
+
+	screenPosition = Vector2(WorldToScreen(object->transform()->Position(), DirectX::XMLoadFloat4x4(&camera->ViewProjectionMatrix()), deviceInfomation, inScreen, false));
+	if (!inScreen)
+		return;
+
+	screenPosition.x *= (deviceInfomation->Width * 0.5f);
+	screenPosition.y *= (deviceInfomation->Height * 0.5f);
+
+	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(screenPosition, scale, 0.0f));
+	SetMatrix(world, worldMatrix);
+
+	SetTexture(diffuseTexture, parts.texture);
+	GetCurrentShader()->Render(parts.indexBuffer, parts.vertexBuffer, SIUIstride);
+	dxDeviceContext->DrawIndexed(parts.indexCount, 0, 0);
+
+	if (mainTarget)
+	{
+		screenPosition.y += markerScale.y * 0.325f;
+		screenPosition.x -= markerScale.x * 0.7f;
+		text->RenderText(L"TGT", screenPosition, float2{ 0.55f, 0.5f }, { 1.0f, 0.0f, 0.0f, 1.0f }, 0.0f);
+
+		screenPosition.y -= markerScale.y * 0.325f;
+		screenPosition.x += markerScale.x * 0.7f;
+	}
+
+	//if (*targeted != object.second)
+	//	continue;
+
+	SetTexture(diffuseTexture, parts.texture);
+	GetCurrentShader()->Render(parts.indexBuffer, parts.vertexBuffer, SIUIstride);
+	dxDeviceContext->DrawIndexed(parts.indexCount, 0, 0);
+	screenPosition.y += markerScale.y * 0.325f;
+	screenPosition.x += markerScale.x * 0.25f;
+	text->RenderText(std::to_wstring(static_cast<INT>(distance)), screenPosition, float2{ 0.55f, 0.5f }, uiColor, 0.0f);
+
+	//Test
+	if (*targeted != object)
+		return;
+	pilot = static_cast<AIPilot*>(object->GetComponent(aiPilotComponentName));
+	if (pilot == nullptr)
+	{
+		pilot = static_cast<AIPilot*>(object->GetComponent(aiSuperClassPilotComponentName));
+	}
+
+
+	screenPosition.y -= markerScale.y * 0.325f;
+
+	if (pilot == nullptr)
+		text->RenderText(L"CURRENTTARGET", screenPosition, float2{ 0.55f, 0.5f }, uiColor, 0.0f);
+	else
+		text->RenderText(pilot->LinkObjectInfomation().aircraftInfomation.AircraftModelName, screenPosition, float2{ 0.55f, 0.5f }, uiColor, 0.0f);
 }
 
 void IdentificationFriendorFoeHeadUpDisplay::AddLayers(Engine::Scene* scene)

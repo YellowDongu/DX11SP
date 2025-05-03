@@ -21,7 +21,7 @@ HRESULT MainCamera::Start(void)
 
 	transformComponent->Position() = Vector3{ 50.0f, 50.0f, 0.0f };
 
-	camera = Engine::Camera::Create(dxDevice, dxDeviceContext, transformComponent, 45.0f, static_cast<FLOAT>(windowSizeX) / static_cast<FLOAT>(windowSizeY), 0.1f, 50000.0f);
+	camera = Engine::Camera::Create(dxDevice, dxDeviceContext, 45.0f, static_cast<FLOAT>(windowSizeX) / static_cast<FLOAT>(windowSizeY), 0.1f, 2500.0f);
 	if (!camera)
 		return E_FAIL;
 	AddComponent(camera, L"Camera");
@@ -31,12 +31,6 @@ HRESULT MainCamera::Start(void)
 
 HRESULT MainCamera::Awake(void)
 {
-	camera = Engine::Camera::Create(dxDevice, dxDeviceContext, transformComponent);
-	if (camera == nullptr)
-		return E_FAIL;
-
-	AddComponent(camera, L"Camera");
-
 
 	return S_OK;
 }
@@ -71,7 +65,7 @@ void MainCamera::Update(void)
 
 void MainCamera::LateUpdate(void)
 {
-	//camera->Render();
+	camera->LateUpdate();
 	AddRenderObject(RenderType::Camera, this);
 }
 

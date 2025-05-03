@@ -34,7 +34,7 @@ void MainApp::Start(void)
 
 	sceneManager = EngineInstance()->SceneManager();
 	sceneManager->AddScene(MS01::Create());
-	sceneManager->ChangeScene(0);
+	sceneManager->ForceSetCurrentScene(0);
 
 }
 
@@ -72,7 +72,7 @@ void MainApp::LateUpdate(void)
 
 void MainApp::FixedUpdate(void)
 {
-	//sceneManager->FixedUpdate();
+	sceneManager->FixedUpdate();
 }
 
 void MainApp::Render(void)

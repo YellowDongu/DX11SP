@@ -13,12 +13,13 @@ namespace Engine
 
 		void Update(void);
 		void BeginLoading(Scene* scene);
-		void CreateThread(std::function<void(void)> loadingFunction);
 
-		bool EndLoading(void) { return loadEnd; }
+		void LoadScene(Scene* scene);
+
+		bool EndLoading(void) { return threadDone; }
 
 	private:
-		bool loadEnd = {false};
+		std::atomic<bool> threadDone = false;
 		std::thread* loadingThread = {nullptr};
 	};
 

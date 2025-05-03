@@ -34,24 +34,67 @@ Act* Act::Create(Scene* baseScene, Scene* loadingScene)
 	return newInstance;
 }
 
-void Act::LateUpdate(void)
+void Act::Update(void)
 {
-	if (currentScene == nullptr)
-		return;
-
-	EngineInstance()->ColliderSystem()->Update();
-	EngineInstance()->ColliderSystem()->LateUpdate();
-	currentScene->LateUpdate();
+	if (Loading)
+	{
+		if (loadingScene)
+			loadingScene->Update();
+	}
+	else
+	{
+		if (currentScene)
+			currentScene->Update();
+	}
 }
 
+
+void Act::LateUpdate(void)
+{
+	EngineInstance()->ColliderSystem()->Update();
+	EngineInstance()->ColliderSystem()->LateUpdate();
+	if (Loading)
+	{
+
+		if (loadingScene)
+			loadingScene->LateUpdate();
+	}
+	else
+	{
+		if (currentScene == nullptr)
+			return;
+
+		currentScene->LateUpdate();
+	}
+}
+void Act::FixedUpdate(void)
+{
+	if (Loading)
+	{
+		if (loadingScene)
+			loadingScene->FixedUpdate();
+	}
+	else
+	{
+		if (currentScene)
+			currentScene->FixedUpdate();
+	}
+}
 void Act::Render(void)
 {
-	if (currentScene != nullptr)
-		currentScene->Render();
+	if (Loading)
+	{
+		if (loadingScene)
+			loadingScene->Render();
+	}
+	else
+	{
+		if (currentScene != nullptr)
+			currentScene->Render();
+	}
 
 	EngineInstance()->RenderManager()->Render();
 }
-
 
 UINT Act::AddScene(Scene* scene)
 {
@@ -60,21 +103,37 @@ UINT Act::AddScene(Scene* scene)
 	return static_cast<UINT>(scenes.size()) - 1;
 }
 
-HRESULT Act::ChangeScene(UINT sceneNumber)
+Scene* Act::GetScene(UINT sceneNumber)
 {
 	if (sceneNumber >= scenes.size())
-		return E_FAIL;
+		return nullptr;
 
-	currentScene = scenes[sceneNumber];
-
-	//TODO : 로딩 씬으로 전환
-
-
-	return S_OK;
+	return scenes[sceneNumber];
 }
 
 void Act::CompleteLoadingScene(void)
 {
-	currentScene->Release();
-	currentScene = nextScene;
+	loadingScene->Release();
+	loadingScene = nullptr;
+	Loading = false;
+	loadEnd = false;
+}
+
+void Engine::Act::ChangeLoadingScene(UINT loadingSceneNumber)
+{
+	if (loadingSceneNumber >= scenes.size())
+		return;
+
+	loadingScene = scenes[loadingSceneNumber];
+}
+
+void Act::ReadyOtherScene(UINT loadingSceneNumber, UINT targetSceneNumber)
+{
+	if (loadingSceneNumber >= scenes.size() || targetSceneNumber >= scenes.size())
+			return;
+
+	currentScene = scenes[targetSceneNumber];
+	loadingScene = scenes[loadingSceneNumber];
+	Loading = true;
+	loadEnd = false;
 }

@@ -52,6 +52,9 @@ public:
 	//	return { 1.0f - xPercent, 1.0f - yPercent };
 	//}
 
+
+	class ToolCamera* LinkCamera(void) { return camera; }
+
 	ID3D11ShaderResourceView* mainView = nullptr;
 private:
 	bool focused = false, mouseHovering = false;

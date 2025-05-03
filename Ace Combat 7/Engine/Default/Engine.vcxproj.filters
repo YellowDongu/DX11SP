@@ -261,6 +261,12 @@
     <ClInclude Include="..\Public\DefaultParticleShader.h">
       <Filter>00. System\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\RectanglePolygon.h">
+      <Filter>01. Utility\00. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DefaultDeferredShader.h">
+      <Filter>00. System\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Act.cpp">
@@ -428,6 +434,12 @@
     <ClCompile Include="..\Private\DefaultParticleShader.cpp">
       <Filter>00. System\Shader</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\RectanglePolygon.cpp">
+      <Filter>01. Utility\00. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DefaultDeferredShader.cpp">
+      <Filter>00. System\Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\Shaders\DefaultModelShader.hlsl">
@@ -455,6 +467,9 @@
       <Filter>00. System\Shader\HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\Shaders\DefaultParticleShader.hlsl">
+      <Filter>00. System\Shader\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\Shaders\DefaultDeferredShader.hlsl">
       <Filter>00. System\Shader\HLSL</Filter>
     </FxCompile>
   </ItemGroup>

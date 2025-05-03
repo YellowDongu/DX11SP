@@ -66,6 +66,11 @@ ENGINEDLL void AddRenderObject(RenderType type, Engine::GameObject* object)
 	CheckInstance( );
 	EngineInstance()->RenderManager()->AddRenderObject(type, object);
 }
+ENGINEDLL HRESULT BindCamera(Engine::Camera* camera)
+{
+	CheckInstance(E_FAIL);
+	return EngineInstance()->RenderManager()->BindCamera(camera);
+}
 #pragma endregion
 
 #pragma region Texture
@@ -94,42 +99,46 @@ ENGINEDLL HRESULT LoadTexture(const std::wstring path, const std::wstring key, I
 Engine::Shader* GetShader(const std::wstring& key)
 {
 	CheckInstance(nullptr);
-	return EngineInstance()->shaders()->GetShader(key);
+	return ::EngineInstance()->shaders()->GetShader(key);
 }
 
 Engine::Shader* GetCurrentShader(void)
 {
 	CheckInstance(nullptr);
+	return ::EngineInstance()->RenderManager()->GetCurrentShader();
 	return EngineInstance()->shaders()->CurrentShader();
 }
 
 Engine::Shader* LoadShader(const std::wstring& filePath, D3D11_INPUT_ELEMENT_DESC** elements, UINT elementsSize)
 {
 	CheckInstance(nullptr);
-	return EngineInstance()->shaders()->LoadShader(filePath, elements, elementsSize);
+	return ::EngineInstance()->shaders()->LoadShader(filePath, elements, elementsSize);
 }
 
 Engine::Shader* LoadShader(const std::wstring& filePath, std::vector<D3D11_INPUT_ELEMENT_DESC>& elements)
 {
 	CheckInstance(nullptr);
-	return EngineInstance()->shaders()->LoadShader(filePath, elements);
+	return ::EngineInstance()->shaders()->LoadShader(filePath, elements);
 }
 
 HRESULT Render(ID3D11Buffer* indexBuffer, ID3D11Buffer* vertexBuffer, UINT stride, UINT offset, DXGI_FORMAT indexFormat, D3D11_PRIMITIVE_TOPOLOGY topology)
 {
 	CheckInstance(E_FAIL);
+	return ::GetCurrentShader()->Render(indexBuffer, vertexBuffer, stride, offset, indexFormat, topology);
 	return ::EngineInstance()->shaders()->CurrentShader()->Render(indexBuffer, vertexBuffer, stride, offset, indexFormat, topology);
 }
 
 ENGINEDLL HRESULT SetShader(void)
 {
 	CheckInstance(E_FAIL);
+	return ::GetCurrentShader()->SetShader();
 	return ::EngineInstance()->shaders()->CurrentShader()->SetShader();
 }
 
 ENGINEDLL HRESULT ApplyShader(void)
 {
 	CheckInstance(E_FAIL);
+	return GetCurrentShader()->ApplyShader();
 	return ::EngineInstance()->shaders()->CurrentShader()->ApplyShader();
 }
 
@@ -137,18 +146,26 @@ ENGINEDLL const std::wstring& GetCurrentShaderName(void)
 {
 	std::wstring null = L"";
 	CheckInstance(null);
+	return GetCurrentShader()->shaderFile;
 	return EngineInstance()->shaders()->CurrentShaderName();
 }
 
 ENGINEDLL HRESULT SetShader(Engine::Shader* shader)
 {
 	CheckInstance(E_FAIL);
+
+	return EngineInstance()->RenderManager()->SetShader(shader);
 	return EngineInstance()->shaders()->SetShader(shader);
 }
 
 ENGINEDLL HRESULT SetShader(const std::wstring& key)
 {
 	CheckInstance(E_FAIL);
+	Engine::Shader* shader = ::GetShader(key);
+
+	if (shader == nullptr)
+		return E_FAIL;
+	return EngineInstance()->RenderManager()->SetShader(shader);
 	return ::EngineInstance()->shaders()->SetShader(key);
 }
 
@@ -161,6 +178,8 @@ ENGINEDLL HRESULT AddShader(const std::wstring key, Engine::Shader* newShader)
 ENGINEDLL HRESULT SetMatrix(const std::string& variableName, const Matrix& matrix)
 {
 	CheckInstance(E_FAIL);
+	return ::EngineInstance()->RenderManager()->BindMatrix(variableName, matrix);
+
 	if (::EngineInstance()->shaders()->CurrentShader() != nullptr)
 		return ::EngineInstance()->shaders()->CurrentShader()->BindMatrix(variableName, matrix);
 	else return E_FAIL;
@@ -169,56 +188,37 @@ ENGINEDLL HRESULT SetMatrix(const std::string& variableName, const Matrix& matri
 ENGINEDLL void SetWorldMatrix(const Matrix& matrix)
 {
 	CheckInstance();
-	if (::EngineInstance()->shaders() == nullptr)
-		return;
-	::EngineInstance()->WorldMatrix(matrix);
-	::SetMatrix(EngineInstance()->shaders()->CurrentShader()->worldMatrixA, matrix);
+	::EngineInstance()->RenderManager()->BindMatrix(GetCurrentShader()->worldMatrixA, matrix);
 }
 
 ENGINEDLL void SetWorldMatrix(void)
 {
 	CheckInstance();
-	if (::EngineInstance()->shaders() == nullptr)
-		return;
-	::SetMatrix(::EngineInstance()->shaders()->CurrentShader()->worldMatrixA, ::EngineInstance()->WorldMatrix());
+	::EngineInstance()->RenderManager()->BindMatrix(GetCurrentShader()->worldMatrixA, ::EngineInstance()->RenderManager()->WorldMatrix());
 }
 
-ENGINEDLL void SetViewProjectionMatrix(const Matrix& matrix)
+ENGINEDLL HRESULT SetViewProjectionMatrix(const Matrix& viewMatrix, const Matrix& projectionMatrix)
 {
-	CheckInstance( );
-	if (::EngineInstance()->shaders() == nullptr)
-		return;
+	CheckInstance(E_FAIL);
+	return ::EngineInstance()->RenderManager()->BindViewProjectionMatrix(viewMatrix, projectionMatrix);
+}
 
-	::EngineInstance()->ViewProjectionMatrix(matrix);
-	::SetMatrix(::EngineInstance()->shaders()->CurrentShader()->viewProjectionMatrixA, matrix);
+ENGINEDLL HRESULT SetViewProjectionMatrix(fxmMatrix viewMatrix, fxmMatrix projectionMatrix)
+{
+	CheckInstance(E_FAIL);
+	return ::EngineInstance()->RenderManager()->BindViewProjectionMatrix(viewMatrix, projectionMatrix);
+
+	//if (::EngineInstance()->shaders() == nullptr)
+	//	return;
+	//
+	//::EngineInstance()->ViewProjectionMatrix(matrix);
+	//::SetMatrix(::EngineInstance()->shaders()->CurrentShader()->viewProjectionMatrixA, matrix);
 }
 
 ENGINEDLL void SetViewProjectionMatrix(void)
 {
 	CheckInstance();
-	if (::EngineInstance()->shaders() == nullptr)
-		return;
-
-	::SetMatrix(::EngineInstance()->shaders()->CurrentShader()->viewProjectionMatrixA, ::EngineInstance()->ViewProjectionMatrix());
-}
-
-ENGINEDLL void SetAllViewProjectionMatrix(const Matrix& matrix)
-{
-	CheckInstance();
-	if (::EngineInstance()->shaders() == nullptr)
-		return;
-
-	::EngineInstance()->ViewProjectionMatrix(matrix);
-	::EngineInstance()->shaders()->SetViewProjectionMatrix(matrix);
-}
-
-ENGINEDLL void SetAllViewProjectionMatrix(void)
-{
-	CheckInstance();
-	if (::EngineInstance()->shaders() == nullptr)
-		return;
-
-	::EngineInstance()->shaders()->SetViewProjectionMatrix(::EngineInstance()->ViewProjectionMatrix());
+	::EngineInstance()->RenderManager()->BindViewProjectionMatrix(::EngineInstance()->RenderManager()->ViewMatrix(), ::EngineInstance()->RenderManager()->ProjectionMatrix());
 }
 
 ENGINEDLL HRESULT BindConstantBuffer(const std::string& variableName, ID3D11Buffer* buffer)
@@ -227,8 +227,8 @@ ENGINEDLL HRESULT BindConstantBuffer(const std::string& variableName, ID3D11Buff
 	if (buffer == nullptr)
 		return E_FAIL;	
 
-	if (::EngineInstance()->shaders()->CurrentShader() != nullptr)
-		return ::EngineInstance()->shaders()->CurrentShader()->BindConstantBuffer(variableName, buffer);
+	if (::GetCurrentShader() != nullptr)
+		return ::GetCurrentShader()->BindConstantBuffer(variableName, buffer);
 	else return E_FAIL;
 }
 
@@ -236,8 +236,8 @@ ENGINEDLL HRESULT SetTexture(const std::string& variableName, ID3D11ShaderResour
 {
 	CheckInstance(E_FAIL);
 
-	if (::EngineInstance()->shaders()->CurrentShader() != nullptr)
-		return ::EngineInstance()->shaders()->CurrentShader()->BindTexture(variableName, texture);
+	if (::GetCurrentShader() != nullptr)
+		return ::GetCurrentShader()->BindTexture(variableName, texture);
 	else return E_FAIL;
 }
 
@@ -247,8 +247,8 @@ ENGINEDLL HRESULT SetConstantBuffer(const std::string& variableName, ID3D11Buffe
 	if (buffer == nullptr)
 		return E_FAIL;
 
-	if (::EngineInstance()->shaders()->CurrentShader() != nullptr)
-		return ::EngineInstance()->shaders()->CurrentShader()->SetConstantBuffer(variableName, buffer);
+	if (::GetCurrentShader() != nullptr)
+		return ::GetCurrentShader()->SetConstantBuffer(variableName, buffer);
 	else return E_FAIL;
 }
 ENGINEDLL void AddCollider(Engine::Collider* collider)
@@ -508,18 +508,16 @@ void GameInstance::Free(void)
 {
 	Base::DestroyInstance(console);
 	Base::DestroyInstance(act);
-	Base::DestroyInstance(textMaster);
-	Base::DestroyInstance(modelManager);
-	Base::DestroyInstance(shaderManager);
-	Base::DestroyInstance(prototypeManager);
-	Base::DestroyInstance(textureManager);
 	Base::DestroyInstance(colliders);
+	Base::DestroyInstance(textMaster);
+	Base::DestroyInstance(prototypeManager);
 	Base::DestroyInstance(rendererInstance);
+	Base::DestroyInstance(modelManager);
+	Base::DestroyInstance(textureManager);
+	Base::DestroyInstance(shaderManager);
 	Base::DestroyInstance(soundManager);
 	Base::DestroyInstance(timeManager);
 	Base::DestroyInstance(input);
-
-
 
 
 	if (device)

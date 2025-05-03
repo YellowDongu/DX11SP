@@ -177,6 +177,7 @@
     <ClInclude Include="..\Public\Missile.h" />
     <ClInclude Include="..\Public\MissileLockUI.h" />
     <ClInclude Include="..\Public\MS01.h" />
+    <ClInclude Include="..\Public\MS01OceanModel.h" />
     <ClInclude Include="..\Public\MS01Terrain.h" />
     <ClInclude Include="..\Public\MS01TerrainA.h" />
     <ClInclude Include="..\Public\MS01TerrainB.h" />
@@ -189,6 +190,7 @@
     <ClInclude Include="..\Public\PlayerEar.h" />
     <ClInclude Include="..\Public\PlayerPilot.h" />
     <ClInclude Include="..\Public\PlayerStatusHUD.h" />
+    <ClInclude Include="..\Public\RaderSystem.h" />
     <ClInclude Include="..\Public\RaderUI.h" />
     <ClInclude Include="..\Public\RMWR.h" />
     <ClInclude Include="..\Public\SimpleBullet.h" />
@@ -196,14 +198,15 @@
     <ClInclude Include="..\Public\SpeedIndicator.h" />
     <ClInclude Include="..\Public\StandardMissile.h" />
     <ClInclude Include="..\Public\SU33Handler.h" />
-    <ClInclude Include="..\Public\SuperClassPilot.h" />
+    <ClInclude Include="..\Public\SuperClassAIPilot.h" />
+    <ClInclude Include="..\Public\SuperClassAutoPilot.h" />
     <ClInclude Include="..\Public\TargetDummy.h" />
     <ClInclude Include="..\Public\AIPilot.h" />
     <ClInclude Include="..\Public\Title.h" />
     <ClInclude Include="..\Public\TitleBackground.h" />
     <ClInclude Include="..\Public\Trigger.h" />
     <ClInclude Include="..\Public\TU160.h" />
-    <ClInclude Include="..\Public\UIShader.h" />
+    <ClInclude Include="..\Public\TerrainCollision.h" />
     <ClInclude Include="..\Public\WingTrailParticle.h" />
     <ClInclude Include="..\Public\WingVaporTrail.h" />
     <ClInclude Include="framework.h" />
@@ -241,6 +244,7 @@
     <ClCompile Include="..\Private\Missile.cpp" />
     <ClCompile Include="..\Private\MissileLockUI.cpp" />
     <ClCompile Include="..\Private\MS01.cpp" />
+    <ClCompile Include="..\Private\MS01OceanModel.cpp" />
     <ClCompile Include="..\Private\MS01Terrain.cpp" />
     <ClCompile Include="..\Private\MS01TerrainA.cpp" />
     <ClCompile Include="..\Private\MS01TerrainB.cpp" />
@@ -253,6 +257,7 @@
     <ClCompile Include="..\Private\PlayerEar.cpp" />
     <ClCompile Include="..\Private\PlayerPilot.cpp" />
     <ClCompile Include="..\Private\PlayerStatusHUD.cpp" />
+    <ClCompile Include="..\Private\RaderSystem.cpp" />
     <ClCompile Include="..\Private\RaderUI.cpp" />
     <ClCompile Include="..\Private\RMWR.cpp" />
     <ClCompile Include="..\Private\SimpleBullet.cpp" />
@@ -260,16 +265,17 @@
     <ClCompile Include="..\Private\SpeedIndicator.cpp" />
     <ClCompile Include="..\Private\StandardMissile.cpp" />
     <ClCompile Include="..\Private\SU33Handler.cpp" />
-    <ClCompile Include="..\Private\SuperClassPilot.cpp" />
+    <ClCompile Include="..\Private\SuperClassAutoPilot.cpp" />
     <ClCompile Include="..\Private\TargetDummy.cpp" />
     <ClCompile Include="..\Private\AIPilot.cpp" />
     <ClCompile Include="..\Private\Title.cpp" />
     <ClCompile Include="..\Private\TitleBackground.cpp" />
     <ClCompile Include="..\Private\Trigger.cpp" />
     <ClCompile Include="..\Private\TU160.cpp" />
-    <ClCompile Include="..\Private\UIShader.cpp" />
+    <ClCompile Include="..\Private\TerrainCollision.cpp" />
     <ClCompile Include="..\Private\WingTrailParticle.cpp" />
     <ClCompile Include="..\Private\WingVaporTrail.cpp" />
+    <ClCompile Include="..\Public\SuperClassAIPilot.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

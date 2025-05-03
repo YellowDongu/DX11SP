@@ -10,7 +10,7 @@ public:
 	virtual ~PlayerPilot(void) = default;
 	virtual void Free(void);
 public:
-	static PlayerPilot* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, struct AircraftMetaData& target);
+	static PlayerPilot* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ObjectInfomation& objectInfomation);
 	virtual Engine::Component* Clone(void);
 
 	HRESULT Awake(void);
@@ -18,14 +18,13 @@ public:
 	virtual void LateUpdate(void);
 	virtual void FixedUpdate(void);
 
-	void ApplyAircraftMetaData(struct AircraftMetaData* target) { metaData = target; }
-	struct AircraftMetaData* LinkAircraftMetaData(void) { return metaData; }
+	const ObjectInfomation& LinkObjectInfomation(void) const { return objectInfomation; }
 	void LinkCamera(class MainCamera* object) { camera = object; }
 	//Test Area
 	Engine::GameObject** testEnemyPointer;
 	Engine::GameObject* testEnemy;
 private:
-	struct AircraftMetaData* metaData;
+	ObjectInfomation objectInfomation;
 	Engine::Transform* transformComponent;
 	class FlightMovement* flightModule;
 	class FireControlSystem* fcs;

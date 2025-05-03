@@ -51,6 +51,7 @@
 #include "DirectXTK/PrimitiveBatch.h"
 #include "DirectXTK/VertexTypes.h"
 #include "DirectXTK/Effects.h"
+#include "DirectXTK/CommonStates.h"
 //#include "DebugDraw.h"
 #pragma endregion
 

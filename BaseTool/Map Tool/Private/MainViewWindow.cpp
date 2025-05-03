@@ -25,9 +25,6 @@ void MainViewWindow::Free(void)
     if (renderRTV != nullptr) { renderRTV->Release(); renderRTV = nullptr; }
     if (renderSRV != nullptr) { renderSRV->Release(); renderSRV = nullptr; }
 
-
-
-
     if (device != nullptr)
     {
         device->Release();

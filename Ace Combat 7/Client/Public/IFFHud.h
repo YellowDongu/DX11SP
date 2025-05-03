@@ -21,7 +21,12 @@ public:
 	void Render(void) override;
 
 	void RenderUI(Engine::Layer* layer, UIParts& parts);
+	void RenderHUD(Engine::GameObject* gameObject, UIParts& parts, Vector2 markerScale, Vector2 scale, bool mainTarget = false);
 	void AddLayers(Engine::Scene* scene);
+
+	void SetUIColor(float4 color) { uiColor = color; }
+	void SetUIColor(fxmVector color) { DirectX::XMStoreFloat4(&uiColor, color); }
+
 private:
 	Engine::Layer* MainTargetEnemy = nullptr;
 	Engine::Layer* MainTargetEnemyGround = nullptr;
@@ -51,5 +56,7 @@ private:
 	// * 30.2f / 50.0f
 	float maxDistance = 5000.0f;
 	Vector2 markerScale;
+
+	float4 uiColor = { 0.0f, 1.0f, 0.0f, 1.0f };
 }typedef IFFHUD;
 //typedef IdentificationFriendorFoeHeadUpDisplay, IFFHUD

@@ -9,22 +9,23 @@ namespace Engine
 	private:
 		Camera(void) = delete;
 		Camera(ID3D11Device*& dxDevice, ID3D11DeviceContext*& dxDeviceContext);
-		Camera(const Camera& other) = delete;
+		Camera(const Camera& other);
 		virtual ~Camera(void) = default;
-		virtual void Free(void);
+		virtual void Free(void) override;
 	public:
-		static Camera* Create(ID3D11Device*& dxDevice, ID3D11DeviceContext*& dxDeviceContext, Transform*& transformComponent, float fov = 45.0f, float aspectRatio = 1.3f, float nearZ = 0.1f, float farZ = 1000.0f);
+		static Camera* Create(ID3D11Device*& dxDevice, ID3D11DeviceContext*& dxDeviceContext, float fov = 45.0f, float aspectRatio = 1.3f, float nearZ = 0.1f, float farZ = 1000.0f);
 		virtual Component* Clone(void) override;
 
 		HRESULT SetCamera(float fov, float aspectRatio, float nearZ , float farZ);
 
-		void Update(void);
+		virtual void LateUpdate(void) override;
 		void Render(void);
 		void Render(const Matrix& matrix);
 
-		void LinkTransform(Transform*& transformComponent);
 		const Matrix& ViewProjectionMatrix(void) const { return viewProjectionMatrix; }
-		xmMatrix ProjectionMatrix(void) const { return DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearZ, farZ); }
+		xmMatrix ViewProjectionxmMatrix(void) const { return DirectX::XMLoadFloat4x4(&viewProjectionMatrix); }
+		xmMatrix ProjectionxmMatrix(void) const { return DirectX::XMLoadFloat4x4(&projectionMatrix); }
+		const Matrix& ProjectionMatrix(void) const { return projectionMatrix; }
 		
 
 		Vector3 Look(void) { return lookAt.normalize(); }
@@ -34,19 +35,17 @@ namespace Engine
 		FLOAT NearZ(void) { return nearZ; }
 		FLOAT FarZ(void) { return farZ; }
 
-		void FOV(FLOAT value) { fov = value; }
-		void AspectRaito(FLOAT value) { aspectRatio = value; }
-		void NearZ(FLOAT value) { nearZ = value; }
-		void FarZ(FLOAT value) { farZ = value; }
+		void FOV(FLOAT value) { SetCamera(value, aspectRatio, nearZ, farZ); }
+		void AspectRaito(FLOAT value) { SetCamera(fov, value, nearZ, farZ); }
+		void NearZ(FLOAT value) { SetCamera(fov, aspectRatio, value, farZ); }
+		void FarZ(FLOAT value) { SetCamera(fov, aspectRatio, nearZ, value); }
 
 
 	private:
 		FLOAT fov, aspectRatio, nearZ, farZ;
 		Vector3* position, lookAt, up, focusPosition;
 		const Vector3* angle;
-		Matrix viewProjectionMatrix;
-
-		Transform* transformComponent;
+		Matrix viewProjectionMatrix, projectionMatrix;
 	};
 
 }

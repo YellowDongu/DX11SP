@@ -1,4 +1,5 @@
 #pragma once
+/*
 
 struct NaviNode
 {
@@ -8,7 +9,7 @@ struct NaviNode
 
 	Vector3 lineVector[3];
 	float4 plane;
-	
+
 	UINT index = -1;
 	INT neighborCellIndices[3] = { -1, -1, -1 };
 
@@ -92,7 +93,8 @@ public:
 
 	bool Inside(const Vector3& position, INT& cellIndex);
 	HRESULT LoadMesh(std::wstring& path);
-	HRESULT SaveMesh(std::wstring& path, std::vector<Vector3> vertices, std::vector<UINT> indices);
+	HRESULT LoadMesh(std::wstring& path, std::vector<Vector3>& vertices, std::vector<UINT>& indices);
+	HRESULT SaveMesh(std::wstring& path, std::vector<Vector3>& vertices, std::vector<UINT>& indices);
 	UINT GetTriangleIndex(Vector3 position);
 
 	HRESULT ReadMeshFile(std::ifstream& fileStream, std::vector<Vector3>& verticesOut, std::vector<UINT>& indicesOut);
@@ -104,3 +106,5 @@ public:
 private:
 	std::vector<NaviNode> nodes;
 };
+
+*/

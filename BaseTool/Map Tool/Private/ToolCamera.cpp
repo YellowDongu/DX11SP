@@ -42,7 +42,7 @@ HRESULT ToolCamera::Start(void)
 {
 	CreateTransform();
 	const D3D11_VIEWPORT& viewport = Device()->ViewPortInfomation();
-	camera = Engine::Camera::Create(dxDevice, dxDeviceContext, transformComponent, 45.0f, (viewport.Width / viewport.Height), 0.01f, 100000.0f);
+	camera = Engine::Camera::Create(dxDevice, dxDeviceContext, 45.0f, (viewport.Width / viewport.Height), 0.01f, 50000.0f);
 	AddComponent(camera, L"Camera");
 
 	return S_OK;
@@ -96,6 +96,7 @@ void ToolCamera::Update(void)
 	//	y = std::fabs(y) / y;
 	//transformComponent->Rotate(Vector3{ x, y, 0.0f });
 	Engine::GameObject::Update();
+	camera->LateUpdate();
 }
 
 void ToolCamera::LateUpdate(void)

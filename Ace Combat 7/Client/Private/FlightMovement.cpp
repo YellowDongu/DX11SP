@@ -105,7 +105,10 @@ void FlightMovement::CalculatePrimarySurfaceForce(void)
 	finalMenuverForce.y = maneuverSpeed.y * manuverForce.y * 0.5f;
 	finalMenuverForce.z = maneuverSpeed.z * manuverForce.z * 0.75f;
 
-	transform->Rotate(Vector3{ 0.0f, sinf((transform->Angle().z / 2.0f) * (3.14159265357989f / 90.0f)) * -0.01f/*deltatime*/, 0.0f });
+	if(isSuper)
+		transform->Rotate(Vector3{ 0.0f, sinf((transform->Angle().z / 2.0f) * (3.14159265357989f / 90.0f)) * -0.01f/*deltatime*/, 0.0f } * 5.0f);
+	else
+		transform->Rotate(Vector3{ 0.0f, sinf((transform->Angle().z / 2.0f) * (3.14159265357989f / 90.0f)) * -0.01f/*deltatime*/, 0.0f });
 	transform->RelativeRotate(finalMenuverForce * 0.01f/*deltatime*/);
 	//transform->RelativeRotate(manuverForce * DeltaTime());
 }

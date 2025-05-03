@@ -94,8 +94,8 @@ void Collider::Render(void)
 {
 	#ifdef ColliderDebug
 	effect->SetWorld(DirectX::XMMatrixIdentity());
-	effect->SetView(DirectX::XMLoadFloat4x4(&::EngineInstance()->ViewMatrix()));
-	effect->SetProjection(DirectX::XMLoadFloat4x4(&::EngineInstance()->ProjectionMatrix()));
+	effect->SetView(DirectX::XMLoadFloat4x4(&::EngineInstance()->RenderManager()->ViewMatrix()));
+	effect->SetProjection(DirectX::XMLoadFloat4x4(&::EngineInstance()->RenderManager()->ProjectionMatrix()));
 	context->IASetInputLayout(inputLayout);
 
 	effect->Apply(context);

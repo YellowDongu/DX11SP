@@ -3,7 +3,7 @@
 #include "NavMesh.h"
 namespace Engine
 {
-	class ColliderManager : public Base
+	class ENGINEDLL ColliderManager : public Base
 	{
 	private:
 		ColliderManager(void) = delete;

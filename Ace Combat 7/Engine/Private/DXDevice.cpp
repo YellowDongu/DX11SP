@@ -18,6 +18,7 @@ DXDevice* DXDevice::Create(DeviceInfomation& deviceInfo)
 	}
 	newInstance->deviceInfo = deviceInfo;
 	newInstance->backBufferColor = { 0.0f, 1.0f, 0.0f, 1.0f };
+	newInstance->renderTargets.resize(static_cast<UINT>(RenderTargetType::End), nullptr);
 	return newInstance;
 }
 
@@ -276,8 +277,94 @@ void DXDevice::RestartDevice(void)
 	}
 }
 
+
+HRESULT DXDevice::AddRenderTargets(RenderTargetType type, const RenderTarget::RenderTargetInfomation& infomation, bool replaceMode)
+{
+	if (replaceMode)
+	{
+		if (renderTargets[static_cast<UINT>(type)] != nullptr)
+		{
+			Base::DestroyInstance(renderTargets[static_cast<UINT>(type)]);
+		}
+	}
+	else
+	{
+		if (renderTargets[static_cast<UINT>(type)] != nullptr)
+			return E_FAIL;
+	}
+
+	RenderTarget* newInstance = RenderTarget::Create(dxDevice, dxDeviceContext, infomation);
+
+	if (newInstance == nullptr)
+		return E_FAIL;
+
+	renderTargets[static_cast<UINT>(type)] = newInstance;
+	return S_OK;
+}
+
+HRESULT DXDevice::BindMultiRenderTarget(DeferredRenderOrder order, RenderTargetType type)
+{
+	auto iterator = multiRenderTarget.find(order);
+	if (iterator == multiRenderTarget.end())
+	{
+		multiRenderTarget[order] = std::list<RenderTargetType>();
+		iterator = multiRenderTarget.find(order);
+	}
+	else
+	{
+		for (auto& targetType : iterator->second)
+		{
+			if (targetType == type)
+				return S_OK;
+		}
+	}
+
+	iterator->second.push_back(type);
+
+	return S_OK;
+}
+
+HRESULT DXDevice::SetMultiRenderTarget(DeferredRenderOrder renderOrder)
+{
+	auto iterator = multiRenderTarget.find(renderOrder);
+	if (iterator == multiRenderTarget.end())
+		return E_FAIL;
+
+	RenderTarget* renderTarget = nullptr;
+	UINT NumberRenderTargets = 0;
+	ID3D11RenderTargetView* RenderTargets[8] = {};
+
+	for (auto& renderTargetType : iterator->second)
+	{
+		renderTarget = renderTargets[static_cast<UINT>(renderTargetType)];
+		if (renderTarget == nullptr)
+			continue;
+
+		renderTarget->Clear();
+
+		RenderTargets[NumberRenderTargets++] = renderTarget->GetRenderTargetView();
+	}
+
+	dxDeviceContext->OMSetRenderTargets(NumberRenderTargets, RenderTargets, depthStencilView);
+
+	return S_OK;
+}
+
+HRESULT DXDevice::ApplyBackBuffer(void)
+{
+	dxDeviceContext->OMSetRenderTargets(1, &backBuffer, depthStencilView);
+
+	return S_OK;
+}
+
 void DXDevice::Free(void)
 {
+	for (auto& renderTarget : renderTargets)
+	{
+		Base::DestroyInstance(renderTarget);
+	}
+	renderTargets.clear();
+
 	dxDeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 	if (swapChain)
 		swapChain->Release();
@@ -325,3 +412,87 @@ void DXDevice::Free(void)
 	#endif
 }
 
+RenderTarget::RenderTarget(ID3D11Device* _device, ID3D11DeviceContext* _context) : device(_device), context(_context)
+{
+}
+
+void RenderTarget::Free(void)
+{
+	if (shaderResourceView != nullptr)
+	{
+		shaderResourceView->Release();
+		shaderResourceView = nullptr;
+	}
+	if (renderTargetView != nullptr)
+	{
+		renderTargetView->Release();
+		renderTargetView = nullptr;
+	}
+	if (texture != nullptr)
+	{
+		texture->Release();
+		texture = nullptr;
+	}
+	return;
+	if (context != nullptr)
+	{
+		context->Release();
+		context = nullptr;
+	}
+	if (device != nullptr)
+	{
+		device->Release();
+		device = nullptr;
+	}
+}
+
+RenderTarget* RenderTarget::Create(ID3D11Device* device, ID3D11DeviceContext* context, const RenderTargetInfomation& infomation)
+{
+	RenderTarget* newInstance = new RenderTarget(device, context);
+	newInstance->infomation = infomation;
+	if (FAILED(newInstance->Start()))
+	{
+		Base::Destroy(newInstance);
+		return nullptr;
+	}
+	return newInstance;
+}
+
+HRESULT RenderTarget::Start(void)
+{
+	if (FAILED(CreateRenderTarget(infomation.xSize, infomation.ySize, infomation.pixelFormat)))
+		return E_FAIL;
+	return S_OK;
+}
+
+HRESULT RenderTarget::CreateRenderTarget(UINT iSizeX, UINT iSizeY, DXGI_FORMAT ePixelFormat)
+{
+	D3D11_TEXTURE2D_DESC			TextureInfomation{};
+
+	TextureInfomation.Width = iSizeX;
+	TextureInfomation.Height = iSizeY;
+	TextureInfomation.MipLevels = 1;
+	TextureInfomation.ArraySize = 1;
+	TextureInfomation.Format = ePixelFormat;
+
+	TextureInfomation.SampleDesc.Quality = 0;
+	TextureInfomation.SampleDesc.Count = 1;
+
+	/* 동적? 정적?  */
+	TextureInfomation.Usage = D3D11_USAGE_DEFAULT;
+	TextureInfomation.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	TextureInfomation.CPUAccessFlags = 0;
+	TextureInfomation.MiscFlags = 0;
+
+	if (FAILED(device->CreateTexture2D(&TextureInfomation, nullptr, &texture)))
+		return E_FAIL;
+
+	if (FAILED(device->CreateRenderTargetView(texture, nullptr, &renderTargetView)))
+		return E_FAIL;
+
+	if (FAILED(device->CreateShaderResourceView(texture, nullptr, &shaderResourceView)))
+		return E_FAIL;
+
+
+	return S_OK;
+}

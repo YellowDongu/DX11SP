@@ -2,8 +2,8 @@
 #include "ToolMain.h"
 #include "ObjectManager.h"
 #include "JsonIO.h"
-
-
+#include "ToolCamera.h"
+#include "DefaultUIShader.h"
 ToolMain::ToolMain()
 {
 }
@@ -37,6 +37,9 @@ HRESULT ToolMain::Start(void)
 	gameInstance->Device()->SetBackBufferColor({ 153.0f / 256.0f * 0.8f, 217.0f / 256.0f * 0.6f, 234.0f / 256.0f * 0.8f, 1.0f });
 	::SetModelVerticeSaveMode(true);
 	ImGuiStart();
+	Engine::DefaultUIShader* uiShader = Engine::DefaultUIShader::Create(DxDevice(), DxDeviceContext());
+	::AddShader(uiShader->shaderFile, uiShader);
+	::EngineInstance()->RenderManager()->ChangeUIShader(uiShader);
 	//ImGui_ImplWin32_EnableDpiAwareness();
 	objectManager = ObjectManager::Create(DxDevice(), DxDeviceContext());
 	CreateWindows();
@@ -108,9 +111,9 @@ void ToolMain::Render(void)
 	DirectX::XMStoreFloat4x4(&identity, DirectX::XMMatrixIdentity());
 	SetWorldMatrix(identity);
 	
-	naviWindow->Render();
 	mainViewWindow->Render();
 	EngineInstance()->RenderManager()->Render();
+	naviWindow->Render();
 	
 	//mainViewWindow->SetRenderTarget();
 	mainViewWindow->CreateFrame();
@@ -262,6 +265,7 @@ HRESULT ToolMain::CreateWindows(void)
 	if (mainViewWindow == nullptr)
 		return E_FAIL;
 	monitoringWindow = MonitoringWindow::Create();
+	monitoringWindow->LinkCamera(mainViewWindow->LinkCamera());
 	//if (monitoringWindow == nullptr)
 	//	return E_FAIL;
 	propertyWindow = PropertyWindow::Create(objectManager);

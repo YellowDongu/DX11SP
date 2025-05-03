@@ -4,10 +4,10 @@
 F15EMetaData::F15EMetaData()
 {
     AircraftModelName = L"F15E";
-    modelFilePath = L"../Bin/f15e.model";
-    modelFilePathA = "../Bin/f15e.fbx";
-    gearModelfilePathA = "../Bin/f15eGear.fbx";
-    gearModelfilePath = L"../Bin/f15eGear.model";
+    modelFilePath = L"../Bin/Resources/Vehicles/Aircrafts/f15e/f15e.model";
+    modelFilePathA = "../Bin/Resources/Vehicles/Aircrafts/f15e/f15e.fbx";
+    gearModelfilePathA = "../Bin/Resources/Vehicles/Aircrafts/f15e/f15eGear.fbx";
+    gearModelfilePath = L"../Bin/Resources/Vehicles/Aircrafts/f15e/f15eGear.model";
     flightSpec.airbreakPower = 500.0f;
     flightSpec.dragCoefficient = 0.05f;
     flightSpec.liftCoefficient = 0.05f;
@@ -20,17 +20,25 @@ F15EMetaData::F15EMetaData()
     flightSpec.criticalSpeed = 2000.0f;
     cameraTrdViewOffset = Vector3{ 0.0f ,0.4f, -1.75f };
     cameraFstViewOffset = Vector3{ 0.0f,0.12f, 0.88f };
+
+
+    // notYet
     colliderCenter = Vector3{ 0.0f, 0.1f, 0.25f };
     colliderExtent = Vector3{ 0.25f, 0.15f, 1.0f };
+
+
+    WingTrailRightOffset = Vector3{1.0f, 0.0f, 0.0f};
+    WingTrailLeftOffset = Vector3{-1.0f, 0.0f, 0.0f};
+    WingTrailWidthOffset = 1.0f;
 }
 
 F16CMetaData::F16CMetaData()
 {
     AircraftModelName = L"F16C";
-    modelFilePath = L"../Bin/f16c/f16c.model";
-    modelFilePathA = "../Bin/f16c/f16c.fbx";
-    gearModelfilePathA = "../Bin/f15eGear.fbx";
-    gearModelfilePath = L"../Bin/f15eGear.model";
+    modelFilePath = L"../Bin/Resources/Vehicles/Aircrafts/f16c/f16c.model";
+    modelFilePathA = "../Bin/Resources/Vehicles/Aircrafts/f16c/f16c.fbx";
+    gearModelfilePathA = "../Bin/Resources/Vehicles/Aircrafts/f16c/f16cGear.fbx";
+    gearModelfilePath = L"../Bin/Resources/Vehicles/Aircrafts/f16c/f16cGear.model";
     flightSpec.airbreakPower = 500.0f;
     flightSpec.dragCoefficient = 0.05f;
     flightSpec.liftCoefficient = 0.05f;
@@ -43,8 +51,16 @@ F16CMetaData::F16CMetaData()
     flightSpec.criticalSpeed = 1800.0f;
     cameraTrdViewOffset = Vector3{ 0.0f ,0.4f, -1.5f };
     cameraFstViewOffset = Vector3{ 0.0f,0.09f, 0.53f };
+
+
+    // notYet
     colliderCenter = Vector3{ 0.0f, 0.1f, 0.25f };
     colliderExtent = Vector3{ 0.25f, 0.15f, 1.0f };
+
+
+    WingTrailRightOffset = Vector3{ 1.0f, 0.0f, 0.0f };
+    WingTrailLeftOffset = Vector3{ -1.0f, 0.0f, 0.0f };
+    WingTrailWidthOffset = 1.0f;
 }
 
 F14DMetaData::F14DMetaData()
@@ -66,8 +82,16 @@ F14DMetaData::F14DMetaData()
     flightSpec.criticalSpeed = 2000.0f;
     cameraTrdViewOffset = Vector3{ 0.0f ,0.4f, -1.75f };
     cameraFstViewOffset = Vector3{ 0.0f,0.1f, 0.84f };
+
+
+    // notYet
     colliderCenter = Vector3{ 0.0f, 0.1f, 0.25f };
     colliderExtent = Vector3{ 0.25f, 0.15f, 1.0f };
+
+
+    WingTrailRightOffset = Vector3{ 1.0f, 0.0f, 0.0f };
+    WingTrailLeftOffset = Vector3{ -1.0f, 0.0f, 0.0f };
+    WingTrailWidthOffset = 1.0f;
 }
 
 SU33MetaData::SU33MetaData()
@@ -87,10 +111,18 @@ SU33MetaData::SU33MetaData()
     flightSpec.EnginePower = 3000.0f;
     flightSpec.stallSpeed = 330.0f;
     flightSpec.criticalSpeed = 2000.0f;
-    cameraTrdViewOffset = Vector3{ 0.0f ,0.4f, -1.75f };
-    cameraFstViewOffset = Vector3{ 0.0f,0.1f, 0.84f };
+    cameraTrdViewOffset = Vector3::zero();
+    cameraFstViewOffset = Vector3::zero();
+
+
+    // notYet
     colliderCenter = Vector3{ 0.0f, 0.1f, 0.25f };
     colliderExtent = Vector3{ 0.25f, 0.15f, 1.0f };
+
+
+    WingTrailRightOffset = Vector3{ 1.0f, 0.0f, 0.0f };
+    WingTrailLeftOffset = Vector3{ -1.0f, 0.0f, 0.0f };
+    WingTrailWidthOffset = 1.0f;
 }
 
 TU160MetaData::TU160MetaData()
@@ -110,10 +142,17 @@ TU160MetaData::TU160MetaData()
     flightSpec.EnginePower = 3000.0f;
     flightSpec.stallSpeed = 330.0f;
     flightSpec.criticalSpeed = 2000.0f;
-    cameraTrdViewOffset = Vector3{ 0.0f ,0.4f, -1.75f };
-    cameraFstViewOffset = Vector3{ 0.0f,0.1f, 0.84f };
+    cameraTrdViewOffset = Vector3::zero();
+    cameraFstViewOffset = Vector3::zero();
+
+    // notYet
     colliderCenter = Vector3{ 0.0f, 0.1f, 0.25f };
     colliderExtent = Vector3{ 0.25f, 0.15f, 1.0f };
+
+
+    WingTrailRightOffset = Vector3{ 1.0f, 0.0f, 0.0f };
+    WingTrailLeftOffset = Vector3{ -1.0f, 0.0f, 0.0f };
+    WingTrailWidthOffset = 1.0f;
 }
 
 TU95MetaData::TU95MetaData()
@@ -133,8 +172,15 @@ TU95MetaData::TU95MetaData()
     flightSpec.EnginePower = 3000.0f;
     flightSpec.stallSpeed = 330.0f;
     flightSpec.criticalSpeed = 2000.0f;
-    cameraTrdViewOffset = Vector3{ 0.0f ,0.4f, -1.75f };
-    cameraFstViewOffset = Vector3{ 0.0f,0.1f, 0.84f };
+    cameraTrdViewOffset = Vector3::zero();
+    cameraFstViewOffset = Vector3::zero();
+
+    // notYet
     colliderCenter = Vector3{ 0.0f, 0.1f, 0.25f };
     colliderExtent = Vector3{ 0.25f, 0.15f, 1.0f };
+
+
+    WingTrailRightOffset = Vector3{ 1.0f, 0.0f, 0.0f };
+    WingTrailLeftOffset = Vector3{ -1.0f, 0.0f, 0.0f };
+    WingTrailWidthOffset = 1.0f;
 }
