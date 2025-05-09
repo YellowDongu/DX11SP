@@ -91,6 +91,12 @@
     <Filter Include="02. CommonGameObject\Vehicle\tu160">
       <UniqueIdentifier>{c87d824e-6fff-4c7e-bc70-5a21312d811b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. CommonGameObject\Vehicle\Ground">
+      <UniqueIdentifier>{6bab8f31-32ed-48a4-9b22-20af1ec5d279}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="041. Particle">
+      <UniqueIdentifier>{7a8aadc2-d65f-43ce-9fd7-6bd022c674c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -231,22 +237,13 @@
     <ClInclude Include="..\Public\AIPilot.h">
       <Filter>03. Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\NavMesh.h">
-      <Filter>01. Act</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\MS01TerrainA.h">
       <Filter>01. Act\MS01\GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\MS01TerrainB.h">
+    <ClInclude Include="..\Public\Cloud.h">
       <Filter>01. Act\MS01\GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\MS01TerrainC.h">
-      <Filter>01. Act\MS01\GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\MS01TerrainD.h">
-      <Filter>01. Act\MS01\GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\MS01TerrainE.h">
+    <ClInclude Include="..\Public\GroundAI.h">
       <Filter>01. Act\MS01\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\SimpleBullet.h">
@@ -261,23 +258,50 @@
     <ClInclude Include="..\Public\Trigger.h">
       <Filter>02. CommonGameObject</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\WingVaporTrail.h">
-      <Filter>02. CommonGameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\WingTrailParticle.h">
-      <Filter>03. Component</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\MS01OceanModel.h">
       <Filter>03. Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\RaderSystem.h">
-      <Filter>Temp</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\SuperClassAIPilot.h">
       <Filter>03. Component</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\TerrainCollision.h">
       <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ScreenFadeOut.h">
+      <Filter>02. CommonGameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\RaderSystem.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SurfaceToAirMissileFireControlSystem.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SurfaceToAirMissileTruck.h">
+      <Filter>02. CommonGameObject\Vehicle\Ground</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AntiAirGunTruck.h">
+      <Filter>02. CommonGameObject\Vehicle\Ground</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AntiAirFireControlSystem.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\WingTrailParticle.h">
+      <Filter>041. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\WingVaporTrail.h">
+      <Filter>041. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ExplosionParticle.h">
+      <Filter>041. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Explosion.h">
+      <Filter>041. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MissileTrailParticle.h">
+      <Filter>041. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MissileTrail.h">
+      <Filter>041. Particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -415,22 +439,13 @@
     <ClCompile Include="..\Private\AIPilot.cpp">
       <Filter>03. Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\NavMesh.cpp">
-      <Filter>01. Act</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\MS01TerrainA.cpp">
       <Filter>01. Act\MS01\GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\MS01TerrainB.cpp">
+    <ClCompile Include="..\Private\Cloud.cpp">
       <Filter>01. Act\MS01\GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\MS01TerrainC.cpp">
-      <Filter>01. Act\MS01\GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\MS01TerrainD.cpp">
-      <Filter>01. Act\MS01\GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\MS01TerrainE.cpp">
+    <ClCompile Include="..\Private\GroundAI.cpp">
       <Filter>01. Act\MS01\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\SimpleBullet.cpp">
@@ -445,12 +460,6 @@
     <ClCompile Include="..\Private\Trigger.cpp">
       <Filter>02. CommonGameObject</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\WingVaporTrail.cpp">
-      <Filter>02. CommonGameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\WingTrailParticle.cpp">
-      <Filter>03. Component</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\MS01OceanModel.cpp">
       <Filter>03. Component</Filter>
     </ClCompile>
@@ -462,6 +471,39 @@
     </ClCompile>
     <ClCompile Include="..\Private\TerrainCollision.cpp">
       <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ScreenFadeOut.cpp">
+      <Filter>02. CommonGameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SurfaceToAirMissileFireControlSystem.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\SurfaceToAirMissileTruck.cpp">
+      <Filter>02. CommonGameObject\Vehicle\Ground</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AntiAirGunTruck.cpp">
+      <Filter>02. CommonGameObject\Vehicle\Ground</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AntiAirFireControlSystem.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\WingTrailParticle.cpp">
+      <Filter>041. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\WingVaporTrail.cpp">
+      <Filter>041. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ExplosionParticle.cpp">
+      <Filter>041. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Explosion.cpp">
+      <Filter>041. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MissileTrailParticle.cpp">
+      <Filter>041. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MissileTrail.cpp">
+      <Filter>041. Particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

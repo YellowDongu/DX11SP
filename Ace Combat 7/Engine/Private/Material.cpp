@@ -93,31 +93,32 @@ HRESULT Material::LoadMaterial(ModelConverter::FullModelMaterial& material, cons
     }
 
     // Normal Texture
-    texPath = To_WString(material.texturePath[6]);
-    if (texPath.length() != 0)
-    {
-        fullPath = getAbsolutePathFromFile(modelPath, texPath);
-        normalTexture = nullptr;
-        //if (FAILED(GetTexture(fullPath, fullPath, diffuseTexture)))
-        //{
-        //    std::wstring errMsg = L"TextureLoadError : " + fullPath;
-        //    ErrMsg(errMsg.c_str());
-        //    result = E_FAIL;
-        //}
-    }
+    //texPath = To_WString(material.texturePath[6]);
+    //if (texPath.length() != 0)
+    //{
+    //    fullPath = getAbsolutePathFromFile(modelPath, texPath);
+    //    if (FAILED(GetTexture(fullPath, fullPath, normalTexture)))
+    //    {
+    //        //std::wstring errMsg = L"TextureLoadError : " + fullPath;
+    //        normalTexture = nullptr;
+    //        //ErrMsg(errMsg.c_str());
+    //        result = E_FAIL;
+    //    }
+    //}
+    normalTexture = nullptr;
 
     // Specular Texture
     texPath = To_WString(material.texturePath[2]);
     if (texPath.length() != 0)
     {
         fullPath = getAbsolutePathFromFile(modelPath, texPath);
-        normalTexture = nullptr;
-        //if (FAILED(GetTexture(fullPath, fullPath, diffuseTexture)))
-        //{
-        //    std::wstring errMsg = L"TextureLoadError : " + fullPath;
-        //    ErrMsg(errMsg.c_str());
-        //    result = E_FAIL;
-        //}
+        if (FAILED(GetTexture(fullPath, fullPath, specularTexture)))
+        {
+            //std::wstring errMsg = L"TextureLoadError : " + fullPath;
+            specularTexture = nullptr;
+            //ErrMsg(errMsg.c_str());
+            result = E_FAIL;
+        }
     }
     // allTexture
     //for (size_t i = 0; i < 21; i++)
@@ -138,13 +139,13 @@ HRESULT Material::LoadMaterial(ModelConverter::FullModelMaterial& material, cons
     memcpy(&diffuseColor, &material.diffuseColor, sizeof(DirectX::XMFLOAT4));
     memcpy(&specularColor, &material.specularColor, sizeof(DirectX::XMFLOAT4));
     memcpy(&shininess, &material.shininess, sizeof(FLOAT));
-    hasSpecularTexture = (specularTexture != nullptr) ? 1 : 0;
+    buffer.hasSpecularTexture = hasSpecularTexture = (specularTexture != nullptr) ? 1 : 0;
+    buffer.hasNormalTexture = (normalTexture != nullptr) ? 1 : 0;
+    //specularColor = { 0.5f, 0.5f, 0.5f, 1.0f };
 
     ZeroMemory(&buffer, sizeof(MaterialBufferType));
-    memcpy(&buffer.diffuseColor, &diffuseColor, sizeof(DirectX::XMFLOAT4));
     memcpy(&buffer.specularColor, &specularColor, sizeof(DirectX::XMFLOAT4));
     memcpy(&buffer.shininess, &shininess, sizeof(FLOAT));
-    memcpy(&buffer.hasSpecularTexture, &hasSpecularTexture, sizeof(bool));
 
     return S_OK;
     return result;
@@ -155,26 +156,33 @@ HRESULT Material::SetMaterial(ID3D11DeviceContext*& context)
     if (GetCurrentShader() == nullptr)
         return E_FAIL;
 
-    ID3D11Buffer* materialBuffer = GetCurrentShader()->ConstantBuffer(GetCurrentShader()->MaterialConstantBuffer);
+    Shader* shader = GetCurrentShader();
+    ID3D11Buffer* materialBuffer = shader->ConstantBuffer(shader->MaterialConstantBuffer);
 
     if (materialBuffer == nullptr)
         return E_FAIL;
 
+    static std::string normalTextureName = "normalTexture";
+    static std::string specularTextureName = "specularTexture";
+    static std::string constantBufferName = "specularTexture";
+
     // 디퓨즈 텍스처 바인딩
-    ::SetTexture(GetCurrentShader()->diffuseTextureA, diffuseTexture);
-    // 스펙큘러 텍스처 바인딩
-    //::SetTexture(SpecularTextureBufferA, specularTexture);
-    // 노멀맵 텍스쳐 바인딩
-    //::SetTexture(NormalTextureBufferA, normalTexture);
+    ::SetTexture(shader->diffuseTextureA, diffuseTexture);
+     //스펙큘러 텍스처 바인딩
+    ::SetTexture(specularTextureName, specularTexture);
+     //노멀맵 텍스쳐 바인딩
+    ::SetTexture(normalTextureName, normalTexture);
 
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     if (SUCCEEDED(context->Map(materialBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
     {
         MaterialBufferType* dataPtr = (MaterialBufferType*)mappedResource.pData;
         memcpy(dataPtr, &buffer, sizeof(MaterialBufferType));
+        dataPtr->hasNormalTexture = 0;
+        dataPtr->hasSpecularTexture = specularTexture != nullptr;
         context->Unmap(materialBuffer, 0);
 
-        context->PSSetConstantBuffers(1, 1, &materialBuffer);
+        shader->BindConstantBuffer(materialBuffer, "MaterialBufferInput");
         return S_OK;
     }
     return E_FAIL;
@@ -274,14 +282,11 @@ HRESULT Material::LoadMaterial(aiMaterial* aiMaterial, const std::wstring& model
     //    emmisiveColor = DirectX::XMFLOAT4(loadedColor.r, loadedColor.g, loadedColor.b, loadedColor.a);
 
 
-
-    hasSpecularTexture = (specularTexture != nullptr) ? 1 : 0;
-
     ZeroMemory(&buffer, sizeof(MaterialBufferType));
-    buffer.diffuseColor = diffuseColor;
     buffer.specularColor = specularColor;
     buffer.shininess = shininess;
-    buffer.hasSpecularTexture = hasSpecularTexture;
+    buffer.hasSpecularTexture = hasSpecularTexture = (specularTexture != nullptr) ? 1 : 0;
+    buffer.hasNormalTexture = (normalTexture != nullptr) ? 1 : 0;
 
     return S_OK;
     return result;

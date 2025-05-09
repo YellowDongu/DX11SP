@@ -2,6 +2,7 @@
 #include "ActiveRadarHomingMissile.h"
 #include "FireControlSystem.h"
 #include "LineDrawer.h"
+#include "MissileTrail.h"
 
 ActiveRadarHomingMissile::ActiveRadarHomingMissile(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Missile(dxDevice, dxDeviceContext)
 {
@@ -49,6 +50,12 @@ Missile* ActiveRadarHomingMissile::Launch(Engine::GameObject* shooter, Vector3 L
 	newInstnace->debugDraw->AddPosition(transform.Position());
 	newInstnace->fcs = static_cast<FCS*>(shooter->GetComponent(L"FCS"));
 
+
+	Engine::Layer* layer = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"ParticleLayer");
+	MissileTrail* trail = static_cast<MissileTrail*>(layer->GetGameObject(L"MissileTrail"));
+	if (trail != nullptr)
+		trail->AddTrail(newInstnace);
+
 	return newInstnace;
 }
 
@@ -59,8 +66,8 @@ HRESULT ActiveRadarHomingMissile::Start(void)
 
 	transformComponent->Scale() *= 50.0f;
 
-	//::LoadStaticModel(L"../Bin/Resources/Vehicles/Weapons/w_msl_a0/w_msl_a0.model", model);
-	model = Engine::StaticModel::Create(dxDevice, dxDeviceContext, "../Bin/Resources/Vehicles/Weapons/w_msl_a0/w_msl_a0.FBX");
+	::LoadStaticModel(L"../Bin/Resources/Vehicles/Weapons/w_msl_a0/w_msl_a0.model", model);
+	//model = Engine::StaticModel::Create(dxDevice, dxDeviceContext, "../Bin/Resources/Vehicles/Weapons/w_msl_a0/w_msl_a0.FBX");
 	if (model == nullptr)
 		return E_FAIL;
 	AddComponent(model, L"StaticModel");
@@ -75,7 +82,7 @@ HRESULT ActiveRadarHomingMissile::Start(void)
 	speed = ConvertFeetToWorld(5000.0f);
 	maximumLifeTime = 35.0f;
 	lifeTime = 0.0f;
-	maximumLockDistance = ConvertFeetToWorld(9000.0f) * 5.0f;
+	maximumLockDistance = ConvertFeetToWorld(9000.0f) * 2.5f;
 	maximumLockDirection = std::cosf(DirectX::XMConvertToRadians(25.0f));
 	missileCount = 50;
 	return S_OK;
@@ -83,6 +90,13 @@ HRESULT ActiveRadarHomingMissile::Start(void)
 
 void ActiveRadarHomingMissile::Update(void)
 {
+	if (target != nullptr && target->Destroy())
+	{
+		target = nullptr;
+		return;
+	}
+
+
 	lifeTime += DeltaTime();
 	if (lifeTime >= maximumLifeTime)
 	{
@@ -108,11 +122,22 @@ void ActiveRadarHomingMissile::LateUpdate(void)
 	if (detonated)
 		return;
 
-	priviousPosition = currentPosition;
-	currentPosition = target->transform()->Position();
-
-
 	AddRenderObject(RenderType::NonBlend, this);
+
+	if (target != nullptr)
+	{
+		if (target->Destroy())
+		{
+			target = nullptr;
+			return;
+		}
+
+		priviousPosition = currentPosition;
+		currentPosition = target->transform()->Position();
+	}
+
+
+
 }
 
 void ActiveRadarHomingMissile::FixedUpdate(void)
@@ -125,12 +150,17 @@ void ActiveRadarHomingMissile::Render(void)
 {
 	transformComponent->Render();
 	model->Render();
-	debugDraw->Render();
+	//debugDraw->Render();
 }
 
 
 void ActiveRadarHomingMissile::Chase(void)
 {
+	transformComponent->Translate(transformComponent->Forward() * 0.005f/*DeltaTime()*/ * speed);
+
+	if (target == nullptr)
+		return;
+
 	if (fcs->Locked() && fcs->LinkTarget() == target)
 	{
 		Vector3 direction = target->transform()->Position() - transformComponent->Position();
@@ -147,6 +177,5 @@ void ActiveRadarHomingMissile::Chase(void)
 		Missile::Rotation(direction);
 	}
 
-	transformComponent->Translate(transformComponent->Forward() * 0.005f/*DeltaTime()*/ * speed);
 	rotation = transformComponent->Quaternion();
 }

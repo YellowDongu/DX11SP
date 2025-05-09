@@ -12,6 +12,7 @@ public:
 	//virtual Engine::GameObject* Clone(void) override;
 	
 	virtual HRESULT Start(void) = 0;
+	virtual HRESULT Awake(void);
 	virtual void Update(void) override;
 	virtual void LateUpdate(void) override;
 	virtual void FixedUpdate(void) override;
@@ -31,16 +32,18 @@ protected:
 	bool detonated = false;
 	Engine::StaticModel* model{nullptr};
 	Engine::GameObject* target{nullptr};
+	static class Explosion* explosion;
 
 	FLOAT damage = 30.0f;
 	FLOAT lifeTime = 0.0f;
 	FLOAT maximumLifeTime = 15.0f;
-	FLOAT maximumLockDistance = ConvertFeetToWorld(6000.0f) * 5.0f;
+	FLOAT maximumLockDistance = ConvertFeetToWorld(6000.0f) * 2.5f;
 	FLOAT speed = ConvertFeetToWorld(4000.0f);
 	FLOAT maximumLockDirection = std::cosf(DirectX::XMConvertToRadians(15.0f));
 	FLOAT coolTimeSpeed = 0.1f;
 	UINT maximumShot = 2;
 	UINT missileCount = 100;
+	FLOAT explosionScale = 5.0f;
 
 	Vector2 rotationSpeed = Vector2::zero();
 };

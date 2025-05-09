@@ -43,6 +43,7 @@ DirectX::XMMATRIX UIObject::CreateMatrix(const Vector2& position, const Vector2&
 
 	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixScaling(scale.x, scale.y, 1.0f) * DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(angle));
 	memcpy(&worldMatrix.r[3], &translation, sizeof(DirectX::XMVECTOR));
+
 	return worldMatrix;
 }
 

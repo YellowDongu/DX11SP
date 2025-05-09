@@ -47,6 +47,7 @@ namespace Engine
 		Normal,
 		Shade,
 		Depth,
+		MaterialSpecular,
 		Specular,
 		End
 	};

@@ -34,7 +34,7 @@ DefaultParticleShader* DefaultParticleShader::Create(ID3D11Device*& device, ID3D
 	{
 		Base::Destroy(newInstance);
 		return nullptr;
-	}
+	}	
 
 	return newInstance;
 }
@@ -47,4 +47,34 @@ void DefaultParticleShader::SetNamePreset(void)
 	boneMatrixBufferA = "BoneBuffer";
 	MaterialConstantBuffer = L"MaterialBufferInput";
 	MaterialConstantBufferA = "MaterialBufferInput";
+}
+
+HRESULT DefaultParticleShader::CreateBuffers(ID3D11Device* device, std::map<std::wstring, ID3D11Buffer*>& constantBuffers)
+{
+	ID3D11Buffer* newBuffer = nullptr;
+	HRESULT result;
+	D3D11_BUFFER_DESC cbDesc = {};
+	ZeroMemory(&cbDesc, sizeof(D3D11_BUFFER_DESC));
+
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.ByteWidth = sizeof(TrailBuffer);
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	result = device->CreateBuffer(&cbDesc, nullptr, &newBuffer);
+	if (FAILED(ConstantBuffer(L"TrailBuffer", newBuffer)))
+		return E_FAIL;
+
+	ZeroMemory(&cbDesc, sizeof(D3D11_BUFFER_DESC));
+
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.ByteWidth = sizeof(rotationMatrixBuffer);
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	result = device->CreateBuffer(&cbDesc, nullptr, &newBuffer);
+	if (FAILED(ConstantBuffer(L"RotationMatrixBuffer", newBuffer)))
+		return E_FAIL;
+
+	return S_OK;
 }

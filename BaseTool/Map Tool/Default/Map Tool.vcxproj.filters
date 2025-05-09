@@ -335,22 +335,19 @@
     <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\NavMesh.cpp">
       <Filter>99. References</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MS01TerrainA.cpp">
-      <Filter>99. References</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MS01TerrainB.cpp">
-      <Filter>99. References</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MS01TerrainC.cpp">
-      <Filter>99. References</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MS01TerrainD.cpp">
-      <Filter>99. References</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MS01TerrainE.cpp">
-      <Filter>99. References</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\SimpleBullet.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\Explosion.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\ExplosionParticle.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MissileTrail.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MissileTrailParticle.cpp">
       <Filter>99. References</Filter>
     </ClCompile>
   </ItemGroup>

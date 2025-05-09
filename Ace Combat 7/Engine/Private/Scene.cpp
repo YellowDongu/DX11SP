@@ -51,6 +51,7 @@ void Scene::End(void)
 	{
 		Base::Destroy(layer.second);
 	}
+	layers.clear();
 }
 
 void Scene::AddLayer(Layer* layer, const std::wstring& key)

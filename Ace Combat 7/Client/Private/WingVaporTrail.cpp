@@ -25,6 +25,7 @@ WingVaporTrail* WingVaporTrail::Create(ID3D11Device* dxDevice, ID3D11DeviceConte
 		Base::Destroy(newInstance);
 		return nullptr;
 	}
+	newInstance->Awake();
 	return newInstance;
 }
 
@@ -45,6 +46,8 @@ HRESULT WingVaporTrail::Start(void)
 
 HRESULT WingVaporTrail::Awake(void)
 {
+	if (FAILED(particle->Awake()))
+		return E_FAIL;
 	return S_OK;
 }
 
@@ -71,19 +74,44 @@ void WingVaporTrail::LateUpdate(void)
 			point.second.resize(MaxListSize);
 		}
 	}
-	size_t listSize = 0;
-	std::list<Matrix>::iterator queueIterator;
-	for (size_t i = 0; i < trailPositions.size(); i++)
+	auto pointIterator = points.begin();
+	auto iterator = trailPositions.begin();
+	for (; iterator != trailPositions.end(); )
 	{
-		trailPositions[i].second.push_back(trailPositions[i].first.gameObjectPointer->transform()->WorldMatrix());
-		if (trailPositions[i].second.size() > MaxListSize)
-			trailPositions[i].second.pop_front();
+		if (iterator->first.gameObjectPointer != nullptr)
+		{
+			if(iterator->first.gameObjectPointer->Destroy())
+				iterator->first.gameObjectPointer = nullptr;
+			else
+			{
+				iterator->second.push_back(iterator->first.gameObjectPointer->transform()->WorldMatrix());
+				if (iterator->second.size() > MaxListSize)
+					iterator->second.pop_front();
 
 
-		trailPositions[i].first.trailWidthSize = 0.1f;
-		UpdatePoints(trailPositions[i].second, points[i].first, trailPositions[i].first.leftOffset, points[i].second, trailPositions[i].first.rightOffset, trailPositions[i].first.trailWidthSize);
-		//UpdatePoints(trailPositions[i].second, points[i].first, trailPositions[i].first.leftOffset, trailPositions[i].first.trailWidthSize);
-		//UpdatePoints(trailPositions[i].second, points[i].first, trailPositions[i].first.rightOffset, trailPositions[i].first.trailWidthSize);
+				iterator->first.trailWidthSize = 0.025f;
+				UpdatePoints(iterator->second, pointIterator->first, iterator->first.leftOffset, pointIterator->second, iterator->first.rightOffset, iterator->first.trailWidthSize);
+			}
+		}
+		else
+		{
+			if (iterator->second.empty())
+			{
+				pointIterator = points.erase(pointIterator);
+				iterator = trailPositions.erase(iterator);
+				continue;
+			}
+			else
+			{
+				iterator->second.pop_front();
+
+				iterator->first.trailWidthSize = 0.025f;
+				UpdatePoints(iterator->second, pointIterator->first, iterator->first.leftOffset, pointIterator->second, iterator->first.rightOffset, iterator->first.trailWidthSize);
+			}
+		}
+
+		pointIterator++;
+		iterator++;
 	}
 }
 

@@ -270,6 +270,62 @@ ENGINEDLL Engine::NavMesh* GetNavMesh(void)
 
 	return ::EngineInstance()->ColliderSystem()->CurrentNavMesh();
 }
+ENGINEDLL HRESULT AddPrefabComponent(wchar_t* Name, Engine::Component* object, Engine::Component** copySlot)
+{
+	CheckInstance(E_FAIL);
+	std::wstring name = Name;
+	if (FAILED(::EngineInstance()->clonePod()->SetPrefab(name, object)))
+		return E_FAIL;
+	if (copySlot != nullptr)
+		*copySlot = ::EngineInstance()->clonePod()->CloneComponentPrefab(name);
+	return S_OK;
+}
+ENGINEDLL HRESULT AddPrefabComponent(std::wstring& Name, Engine::Component* object, Engine::Component** copySlot)
+{
+	CheckInstance(E_FAIL);
+	if(FAILED(::EngineInstance()->clonePod()->SetPrefab(Name, object)))
+		return E_FAIL;
+	if (copySlot != nullptr)
+		*copySlot = ::EngineInstance()->clonePod()->CloneComponentPrefab(Name);
+	return S_OK;
+}
+ENGINEDLL Engine::Component* InstantiateComponent(std::wstring& Name)
+{
+	return ::EngineInstance()->clonePod()->CloneComponentPrefab(Name);
+}
+ENGINEDLL Engine::Component* InstantiateComponent(wchar_t* Name)
+{
+	std::wstring name = std::wstring(Name);
+	return ::EngineInstance()->clonePod()->CloneComponentPrefab(name);
+}
+ENGINEDLL HRESULT AddPrefabGameObject(wchar_t* Name, Engine::Component* object, Engine::GameObject** copySlot)
+{
+	CheckInstance(E_FAIL);
+	std::wstring name = Name;
+	if (FAILED(::EngineInstance()->clonePod()->SetPrefab(name, object)))
+		return E_FAIL;
+	if (copySlot != nullptr)
+		*copySlot = ::EngineInstance()->clonePod()->CloneGameObjectPrefab(name);
+	return S_OK;
+}
+ENGINEDLL HRESULT AddPrefabGameObject(std::wstring& Name, Engine::Component* object, Engine::GameObject** copySlot)
+{
+	CheckInstance(E_FAIL);
+	if (FAILED(::EngineInstance()->clonePod()->SetPrefab(Name, object)))
+		return E_FAIL;
+	if (copySlot != nullptr)
+		*copySlot = ::EngineInstance()->clonePod()->CloneGameObjectPrefab(Name);
+	return S_OK;
+}
+ENGINEDLL Engine::GameObject* InstantiateGameObject(std::wstring& Name)
+{
+	return ::EngineInstance()->clonePod()->CloneGameObjectPrefab(Name);
+}
+ENGINEDLL Engine::GameObject* InstantiateGameObject(wchar_t* Name)
+{
+	std::wstring name = std::wstring(Name);
+	return ::EngineInstance()->clonePod()->CloneGameObjectPrefab(name);
+}
 #pragma endregion
 
 #undef CheckInstance
@@ -506,8 +562,8 @@ ColliderManager* Engine::GameInstance::ColliderSystem(void)
 
 void GameInstance::Free(void)
 {
-	Base::DestroyInstance(console);
 	Base::DestroyInstance(act);
+	Base::DestroyInstance(console);
 	Base::DestroyInstance(colliders);
 	Base::DestroyInstance(textMaster);
 	Base::DestroyInstance(prototypeManager);

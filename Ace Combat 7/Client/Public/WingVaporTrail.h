@@ -36,13 +36,13 @@ public:
 private:
 	Vector3 trailOffset;
 	std::vector<std::pair<AircraftInfo, std::list<Matrix>>> trailPositions;
-	WingTrailParticle* particle;
+	WingTrailParticle* particle{nullptr};
 
 	std::vector<std::pair<std::vector<Engine::VertexMatrix>, std::vector<Engine::VertexMatrix>>> points;
 
 	UINT MaxListSize = 100;
 
 	FLOAT Timer = 0.0f;
-	FLOAT RecordTime = 0.1f;
+	FLOAT RecordTime = 0.025f;
 
 } typedef WVTrail;

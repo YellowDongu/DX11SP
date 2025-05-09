@@ -7,6 +7,7 @@
 #include "AutoPilot.h"
 #include "PlayerPilot.h"
 #include "RMWR.h"
+#include "RaderSystem.h"
 
 #include "ModelConverter.h"
 #include "Collider.h"
@@ -15,10 +16,8 @@
 #include "ActiveRadarHomingMissile.h"
 #include "PlayerEar.h"
 #include "TerrainCollision.h"
-
-Engine::Transform* testtransform = nullptr;
-
 Engine::GameObject* testEnemy = nullptr;
+
 Player::Player(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::GameObject(dxDevice, dxDeviceContext), model(nullptr), boneHandler(nullptr), flightModule(nullptr)
 {
 }
@@ -35,7 +34,6 @@ void Player::Free(void)
 
 Player* Player::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext)
 {
-    ::EngineInstance()->CreateConsole();
     Player* newInstance = new Player(dxDevice, dxDeviceContext);
 
     if (FAILED(newInstance->Start()))
@@ -93,11 +91,96 @@ Engine::GameObject* Player::Clone(void)
 #endif
 RMWR* comTest = nullptr;
 PlayerEar* comTest2 = nullptr;
+RaderSystem* raderSystem = nullptr;
+TerrainCollision* terrainCollision = nullptr;
+HRESULT Player::Start(ObjectInfomation& objectInfomation)
+{
+    std::wstring name = L"F16CHandler";
+    ::AddPrefabComponent(name, F16CHandler::Create(dxDevice, dxDeviceContext));
+    name = L"F14DHandler";
+    ::AddPrefabComponent(name, F14DHandler::Create(dxDevice, dxDeviceContext));
+    name = L"SU33Handler";
+    ::AddPrefabComponent(name, SU33Handler::Create(dxDevice, dxDeviceContext));
+    name = L"F15EHandler";
+    ::AddPrefabComponent(name, F15EHandler::Create(dxDevice, dxDeviceContext));
+
+    if (FAILED(CreateTransform()))
+        return E_FAIL;
+
+    transformComponent->Position() = Vector3(1643.0f, 2.0f, 405.0f);
+    transformComponent->Scale() = Vector3::one() * 0.5f;
+    //transformComponent->SetAngle(Vector3{ 0.0f, -45.0f, 0.0f });
+    //transformComponent->Scale() = Vector3::one() * 0.01f;
+
+
+    AircraftMetaData& metaData = objectInfomation.aircraftInfomation;
+
+    Matrix matrix;
+    aircraftGlobalMatrix(matrix);
+
+    ConvertModel(metaData.modelFilePathA, metaData.modelFilePath, matrix);
+    gearGlobalMatrix(matrix);
+    ConvertModel(metaData.gearModelfilePathA, metaData.gearModelfilePath, matrix);
+    if (FAILED(::LoadModel(metaData.gearModelfilePath, gearModel)))
+        return E_FAIL;
+    if (FAILED(::LoadModel(metaData.modelFilePath, model)))
+        return E_FAIL;
+
+    AddComponent(gearModel, L"GearModel");
+    AddComponent(model, L"FullModel");
+
+    boneHandler = static_cast<AircraftBoneHandler*>(::InstantiateComponent(metaData.BoneHandlerName));
+    AddComponent(boneHandler, L"AircraftBoneHandler");
+    // model setting
+
+    flightModule = FlightMovement::Create(dxDevice, dxDeviceContext, transformComponent, metaData.flightSpec);
+    AddComponent(flightModule, L"FlightMovement");
+
+    fcs = FireControlSystem::Create(dxDevice, dxDeviceContext, metaData);
+    fcs->SetStandardMissile(StandardMissile::Create(dxDevice, dxDeviceContext));
+    fcs->SetUniqueMissile(ARHM::Create(dxDevice, dxDeviceContext));
+    AddComponent(fcs, L"FCS");
+
+    Engine::OBB::Description description = Engine::OBB::Description();
+    description.center = metaData.colliderCenter;
+    description.extents = metaData.colliderExtent;
+    DirectX::XMStoreFloat4(&description.quaternion, DirectX::XMQuaternionIdentity());
+
+    collider = Engine::Collider::Create(dxDevice, dxDeviceContext, &description);
+    if (collider == nullptr)
+        return E_FAIL;
+    AddComponent(collider, L"Collider");
+
+    AddComponent(comTest = RMWR::Create(dxDevice, dxDeviceContext), L"RMWR");
+    playerPilot = PlayerPilot::Create(dxDevice, dxDeviceContext, objectInfomation);
+    AddComponent(playerPilot, L"PlayerPilot");
+    playerPilot->testEnemyPointer = &testEnemy;
+    AddComponent(comTest2 = PlayerEar::Create(dxDevice, dxDeviceContext, metaData), L"PlayerEar");
+
+    Sound()->LoadSound("../Bin/Resources/Sounds/Effects/", "MissileFired.wav");
+    terrainCollision = TerrainCollision::Create(dxDevice, dxDeviceContext);
+    AddComponent(terrainCollision, L"TerrainCollision");
+
+    raderSystem = RaderSystem::Create(dxDevice, dxDeviceContext);
+    AddComponent(raderSystem, L"RaderSystem");
+    return S_OK;
+}
 HRESULT Player::Start(void)
 {
-    CreateTransform();
+    std::wstring name = L"F16CHandler";
+    ::AddPrefabComponent(name, F16CHandler::Create(dxDevice, dxDeviceContext));
+    name = L"F14DHandler";
+    ::AddPrefabComponent(name, F14DHandler::Create(dxDevice, dxDeviceContext));
+    name = L"SU33Handler";
+    ::AddPrefabComponent(name, SU33Handler::Create(dxDevice, dxDeviceContext));
+    name = L"F15EHandler";
+    ::AddPrefabComponent(name, F15EHandler::Create(dxDevice, dxDeviceContext));
+
+    if (FAILED(CreateTransform()))
+        return E_FAIL;
+
     transformComponent->Position() = Vector3(1643.0f, 2.0f, 405.0f);
-    transformComponent->Scale() = Vector3::one();
+    transformComponent->Scale() = Vector3::one() * 0.5f;
     //transformComponent->SetAngle(Vector3{ 0.0f, -45.0f, 0.0f });
     //transformComponent->Scale() = Vector3::one() * 0.01f;
     
@@ -124,28 +207,30 @@ HRESULT Player::Start(void)
     if (FAILED(::LoadModel(metaData.modelFilePath, model)))
         return E_FAIL;
 
-    #if defined(f16c)
-    boneHandler = F16CHandler::Create(dxDevice, dxDeviceContext);
-    #elif defined(f14d)
-    boneHandler = F14DHandler::Create(dxDevice, dxDeviceContext);
-    #elif defined(su33)
-    boneHandler = SU33Handler::Create(dxDevice, dxDeviceContext);
-    #else
-    boneHandler = F15EHandler::Create(dxDevice, dxDeviceContext);
-    #endif
 
-    boneHandler->LinkModels(model, gearModel);
+    boneHandler = static_cast<AircraftBoneHandler*>(::InstantiateComponent(metaData.BoneHandlerName));
+    if (boneHandler == nullptr)
+    {
+        #if defined(f16c)
+        boneHandler = F16CHandler::Create(dxDevice, dxDeviceContext);
+        #elif defined(f14d)
+        boneHandler = F14DHandler::Create(dxDevice, dxDeviceContext);
+        #elif defined(su33)
+        boneHandler = SU33Handler::Create(dxDevice, dxDeviceContext);
+        #else
+        boneHandler = F15EHandler::Create(dxDevice, dxDeviceContext);
+        #endif
+    }
+
     AddComponent(gearModel, L"GearModel");
     AddComponent(model, L"FullModel");
 
     //boneHandler = static_cast<Engine::BoneHandler*>(::GetComponent(metaData.handlerName));
     AddComponent(boneHandler, L"AircraftBoneHandler");
-    boneHandler->Awake();
     // model setting
 
     flightModule = FlightMovement::Create(dxDevice, dxDeviceContext, transformComponent, metaData.flightSpec);
     AddComponent(flightModule, L"FlightMovement");
-    static_cast<AircraftBoneHandler*>(boneHandler)->LinkYoke(flightModule->yoke);
 
     fcs = FireControlSystem::Create(dxDevice, dxDeviceContext, metaData);
     fcs->SetStandardMissile(StandardMissile::Create(dxDevice, dxDeviceContext));
@@ -163,25 +248,34 @@ HRESULT Player::Start(void)
     AddComponent(collider, L"Collider");
 
     AddComponent(comTest = RMWR::Create(dxDevice, dxDeviceContext), L"RMWR");
+    comTest->SetInvincibility(true);
     playerPilot = PlayerPilot::Create(dxDevice, dxDeviceContext, objectInfomation);
     AddComponent(playerPilot, L"PlayerPilot");
-    playerPilot->Awake();
     playerPilot->testEnemyPointer = &testEnemy;
     AddComponent(comTest2 = PlayerEar::Create(dxDevice, dxDeviceContext, metaData), L"PlayerEar");
-    comTest2->Awake();
-    cameraState = 0;
 
     Sound()->LoadSound("../Bin/Resources/Sounds/Effects/", "MissileFired.wav");
-    TerrainCollision* terrainCollision = TerrainCollision::Create(dxDevice, dxDeviceContext);
+    terrainCollision = TerrainCollision::Create(dxDevice, dxDeviceContext);
     AddComponent(terrainCollision, L"TerrainCollision");
-    terrainCollision->Awake();
+
+    raderSystem = RaderSystem::Create(dxDevice, dxDeviceContext);
+    raderSystem->SetMaxTimer(1.5f);
+    AddComponent(raderSystem, L"RaderSystem");
 
     return S_OK;
 }
 HRESULT Player::Awake(void)
 {
-    for (auto& component : components)
-        component.second->Awake();
+    boneHandler->Awake();
+    static_cast<AircraftBoneHandler*>(boneHandler)->LinkYoke(flightModule->yoke);
+    playerPilot->Awake();
+    comTest2->Awake();
+    terrainCollision->Awake();
+    raderSystem->Awake();
+    cameraState = 0;
+
+    //for (auto& component : components)
+    //    component.second->Awake();
 
     return S_OK;
 }
@@ -192,12 +286,14 @@ void Player::Update(void)
     std::cout << DeltaTime() << "   : " << Time()->FPS() << std::endl;
     if (testEnemy == nullptr)
     {
-        testEnemy = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"MainTargetEnemy")->GetGameObject(L"MainTarget");
+        //testEnemy = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"MainTargetEnemy")->GetGameObject(L"MainTarget");
+        testEnemy = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"MainTargetEnemy")->GetGameObject(L"MainTargetEnemy");
     }
     boneHandler->Update();
     playerPilot->Update();
     comTest2->Update();
     collider->Update();
+    raderSystem->Update();
     return;
 }
 

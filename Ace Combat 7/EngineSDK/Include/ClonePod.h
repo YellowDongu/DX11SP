@@ -4,26 +4,27 @@
 namespace Engine
 {
 	class GameObject;
+	class Component;
 	class ClonePod final : public Base
 	{
 	private:
 		ClonePod(void) = default;
 		ClonePod(const ClonePod&) = delete;
 		virtual ~ClonePod(void) = default;
-
+		virtual void Free(void) override;
 	public:
 		static ClonePod* Create(void);
 		HRESULT SetPrefab(std::wstring& key, GameObject* gameObject);
+		HRESULT SetPrefab(std::wstring& key, Component* component);
 
-		GameObject* ClonePrefab(std::wstring& key);
+		GameObject* CloneGameObjectPrefab(std::wstring& key);
+		Component* CloneComponentPrefab(std::wstring& key);
 		void ClearPrefab(void);
-		void ClearAliveObject(void);
 	private:
-		virtual void Free(void);
 
-		std::map<std::wstring, GameObject*> prefabs;
-		std::map<std::wstring, GameObject*> liveObjects;
-		std::map<std::wstring, GameObject*> nonDestroyObjects;
+		std::map<std::wstring, GameObject*> gameObjectPrefabs;
+		std::map<std::wstring, Component*> componentPrefabs;
+
 	};
 
 }

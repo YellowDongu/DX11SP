@@ -5,9 +5,24 @@
 
 using namespace Engine;
 
+void SceneLoader::Free(void)
+{
+	if(loadingThread->joinable())
+		loadingThread->join();
+
+	delete loadingThread;
+	loadingThread = nullptr;
+}
+
+SceneLoader* SceneLoader::Create(void)
+{
+	SceneLoader* newInstnace = new SceneLoader();
+	newInstnace->loadingThread = nullptr;
+	return newInstnace;
+}
+
 void SceneLoader::Update(void)
 {
-
 	if (!threadDone)
 		return;
 

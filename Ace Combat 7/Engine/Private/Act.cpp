@@ -15,6 +15,7 @@ Act::Act(Scene* _baseScene, Scene* _loadingScene) : currentScene(_baseScene), lo
 
 void Act::Free(void)
 {
+	Base::DestroyInstance(loader);
 	for (auto& scene : scenes)
 	{
 		Base::Destroy(scene);
@@ -25,12 +26,14 @@ void Act::Free(void)
 Act* Act::Create(void)
 {
 	Act* newInstance = new Act();
+	newInstance->loader = SceneLoader::Create();
 	return newInstance;
 }
 
 Act* Act::Create(Scene* baseScene, Scene* loadingScene)
 {
 	Act* newInstance = new Act(baseScene, loadingScene);
+	newInstance->loader = SceneLoader::Create();
 	return newInstance;
 }
 
@@ -98,7 +101,6 @@ void Act::Render(void)
 
 UINT Act::AddScene(Scene* scene)
 {
-	scene->Start();
 	scenes.push_back(scene);
 	return static_cast<UINT>(scenes.size()) - 1;
 }
@@ -113,10 +115,15 @@ Scene* Act::GetScene(UINT sceneNumber)
 
 void Act::CompleteLoadingScene(void)
 {
-	loadingScene->Release();
+	if (!loader->EndLoading())
+		return;
+
+	loadingScene->End();
 	loadingScene = nullptr;
 	Loading = false;
-	loadEnd = false;
+
+	loader->ResetStatus();
+	EngineInstance()->RenderManager()->SkipRender();
 }
 
 void Engine::Act::ChangeLoadingScene(UINT loadingSceneNumber)
@@ -135,5 +142,6 @@ void Act::ReadyOtherScene(UINT loadingSceneNumber, UINT targetSceneNumber)
 	currentScene = scenes[targetSceneNumber];
 	loadingScene = scenes[loadingSceneNumber];
 	Loading = true;
-	loadEnd = false;
+
+	loader->BeginLoading(currentScene);
 }

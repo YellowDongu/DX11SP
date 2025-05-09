@@ -31,12 +31,14 @@ namespace Engine
 		Component* GetComponent(std::wstring key);
 		Transform* transform(void) { return transformComponent; }
 		bool IsActive(void) { return active; }
+		bool Destroy(void) { return destroy; }
+		void SetDestroy(bool value) { destroy = value; }
 
 		virtual void Collide(GameObject* target, class Collider* targetCollision);
 
 	protected:
 		HRESULT CreateTransform(void);
-		bool active{ true };
+		bool active{ true }, destroy{ false };
 
 		Transform* transformComponent;
 		std::map<std::wstring, Component*> components;

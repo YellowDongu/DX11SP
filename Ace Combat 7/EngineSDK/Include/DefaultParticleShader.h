@@ -15,6 +15,7 @@ namespace Engine
 	public:
 		static DefaultParticleShader* Create(ID3D11Device*& device, ID3D11DeviceContext*& context);
 		virtual void SetNamePreset(void) override;
+		virtual HRESULT CreateBuffers(ID3D11Device* device, std::map<std::wstring, ID3D11Buffer*>& constantBuffers) override;
 	private:
 
 	};

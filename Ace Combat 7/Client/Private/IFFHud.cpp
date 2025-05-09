@@ -64,6 +64,7 @@ HRESULT IdentificationFriendorFoeHeadUpDisplay::Start(void)
 
 HRESULT IdentificationFriendorFoeHeadUpDisplay::Awake(void)
 {
+	AddLayers(EngineInstance()->SceneManager()->CurrentScene());
 	return E_NOTIMPL;
 }
 
@@ -82,18 +83,7 @@ void IdentificationFriendorFoeHeadUpDisplay::LateUpdate(void)
 
 void IdentificationFriendorFoeHeadUpDisplay::Render(void)
 {
-	static std::wstring aiPilotComponentName = L"AIPilot";
-	static std::wstring aiSuperClassPilotComponentName = L"SuperClassAIPilot";
-	AIPilot* pilot = nullptr;
-
-	bool inScreen;
-	Vector2 screenPosition;
-	static const UINT SIUIstride = sizeof(UIVertex);
-	std::string diffuseTexture = "diffuseTexture";
-	std::string world = "worldMatrix";
-	Matrix worldMatrix;
 	Vector2 scale = Vector2::one() * 0.65f;
-	float distance;
 	if (Enemy != nullptr)
 	{
 		for (auto& object : Enemy->GameObjectList())
@@ -130,12 +120,12 @@ void IdentificationFriendorFoeHeadUpDisplay::RenderHUD(Engine::GameObject* objec
 	float distance;
 
 	distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&object->transform()->Position()), DirectX::XMLoadFloat3(&player->transform()->Position()))));
-	distance = ConvertWorldToFeet(distance) / 5.0f;
+	distance = ConvertWorldToFeet(distance) / 2.5f;
 
 	//if (distance >= maxDistance)
 	//	continue;
 
-	screenPosition = Vector2(WorldToScreen(object->transform()->Position(), DirectX::XMLoadFloat4x4(&camera->ViewProjectionMatrix()), deviceInfomation, inScreen, false));
+	screenPosition = Vector2(WorldToScreen(object->transform()->Position(), DirectX::XMLoadFloat4x4(&camera->ViewProjectionMatrix()), deviceInfomation, inScreen));
 	if (!inScreen)
 		return;
 
@@ -189,25 +179,9 @@ void IdentificationFriendorFoeHeadUpDisplay::RenderHUD(Engine::GameObject* objec
 
 void IdentificationFriendorFoeHeadUpDisplay::AddLayers(Engine::Scene* scene)
 {
-
-
-	MainTargetEnemy = nullptr;
 	MainTargetEnemy = scene->FindLayer(L"MainTargetEnemy");
 	MainTargetEnemyGround = nullptr; 
-	Enemy = nullptr;
 	Enemy = scene->FindLayer(L"Enemy");
-	Enemy->AddGameObject(L"TargetDummy1",  TargetDummy::Create(dxDevice, dxDeviceContext, Vector3{500.0f,  50.0f, 500.0f} ));
-	Enemy->AddGameObject(L"TargetDummy2",  TargetDummy::Create(dxDevice, dxDeviceContext, Vector3{1000.0f, 50.0f, 1000.0f} ));
-	Enemy->AddGameObject(L"TargetDummy3",  TargetDummy::Create(dxDevice, dxDeviceContext, Vector3{1000.0f, 25.0f, 1000.0f } ));
-	Enemy->AddGameObject(L"TargetDummy4",  TargetDummy::Create(dxDevice, dxDeviceContext, Vector3{900.0f,  25.0f, 900.0f} ));
-	Enemy->AddGameObject(L"TargetDummy5",  TargetDummy::Create(dxDevice, dxDeviceContext, Vector3{1000.0f, 50.0f, 500.0f} ));
-	Enemy->AddGameObject(L"TargetDummy6",  TargetDummy::Create(dxDevice, dxDeviceContext, Vector3{500.0f,  50.0f, 1000.0f} ));
-	Enemy->AddGameObject(L"TargetDummy7",  TargetDummy::Create(dxDevice, dxDeviceContext, Vector3{2000.0f, 50.0f, 2000.0f} ));
-	Enemy->AddGameObject(L"TargetDummy8",  TargetDummy::Create(dxDevice, dxDeviceContext, Vector3{2000.0f, 25.0f, 2000.0f} ));
-	Enemy->AddGameObject(L"TargetDummy9",  TargetDummy::Create(dxDevice, dxDeviceContext, Vector3{2000.0f, 50.0f, 1000.0f} ));
-	Enemy->AddGameObject(L"TargetDummy10", TargetDummy::Create(dxDevice, dxDeviceContext, Vector3{1000.0f, 50.0f, 50.0f} ));
-	Enemy->AddGameObject(L"TargetDummy11", TargetDummy::Create(dxDevice, dxDeviceContext, Vector3{1000.0f, 50.0f, 200.0f} ));
-	Enemy->AddGameObject(L"TargetDummy12", TargetDummy::Create(dxDevice, dxDeviceContext, Vector3{1000.0f, 50.0f, 100.0f} ));
 	GroundEnemy = nullptr;
 	NonTargetEnemy = nullptr;
 	NonTargetGroundEnemy = nullptr;

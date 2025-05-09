@@ -27,6 +27,7 @@ namespace Engine
 		void changeVolume(FMOD::Channel*& channel, FLOAT value);
 		void changePitch(FMOD::Channel*& channel, FLOAT value);
 		FMOD::Channel*& GetBGMchannel(void) { return BGMchannel; }
+		
 	private:
 		HRESULT StartSoundDevice(void);
 		virtual void Free(void);

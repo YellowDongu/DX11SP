@@ -46,6 +46,10 @@ HRESULT MS01Terrain::Start(void)
 		return E_FAIL;
 	Engine::GameObject::AddComponent(model, L"StaticModel");
 
+	AddComponent(model, L"StaticModel");
+	if (FAILED(::LoadTexture(L"../Bin/Resources/Environment/Common/Sea/Textures/Sea_SeaWaves_N.dds", L"../Bin/Resources/Environment/Common/Sea/Textures/Sea_SeaWaves_N.dds", waveNormalTexture)))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -68,6 +72,9 @@ void MS01Terrain::FixedUpdate(void)
 
 void MS01Terrain::Render(void)
 {
+	GetCurrentShader()->PassNumber(2);
+	GetCurrentShader()->BindTexture("globalNormalTexture", waveNormalTexture);
 	transformComponent->Render();
 	model->Render();
+	GetCurrentShader()->PassNumber(0);
 }

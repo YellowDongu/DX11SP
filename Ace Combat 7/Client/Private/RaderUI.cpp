@@ -80,7 +80,16 @@ HRESULT RaderUI::Start(void)
 
 HRESULT RaderUI::Awake(void)
 {
-	return E_NOTIMPL;
+	MainTargetlayer = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"MainTargetEnemy");
+	if (MainTargetlayer == nullptr)
+		return E_FAIL;
+	Enemylayer = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"Enemy");
+	if (Enemylayer == nullptr)
+		return E_FAIL;
+	Allylayer = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"Ally");
+	if (Allylayer == nullptr)
+		return E_FAIL;
+	return S_OK;
 }
 
 void RaderUI::FixedUpdate(void)
@@ -98,50 +107,72 @@ void RaderUI::LateUpdate(void)
 
 void RaderUI::Render(void)
 {
-	Vector2 scale = Vector2::one();
-	Matrix worldMatrix;
-	Vector2 position = CenterPosition;
 	switch (raderState)
 	{
 	case 0:
-	{
-		DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 180.0f));
-		SetMatrix(world, worldMatrix);
-
-		SetTexture(diffuseTexture, HUDOutline.texture);
-		GetCurrentShader()->Render(HUDOutline.indexBuffer, HUDOutline.vertexBuffer, stride);
-		dxDeviceContext->DrawIndexed(HUDOutline.indexCount, 0, 0);
-
-		SetTexture(diffuseTexture, RaderInnerLines.texture);
-		GetCurrentShader()->Render(RaderInnerLines.indexBuffer, RaderInnerLines.vertexBuffer, stride);
-		dxDeviceContext->DrawIndexed(RaderInnerLines.indexCount, 0, 0);
-
-		position.y -= windowSizeY * 0.045f;
-		DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 180.0f));
-		SetMatrix(world, worldMatrix);
-
-		SetTexture(diffuseTexture, HUDCircleS.texture);
-		GetCurrentShader()->Render(HUDCircleS.indexBuffer, HUDCircleS.vertexBuffer, stride);
-		dxDeviceContext->DrawIndexed(HUDCircleS.indexCount, 0, 0);
-
-		SetTexture(diffuseTexture, HUDCircleM.texture);
-		GetCurrentShader()->Render(HUDCircleM.indexBuffer, HUDCircleM.vertexBuffer, stride);
-		dxDeviceContext->DrawIndexed(HUDCircleM.indexCount, 0, 0);
-
-		position.y += HUDOutlineScale.y * 0.07f;
-		scale.y = 0.825f;
-		DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 180.0f));
-		SetMatrix(world, worldMatrix);
-		SetTexture(diffuseTexture, HUDCircleL.texture);
-		GetCurrentShader()->Render(HUDCircleL.indexBuffer, HUDCircleL.vertexBuffer, stride);
-		dxDeviceContext->DrawIndexed(HUDCircleL.indexCount, 0, 0);
-	}
+		MiniMapModeRender();
+		break;
+	case 1:
+		LargeMapModeRender();
 		break;
 	default:
 		raderState = 0;
 		break;
 	}
 
+}
+
+void RaderUI::MiniMapModeRender(void)
+{
+	Vector2 scale = Vector2::one();
+	Matrix worldMatrix;
+	Vector2 position = CenterPosition;
+
+	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 180.0f));
+	SetMatrix(world, worldMatrix);
+
+	SetTexture(diffuseTexture, HUDOutline.texture);
+	GetCurrentShader()->Render(HUDOutline.indexBuffer, HUDOutline.vertexBuffer, stride);
+	dxDeviceContext->DrawIndexed(HUDOutline.indexCount, 0, 0);
+
+	SetTexture(diffuseTexture, RaderInnerLines.texture);
+	GetCurrentShader()->Render(RaderInnerLines.indexBuffer, RaderInnerLines.vertexBuffer, stride);
+	dxDeviceContext->DrawIndexed(RaderInnerLines.indexCount, 0, 0);
+
+	position.y -= windowSizeY * 0.045f;
+	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 180.0f));
+	SetMatrix(world, worldMatrix);
+
+	SetTexture(diffuseTexture, HUDCircleS.texture);
+	GetCurrentShader()->Render(HUDCircleS.indexBuffer, HUDCircleS.vertexBuffer, stride);
+	dxDeviceContext->DrawIndexed(HUDCircleS.indexCount, 0, 0);
+
+	SetTexture(diffuseTexture, HUDCircleM.texture);
+	GetCurrentShader()->Render(HUDCircleM.indexBuffer, HUDCircleM.vertexBuffer, stride);
+	dxDeviceContext->DrawIndexed(HUDCircleM.indexCount, 0, 0);
+
+	position.y += HUDOutlineScale.y * 0.07f;
+	scale.y = 0.825f;
+	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 180.0f));
+	SetMatrix(world, worldMatrix);
+	SetTexture(diffuseTexture, HUDCircleL.texture);
+	GetCurrentShader()->Render(HUDCircleL.indexBuffer, HUDCircleL.vertexBuffer, stride);
+	dxDeviceContext->DrawIndexed(HUDCircleL.indexCount, 0, 0);
+
+
+
+
+
+
+
+
+
+
+
+}
+
+void RaderUI::LargeMapModeRender(void)
+{
 }
 
 HRESULT RaderUI::CreateCustomVertex(ID3D11Buffer*& vertexBuffer, ID3D11Buffer*& indexBuffer, UINT& vertexCount, const Vector2& scale)

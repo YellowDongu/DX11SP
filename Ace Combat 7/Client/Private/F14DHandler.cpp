@@ -92,30 +92,6 @@ HRESULT F14DHandler::Start(void)
 	for (auto& gearSet : gearSets)
 		landingGearParts.push_back(&gearSet.second);
 
-
-	for (auto& part: aileronLParts)
-		part->animationTime = part->maxTime;
-	for (auto& part : aileronRParts)
-		part->animationTime = part->maxTime;
-	for (auto& part : elevatorParts)
-		part->animationTime = part->maxTime;
-	for (auto& part : taileronLParts)
-		part->animationTime = part->maxTime;
-	for (auto& part : taileronRParts)
-		part->animationTime = part->maxTime;
-	for (auto& part : rudderParts)
-		part->animationTime = part->maxTime;
-	for (auto& part : flapParts)
-		part->animationTime = part->maxTime;
-	for (auto& part : airbreakParts)
-		part->animationTime = part->maxTime;
-	for (auto& part : airIntakeParts)
-		part->animationTime = part->maxTime;
-	for (auto& part : wingParts)
-		part->animationTime = part->maxTime;
-	for (auto& part : landingGearParts)
-		part->animationTime = part->maxTime;
-
 	return S_OK;
 }
 

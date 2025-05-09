@@ -60,7 +60,7 @@ TU160* TU160::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContex
 
 Engine::GameObject* TU160::Clone(void)
 {
-    return nullptr;
+    return new TU160(*this);
 }
 
 #define aircraftGlobalMatrix(matrix) DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 0.0f), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(0.0f)), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)))
@@ -108,7 +108,6 @@ HRESULT TU160::Start(void)
     autoPilot = SuperClassAutoPilot::Create(dxDevice, dxDeviceContext);
     if (autoPilot == nullptr) return E_FAIL;
     AddComponent(autoPilot, L"AutoPilot");
-    autoPilot->Awake();
 
     Engine::OBB::Description description = Engine::OBB::Description();
     //description.center = Vector3{ 50.0f, 50.0f, 50.0f } * 50.0f;
@@ -125,13 +124,16 @@ HRESULT TU160::Start(void)
 
     SuperClassAIPilot* pilot = SuperClassAIPilot::Create(dxDevice, dxDeviceContext, metaData);
     AddComponent(pilot, L"AIPilot");
-    pilot->Awake();
 
     return S_OK;
 }
 
 HRESULT TU160::Awake(void)
 {
+    autoPilot->Awake();
+
+    SuperClassAIPilot* pilot = static_cast<SuperClassAIPilot*>(GetComponent(L"AIPilot"));
+    pilot->Awake();
     //for (auto& component : components)
     //{
     //    component.second->Awake();
@@ -145,14 +147,14 @@ HRESULT TU160::Awake(void)
 
 void TU160::Update(void)
 {
-    if (!active)
+    if (!active || destroy)
         return;
     Engine::GameObject::Update();
 }
 
 void TU160::LateUpdate(void)
 {
-    if (!active)
+    if (!active || destroy)
         return;
     Engine::GameObject::LateUpdate();
     AddRenderObject(RenderType::NonBlend, this);
@@ -160,14 +162,14 @@ void TU160::LateUpdate(void)
 
 void TU160::FixedUpdate(void)
 {
-    if (!active)
+    if (!active || destroy)
         return;
     Engine::GameObject::FixedUpdate();
 }
 
 void TU160::Render(void)
 {
-    if (!active)
+    if (!active || destroy)
         return;
     transformComponent->Render();
     model->Render();

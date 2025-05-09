@@ -2,6 +2,8 @@
 #include "MainApp.h"
 
 #include "MS01.h"
+#include "Title.h"
+#include "DefaultModelShader.h"
 int windowSizeX = 1920;
 int windowSizeY = 1080;
 
@@ -31,16 +33,21 @@ void MainApp::Start(void)
 	gameInstance->EntireInitialize();
 	gameInstance->Time()->setTargetFPS(144);
 	gameInstance->Device()->SetBackBufferColor({153.0f / 256.0f * 0.8f, 217.0f / 256.0f * 0.6f, 234.0f / 256.0f * 0.8f, 1.0f});
+	auto device = DxDevice();
+	auto context = DxDeviceContext();
+
+	::EngineInstance()->CreateConsole();
 
 	sceneManager = EngineInstance()->SceneManager();
 	sceneManager->AddScene(MS01::Create());
-	sceneManager->ForceSetCurrentScene(0);
-
+	sceneManager->AddScene(Title::Create(true));
+	sceneManager->ReadyOtherScene(1, 0);
 }
 
 HRESULT MainApp::MainLoop(void)
 {
 	EngineInstance()->TimeUpdate();
+	std::cout << DeltaTime() << "	:	" << Time()->FPS() << std::endl;
 	if (Time()->MainTimer() != nullptr)
 	{
 		if (!Time()->MainTimer()->AtTime())

@@ -21,4 +21,5 @@ public:
 
 private:
 	Engine::StaticModel* model{nullptr};
+	ID3D11ShaderResourceView* waveNormalTexture{ nullptr };
 };

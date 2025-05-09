@@ -33,7 +33,7 @@ private:
 	float4 baseRotation;
 
 	float4 rotation;
-
+	FLOAT priviousDistance = FLT_MAX;
 
 	Engine::LineDrawer* debugDraw = nullptr;
 	float timer = 0.0f;

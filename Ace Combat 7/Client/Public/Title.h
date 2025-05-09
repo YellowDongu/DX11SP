@@ -4,12 +4,12 @@
 class Title : public Engine::Scene
 {
 private:
-	Title(void);
+	Title(void) = default;
 	Title(const Title&) = delete;
 	virtual ~Title(void) = default;
 	virtual void Free(void);
 public:
-	static Title* Create(void);
+	static Title* Create(bool initiate);
 
 	virtual void Start(void);
 	virtual void Awake(void);

@@ -326,6 +326,9 @@ HRESULT DXDevice::BindMultiRenderTarget(DeferredRenderOrder order, RenderTargetT
 
 HRESULT DXDevice::SetMultiRenderTarget(DeferredRenderOrder renderOrder)
 {
+	if (renderTargets.empty())
+		return E_FAIL;
+
 	auto iterator = multiRenderTarget.find(renderOrder);
 	if (iterator == multiRenderTarget.end())
 		return E_FAIL;

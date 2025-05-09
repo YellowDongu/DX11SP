@@ -13,12 +13,12 @@ private:
 public:
 	static IdentificationFriendorFoeHeadUpDisplay* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, Engine::Scene* scene, Engine::GameObject* player, Engine::GameObject* camera);
 
-	HRESULT Start(void) override;
-	HRESULT Awake(void) override;
-	void FixedUpdate(void) override;
-	void Update(void) override;
-	void LateUpdate(void) override;
-	void Render(void) override;
+	virtual HRESULT Start(void) override;
+	virtual HRESULT Awake(void) override;
+	virtual void FixedUpdate(void) override;
+	virtual void Update(void) override;
+	virtual void LateUpdate(void) override;
+	virtual void Render(void) override;
 
 	void RenderUI(Engine::Layer* layer, UIParts& parts);
 	void RenderHUD(Engine::GameObject* gameObject, UIParts& parts, Vector2 markerScale, Vector2 scale, bool mainTarget = false);

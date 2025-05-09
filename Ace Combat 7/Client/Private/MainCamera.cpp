@@ -19,9 +19,7 @@ HRESULT MainCamera::Start(void)
 	if (FAILED(CreateTransform()))
 		return E_FAIL;
 
-	transformComponent->Position() = Vector3{ 50.0f, 50.0f, 0.0f };
-
-	camera = Engine::Camera::Create(dxDevice, dxDeviceContext, 45.0f, static_cast<FLOAT>(windowSizeX) / static_cast<FLOAT>(windowSizeY), 0.1f, 2500.0f);
+	camera = Engine::Camera::Create(dxDevice, dxDeviceContext, 45.0f, static_cast<FLOAT>(windowSizeX) / static_cast<FLOAT>(windowSizeY), 0.1f, 750.0f);
 	if (!camera)
 		return E_FAIL;
 	AddComponent(camera, L"Camera");

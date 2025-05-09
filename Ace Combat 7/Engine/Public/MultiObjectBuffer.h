@@ -35,6 +35,7 @@ namespace Engine
 		HRESULT CreateAdditionalVertexInfomationBuffer(ID3D11Device* dxDevice, ID3D11Buffer*& indexBuffer, UINT& vertexStride, UINT instanceNumber);
 		HRESULT CreateWorldBuffer(ID3D11Device* dxDevice, ID3D11Buffer*& worldBuffer, UINT instanceNumber, UINT& worldStride);
 
+		UINT InstanceNumber(void) { return instanceNumber; }
 	protected:
 		bool clone;
 		UINT instanceNumber{0};

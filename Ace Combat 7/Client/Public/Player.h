@@ -18,6 +18,7 @@ public:
 	static Player* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ObjectInfomation& metaData);
 	virtual GameObject* Clone(void);
 
+	HRESULT Start(ObjectInfomation& metaData);
 	HRESULT Start(void);
 	virtual HRESULT Awake(void) override;
 	virtual void Update(void) override;
@@ -32,18 +33,15 @@ public:
 private:
 	//std::wstring selectedModel;
 	ObjectInfomation objectInfomation;
-	Engine::Model* model;
-	Engine::Model* gearModel;
-	class AircraftBoneHandler* boneHandler;
-	class FlightMovement* flightModule;
-	class FireControlSystem* fcs;
-	class AutoPilot* autoPilot = nullptr;
-	Engine::Collider* collider;
-	class PlayerPilot* playerPilot = nullptr;
+	Engine::Model* model{nullptr};
+	Engine::Model* gearModel{nullptr};
+	class AircraftBoneHandler* boneHandler{nullptr};
+	class FlightMovement* flightModule{nullptr};
+	class FireControlSystem* fcs{nullptr};
+	class AutoPilot* autoPilot{nullptr};
+	Engine::Collider* collider{nullptr};
+	class PlayerPilot* playerPilot{nullptr};
 
-	Vector3 cameraTrdViewOffset;
-	Vector3 cameraFstViewOffset;
-
-	MainCamera* camera;
+	MainCamera* camera{ nullptr };
 	int cameraState = -1;
 };

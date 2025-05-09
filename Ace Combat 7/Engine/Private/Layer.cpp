@@ -6,9 +6,18 @@ using namespace Engine;
 
 void Layer::Update(void)
 {
-	for (auto& gameObject : gameObjects)
+	for (auto iterator = gameObjects.begin(); iterator != gameObjects.end(); )
 	{
-		gameObject.second->Update();
+		if (iterator->second->Destroy())
+		{
+			Base::DestroyInstance(iterator->second);
+			iterator = gameObjects.erase(iterator);
+		}
+		else
+		{
+			iterator->second->Update();
+			iterator++;
+		}
 	}
 }
 

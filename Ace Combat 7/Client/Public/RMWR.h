@@ -19,9 +19,12 @@ public:
 	virtual void LateUpdate(void);
 	virtual void FixedUpdate(void);
 
+	void Death(void);
+
 	void LockedMe(FireControlSystem* hunter) { hunters.push_back(hunter); }
 	void FiredToMe(class Missile* missile) { chasedMissile.push_back(missile); }
 	void HitMe(FLOAT damageValue) { currentHealth -= damageValue; }
+	void SetInvincibility(bool value) { nonDeath = value; }
 
 	bool Warning(void) { return warning; }
 	bool MissileWarning(void) { return missileWarning; }
@@ -30,14 +33,13 @@ public:
 	FLOAT MAXHealth(void) { return maxHealth; }
 
 private:
-	bool warning = false;
-	bool missileWarning = false;
-	bool closedWarning = false;
+	bool warning = false, missileWarning = false, closedWarning = false;
 
 	std::list<FireControlSystem*> hunters;
 	std::list<class Missile*> chasedMissile;
 
 	float maxHealth = 100.0f;
 	float currentHealth = 50.0f;
+	bool nonDeath = false;
 
 } typedef RMWR;

@@ -14,6 +14,12 @@ FireControlSystem::FireControlSystem(const FireControlSystem& other) : Engine::C
 	if(other.standardMissile != nullptr)
 		standardMissile = static_cast<StandardMissile*>(other.standardMissile->Clone());
 
+	if (other.uniqueMissile != nullptr)
+		uniqueMissile = static_cast<Missile*>(other.uniqueMissile->Clone());
+
+	if (other.bullet != nullptr)
+		bullet = static_cast<SimpleBullet*>(other.bullet->Clone());
+
 }
 
 void FireControlSystem::Free(void)
@@ -55,13 +61,15 @@ Engine::Component* FireControlSystem::Clone(void)
 HRESULT FireControlSystem::Start(void)
 {
 	bullet = SimpleBullet::Create(dxDevice, dxDeviceContext);
+	if (bullet == nullptr)
+		return E_FAIL;
 
 	return S_OK;
 }
 
 HRESULT FireControlSystem::Awake(void)
 {
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 void FireControlSystem::Update(void)
@@ -69,10 +77,6 @@ void FireControlSystem::Update(void)
 	standardMissileFired = false;
 	uniqueMissileFired = false;
 
-	if (layers.empty())
-		AddTargetLayer(EngineInstance()->SceneManager()->CurrentScene());
-
-	SortObjects();
 	Lock();
 
 	for (auto iterator = activeMissile.begin(); iterator != activeMissile.end(); )
@@ -105,6 +109,9 @@ void FireControlSystem::Update(void)
 	}
 
 	WeaponControl();
+
+	if (targeted != nullptr && targeted->Destroy())
+		targeted = nullptr;
 }
 
 void FireControlSystem::LateUpdate(void)
@@ -120,7 +127,8 @@ void FireControlSystem::LateUpdate(void)
 			bullet->LateUpdate();
 	}
 
-
+	if (targeted != nullptr && targeted->Destroy())
+		targeted = nullptr;
 
 }
 
@@ -220,163 +228,6 @@ void FireControlSystem::WeaponControl(void)
 	{
 		coolTime.first -= DeltaTime() * coolTime.second;
 	}
-}
-
-
-
-void FireControlSystem::AddTargetLayer(Engine::Scene* scene)
-{
-	Engine::Layer* layer;
-	layer = scene->FindLayer(mainTargetEnemy);
-	if (layer != nullptr)
-		searchLayer.push_back(layer); layers[mainTargetEnemy] = layer;
-
-	layer = scene->FindLayer(mainTargetEnemyGround);
-	if (layer != nullptr)
-		searchLayer.push_back(layer); layers[mainTargetEnemyGround] = layer;
-
-	layer = scene->FindLayer(enemy);
-	if (layer != nullptr)
-		searchLayer.push_back(layer); layers[enemy] = layer;
-
-	layer = scene->FindLayer(groundEnemy);
-	if (layer != nullptr)
-		searchLayer.push_back(layer); layers[groundEnemy] = layer;
-
-	layer = scene->FindLayer(unKnown);
-	if (layer != nullptr)
-		searchLayer.push_back(layer); layers[unKnown] = layer;
-
-	layer = scene->FindLayer(groundUnKnown);
-	if (layer != nullptr)
-		searchLayer.push_back(layer); layers[groundUnKnown] = layer;
-}
-
-void FireControlSystem::SortObjects(void)
-{
-	bool targetFind = false;
-	std::map<std::wstring, Engine::Layer*>::iterator layerIterator;
-	std::list<std::pair<FLOAT, Engine::GameObject*>> preSortedPriority;
-	std::list<std::pair<FLOAT, Engine::GameObject*>> preSorted;
-	Vector3 direction = Vector3::zero();
-	float directionAmount = 0.0f;
-
-	layerIterator = layers.find(mainTargetEnemy);
-	if (layerIterator != layers.end())
-	{
-		for (auto& object : layerIterator->second->GameObjectList())
-		{
-			if (targeted == object.second)
-				targetFind = true;
-
-			direction = (object.second->transform()->Position() - gameObject->transform()->Position()).normalize();
-			directionAmount = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMLoadFloat3(&gameObject->transform()->Forward()), DirectX::XMLoadFloat3(&direction)));
-			preSortedPriority.push_back({ directionAmount,object.second });
-		}
-	}
-	//layerIterator = layers.find(mainTargetEnemyGround);
-	//if (layerIterator != layers.end())
-	//{
-	//	for (auto& object : layerIterator->second->GameObjectList())
-	//	{
-	//		if (targeted == object.second)
-	//			targetNotFind = true;
-	// 
-	//		direction = (object.second->transform()->Position() - gameObject->transform()->Position()).normalize();
-	//		directionAmount = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMLoadFloat3(&gameObject->transform()->Forward()), DirectX::XMLoadFloat3(&direction)));
-	//		preSortedPriority.push_back({ directionAmount,object.second });
-	//	}
-	//}
-	layerIterator = layers.find(enemy);
-	if (layerIterator != layers.end())
-	{
-		for (auto& object : layerIterator->second->GameObjectList())
-		{
-			if (targeted == object.second)
-				targetFind = true;
-
-			direction = (object.second->transform()->Position() - gameObject->transform()->Position()).normalize();
-			directionAmount = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMLoadFloat3(&gameObject->transform()->Forward()), DirectX::XMLoadFloat3(&direction)));
-			preSorted.push_back({ directionAmount,object.second });
-		} 
-	}
-	//layerIterator = layers.find(groundEnemy);
-	//if (layerIterator != layers.end())
-	//{
-	//	for (auto& object : layerIterator->second->GameObjectList())
-	//	{
-	//		if (targeted == object.second)
-	//			targetNotFind = true;
-	// 
-	//		direction = (object.second->transform()->Position() - gameObject->transform()->Position()).normalize();
-	//		directionAmount = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMLoadFloat3(&gameObject->transform()->Forward()), DirectX::XMLoadFloat3(&direction)));
-	//		preSorted.push_back({ directionAmount,object.second });
-	//	}
-	//}
-	//layerIterator = layers.find(unKnown);
-	//if (layerIterator != layers.end())
-	//{
-	//	for (auto& object : layerIterator->second->GameObjectList())
-	//	{
-	//		if (targeted == object.second)
-	//			targetNotFind = true;
-	// 
-	//		direction = (object.second->transform()->Position() - gameObject->transform()->Position()).normalize();
-	//		directionAmount = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMLoadFloat3(&gameObject->transform()->Forward()), DirectX::XMLoadFloat3(&direction)));
-	//		preSorted.push_back({ directionAmount,object.second });
-	//	}
-	//}
-	//layerIterator = layers.find(groundUnKnown);
-	//if (layerIterator != layers.end())
-	//{
-	//	for (auto& object : layerIterator->second->GameObjectList())
-	//	{
-	//		if (targeted == object.second)
-	//			targetNotFind = true;
-	// 
-	//		direction = (object.second->transform()->Position() - gameObject->transform()->Position()).normalize();
-	//		directionAmount = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMLoadFloat3(&gameObject->transform()->Forward()), DirectX::XMLoadFloat3(&direction)));
-	//		preSorted.push_back({ directionAmount,object.second });
-	//	}
-	//}
-
-	//if (!targetFind)
-	//	targeted = nullptr;
-	//preSortedPriority.sort([](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
-	//preSorted.sort([](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
-	sorted.clear();
-	sorted.reserve(preSortedPriority.size() + preSorted.size());
-
-	for (auto& object : preSortedPriority)
-	{
-		sorted.push_back(object.second);
-	}
-	for (auto& object : preSorted)
-	{
-		sorted.push_back(object.second);
-	}
-
-}
-
-void FireControlSystem::ChangeTarget(void)
-{
-	if (index >= sorted.size())
-		index = 0;
-
-	if (Input()->getButtonDown(KeyType::T))
-	{
-		index++;
-		if (index >= sorted.size())
-			index = 0;
-
-		if (!sorted.empty())
-		{
-			SetSingleTarget(sorted[index]);
-			lock = 1.0f;
-		}
-	}
-
-	
 }
 
 void FireControlSystem::ChangeWeapon(void)

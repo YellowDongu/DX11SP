@@ -37,6 +37,7 @@ public:
 	void ChaseEnemy(void);
 
 	const ObjectInfomation& LinkObjectInfomation(void) const { return objectInfomation; }
+	void setDestination(Vector3 position);
 protected:
 	ObjectInfomation objectInfomation;
 	bool defend = false;

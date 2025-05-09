@@ -46,8 +46,8 @@ HRESULT PlayerPilot::Awake(void)
     rmwr = static_cast<RMWR*>(gameObject->GetComponent(L"RMWR"));
     //cameraTrdViewOffset = metaData->cameraTrdViewOffset * 50.0f;
     //cameraFstViewOffset = metaData->cameraFstViewOffset * 50.0f;
-    cameraTrdViewOffset = objectInfomation.aircraftInfomation.cameraTrdViewOffset;
-    cameraFstViewOffset = objectInfomation.aircraftInfomation.cameraFstViewOffset;
+    cameraTrdViewOffset = objectInfomation.aircraftInfomation.cameraTrdViewOffset * 0.5f;
+    cameraFstViewOffset = objectInfomation.aircraftInfomation.cameraFstViewOffset * 0.5f;
 
     cameraState = 0;
 
@@ -71,7 +71,6 @@ void PlayerPilot::Update(void)
 
 
     fcs->Update();
-    fcs->ChangeTarget();
 
     switch (cameraState)
     {
@@ -210,8 +209,32 @@ void PlayerPilot::Update(void)
 	// get input
 }
 
+float roundByFloatPrecision(float value, int steps)
+{
+    float unit = FLT_EPSILON * steps;
+    return std::round(value / unit) * unit;
+}
+
 void PlayerPilot::LateUpdate(void)
 {
+    if (flightModule->throttle > flightModule->IdleThrottle())
+        accelValue += DeltaTime() * 0.1f;
+    else if(flightModule->throttle < flightModule->IdleThrottle())
+        accelValue -= DeltaTime() * 0.1f;
+    else
+    {
+        if (accelValue > 0.61f)
+            accelValue -= DeltaTime() * 0.1f;
+        else if (accelValue < 0.59f)
+            accelValue += DeltaTime() * 0.1f;
+        else
+            accelValue = 0.6f;
+    }
+    accelValue = clamp(accelValue, 0.5f, 1.0f);
+
+    cameraTrdViewOffset = objectInfomation.aircraftInfomation.cameraTrdViewOffset * (0.5f + (accelValue - 0.5f) * 0.5f);
+    cameraFstViewOffset = objectInfomation.aircraftInfomation.cameraFstViewOffset * (0.5f + (accelValue - 0.5f) * 0.5f);
+
     switch (cameraState)
     {
     case -1:

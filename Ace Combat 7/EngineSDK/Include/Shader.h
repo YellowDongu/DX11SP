@@ -32,6 +32,8 @@ namespace Engine
 		HRESULT SetConstantBuffer(const std::string& variableName, ID3D11Buffer* buffer);
 		HRESULT LoadShader(ID3D11Device*& device, const std::wstring& fileName, D3D11_INPUT_ELEMENT_DESC** elements, UINT elementsSize, ID3DX11Effect*& effect, UINT& passNumber, std::vector<ID3D11InputLayout*>& inputLayouts);
 		ID3D11Buffer* ConstantBuffer(std::wstring bufferName);
+		HRESULT BindConstantBuffer(ID3D11Buffer* buffer, char* bufferName);
+		HRESULT BindConstantBuffer(ID3D11Buffer* buffer, const std::string& bufferName);
 		HRESULT ConstantBuffer(std::wstring bufferName, ID3D11Buffer* buffer);
 		virtual void SetNamePreset(void);
 

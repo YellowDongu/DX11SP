@@ -6,26 +6,23 @@ class Missile;
 class RadarMissileWarningReceiver;
 class FireControlSystem : public Engine::Component
 {
-private:
+protected:
 	FireControlSystem(void) = delete;
 	FireControlSystem(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext);
 	FireControlSystem(const FireControlSystem& other);
 	virtual ~FireControlSystem(void) = default;
-	virtual void Free(void);
+	virtual void Free(void) override;
 public:
-	static FireControlSystem* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, struct AircraftMetaData& metaData);
-	Component* Clone(void) override;
+	static FireControlSystem* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, AircraftMetaData& metaData);
+	Engine::Component* Clone(void) override;
 
 	HRESULT Start(void);
-	HRESULT Awake(void);
+	virtual HRESULT Awake(void) override;
 	virtual void Update(void) override;
 	virtual void LateUpdate(void) override;
 	virtual void FixedUpdate(void) override;
 
 	void WeaponControl(void);
-	void AddTargetLayer(Engine::Scene* scene);
-	void SortObjects(void);
-	void ChangeTarget(void);
 	void ChangeWeapon(void);
 	void Lock(void);
 
@@ -57,7 +54,7 @@ public:
 	// interface
 	bool weaponRelease = false;
 	bool gunFire = false;
-private:
+protected:
 	bool standardMissileFired, uniqueMissileFired, gunFired;
 
 	struct AircraftMetaData* metaData;

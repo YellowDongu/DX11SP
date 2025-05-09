@@ -8,6 +8,7 @@ F15EMetaData::F15EMetaData()
     modelFilePathA = "../Bin/Resources/Vehicles/Aircrafts/f15e/f15e.fbx";
     gearModelfilePathA = "../Bin/Resources/Vehicles/Aircrafts/f15e/f15eGear.fbx";
     gearModelfilePath = L"../Bin/Resources/Vehicles/Aircrafts/f15e/f15eGear.model";
+    BoneHandlerName = L"F15EHandler";
     flightSpec.airbreakPower = 500.0f;
     flightSpec.dragCoefficient = 0.05f;
     flightSpec.liftCoefficient = 0.05f;
@@ -27,8 +28,8 @@ F15EMetaData::F15EMetaData()
     colliderExtent = Vector3{ 0.25f, 0.15f, 1.0f };
 
 
-    WingTrailRightOffset = Vector3{1.0f, 0.0f, 0.0f};
-    WingTrailLeftOffset = Vector3{-1.0f, 0.0f, 0.0f};
+    WingTrailRightOffset = Vector3{ 0.5f, 0.0f, 0.0f };
+    WingTrailLeftOffset = Vector3{ -0.5f, 0.0f, 0.0f };
     WingTrailWidthOffset = 1.0f;
 }
 
@@ -39,6 +40,7 @@ F16CMetaData::F16CMetaData()
     modelFilePathA = "../Bin/Resources/Vehicles/Aircrafts/f16c/f16c.fbx";
     gearModelfilePathA = "../Bin/Resources/Vehicles/Aircrafts/f16c/f16cGear.fbx";
     gearModelfilePath = L"../Bin/Resources/Vehicles/Aircrafts/f16c/f16cGear.model";
+    BoneHandlerName = L"F16CHandler";
     flightSpec.airbreakPower = 500.0f;
     flightSpec.dragCoefficient = 0.05f;
     flightSpec.liftCoefficient = 0.05f;
@@ -58,9 +60,9 @@ F16CMetaData::F16CMetaData()
     colliderExtent = Vector3{ 0.25f, 0.15f, 1.0f };
 
 
-    WingTrailRightOffset = Vector3{ 1.0f, 0.0f, 0.0f };
-    WingTrailLeftOffset = Vector3{ -1.0f, 0.0f, 0.0f };
-    WingTrailWidthOffset = 1.0f;
+    WingTrailRightOffset = Vector3{ 0.5f, 0.0f, 0.0f };
+    WingTrailLeftOffset = Vector3{ -0.5f, 0.0f, 0.0f };
+    WingTrailWidthOffset = 0.0f;
 }
 
 F14DMetaData::F14DMetaData()
@@ -70,6 +72,7 @@ F14DMetaData::F14DMetaData()
     modelFilePathA = "../Bin/Resources/Vehicles/Aircrafts/f14d/f14d.fbx";
     gearModelfilePathA = "../Bin/Resources/Vehicles/Aircrafts/f14d/f14dGear.fbx";
     gearModelfilePath = L"../Bin/Resources/Vehicles/Aircrafts/f14d/f14dGear.model";
+    BoneHandlerName = L"F14DHandler";
     flightSpec.airbreakPower = 500.0f;
     flightSpec.dragCoefficient = 0.05f;
     flightSpec.liftCoefficient = 0.05f;
@@ -89,8 +92,8 @@ F14DMetaData::F14DMetaData()
     colliderExtent = Vector3{ 0.25f, 0.15f, 1.0f };
 
 
-    WingTrailRightOffset = Vector3{ 1.0f, 0.0f, 0.0f };
-    WingTrailLeftOffset = Vector3{ -1.0f, 0.0f, 0.0f };
+    WingTrailRightOffset = Vector3{ 0.5f, 0.0f, 0.0f };
+    WingTrailLeftOffset = Vector3{ -0.5f, 0.0f, 0.0f };
     WingTrailWidthOffset = 1.0f;
 }
 
@@ -101,6 +104,7 @@ SU33MetaData::SU33MetaData()
     modelFilePathA = "../Bin/Resources/Vehicles/Aircrafts/su33/su33.fbx";
     gearModelfilePathA = "../Bin/Resources/Vehicles/Aircrafts/su33/su33Gear.fbx";
     gearModelfilePath = L"../Bin/Resources/Vehicles/Aircrafts/su33/su33Gear.model";
+    BoneHandlerName = L"SU33Handler";
     flightSpec.airbreakPower = 500.0f;
     flightSpec.dragCoefficient = 0.05f;
     flightSpec.liftCoefficient = 0.05f;
@@ -120,8 +124,8 @@ SU33MetaData::SU33MetaData()
     colliderExtent = Vector3{ 0.25f, 0.15f, 1.0f };
 
 
-    WingTrailRightOffset = Vector3{ 1.0f, 0.0f, 0.0f };
-    WingTrailLeftOffset = Vector3{ -1.0f, 0.0f, 0.0f };
+    WingTrailRightOffset = Vector3{ 0.5f, 0.0f, 0.0f };
+    WingTrailLeftOffset = Vector3{ -0.5f, 0.0f, 0.0f };
     WingTrailWidthOffset = 1.0f;
 }
 
@@ -150,8 +154,8 @@ TU160MetaData::TU160MetaData()
     colliderExtent = Vector3{ 0.25f, 0.15f, 1.0f };
 
 
-    WingTrailRightOffset = Vector3{ 1.0f, 0.0f, 0.0f };
-    WingTrailLeftOffset = Vector3{ -1.0f, 0.0f, 0.0f };
+    WingTrailRightOffset = Vector3{ 0.5f, 0.0f, 0.0f };
+    WingTrailLeftOffset = Vector3{ -0.5f, 0.0f, 0.0f };
     WingTrailWidthOffset = 1.0f;
 }
 
@@ -180,7 +184,67 @@ TU95MetaData::TU95MetaData()
     colliderExtent = Vector3{ 0.25f, 0.15f, 1.0f };
 
 
-    WingTrailRightOffset = Vector3{ 1.0f, 0.0f, 0.0f };
-    WingTrailLeftOffset = Vector3{ -1.0f, 0.0f, 0.0f };
+    WingTrailRightOffset = Vector3{ 0.5f, 0.0f, 0.0f };
+    WingTrailLeftOffset = Vector3{ -0.5f, 0.0f, 0.0f };
     WingTrailWidthOffset = 1.0f;
+}
+
+SAMMetaData::SAMMetaData()
+{
+    AircraftModelName = L"SAM";
+    modelFilePath = L"../Bin/Resources/Vehicles/Ground/geck/geck.model";
+    modelFilePathA = "../Bin/Resources/Vehicles/Ground/geck/geck.FBX";
+    gearModelfilePathA = "";
+    gearModelfilePath = L"";
+    flightSpec.airbreakPower = 0.0f;
+    flightSpec.dragCoefficient = 0.0f;
+    flightSpec.liftCoefficient = 0.0f;
+    flightSpec.landingDragCoefficient = 0.0f;
+    flightSpec.landingLiftCoefficient = 0.0f;
+    flightSpec.maneuverSpeed = Vector3::zero();
+    flightSpec.mass = 0.0f;
+    flightSpec.EnginePower = 0.0f;
+    flightSpec.stallSpeed = 0.0f;
+    flightSpec.criticalSpeed = 0.0f;
+    cameraTrdViewOffset = Vector3::zero();
+    cameraFstViewOffset = Vector3::zero();
+
+    // notYet
+    colliderCenter = Vector3::zero();
+    colliderExtent = Vector3::zero();
+
+
+    WingTrailRightOffset = Vector3::zero();
+    WingTrailLeftOffset = Vector3::zero();
+    WingTrailWidthOffset = 0.0f;
+}
+
+AAMetaData::AAMetaData()
+{
+    AircraftModelName = L"AAGUN";
+    modelFilePath = L"../Bin/Resources/Vehicles/Ground/gepa/gepa.model";
+    modelFilePathA = "../Bin/Resources/Vehicles/Ground/gepa/gepa.FBX";
+    gearModelfilePathA = "";
+    gearModelfilePath = L"";
+    flightSpec.airbreakPower = 0.0f;
+    flightSpec.dragCoefficient = 0.0f;
+    flightSpec.liftCoefficient = 0.0f;
+    flightSpec.landingDragCoefficient = 0.0f;
+    flightSpec.landingLiftCoefficient = 0.0f;
+    flightSpec.maneuverSpeed = Vector3::zero();
+    flightSpec.mass = 0.0f;
+    flightSpec.EnginePower = 0.0f;
+    flightSpec.stallSpeed = 0.0f;
+    flightSpec.criticalSpeed = 0.0f;
+    cameraTrdViewOffset = Vector3::zero();
+    cameraFstViewOffset = Vector3::zero();
+
+    // notYet
+    colliderCenter = Vector3::zero();
+    colliderExtent = Vector3::zero();
+
+
+    WingTrailRightOffset = Vector3::zero();
+    WingTrailLeftOffset = Vector3::zero();
+    WingTrailWidthOffset = 0.0f;
 }

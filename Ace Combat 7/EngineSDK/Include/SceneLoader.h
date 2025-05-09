@@ -9,14 +9,16 @@ namespace Engine
 	{
 	public:
 		SceneLoader(void) = default;
-		~SceneLoader(void) = default;
-
+		virtual ~SceneLoader(void) = default;
+		virtual void Free(void) override;
+		static SceneLoader* Create(void);
 		void Update(void);
 		void BeginLoading(Scene* scene);
 
 		void LoadScene(Scene* scene);
 
 		bool EndLoading(void) { return threadDone; }
+		void ResetStatus(void) { threadDone = false; }
 
 	private:
 		std::atomic<bool> threadDone = false;

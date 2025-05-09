@@ -25,6 +25,8 @@ protected:
 		std::wstring triggerName;
 		TriggerType triggerType;
 		bool standByStatus = false;
+		UINT sceneNumber;
+		std::vector<Trigger*> linkedTrigger;
 
 		TriggerDescription() : triggerType(TriggerType::End) {}
 	};
@@ -51,6 +53,7 @@ public:
 protected:
 	bool standby{ false }, deleteThis{false};
 	std::wstring name;
+	UINT sceneNumber;
 	std::vector<Trigger*> linkedTrigger;
 };
 
@@ -88,6 +91,7 @@ class KillSpawnTrigger : public Trigger
 {
 	KillSpawnTrigger(void) = default;
 	virtual ~KillSpawnTrigger(void) = default;
+	virtual void Free(void) override;
 public:
 	struct TriggerDescription : public Trigger::TriggerDescription
 	{
@@ -98,6 +102,7 @@ public:
 	};
 	static KillSpawnTrigger* Create(KillSpawnTrigger::TriggerDescription& triggerDescription);
 
+	HRESULT Start(KillSpawnTrigger::TriggerDescription& description);
 	virtual HRESULT Awake(void) override;
 	virtual void Update(void) override;
 	virtual void LateUpdate(void) override;
@@ -107,6 +112,7 @@ public:
 
 protected:
 	Engine::Layer* targetLayer{nullptr};
+	std::wstring targetLayerName;
 	std::vector<GameObjectSpawnInfomation> spawnTargets;
 };
 

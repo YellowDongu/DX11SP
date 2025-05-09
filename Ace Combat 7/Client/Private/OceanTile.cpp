@@ -5,7 +5,7 @@ OceanTile::OceanTile(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContex
 {
 }
 
-OceanTile::OceanTile(const OceanTile& other) : Engine::GameObject(other)
+OceanTile::OceanTile(const OceanTile& other) : Engine::GameObject(other), waveNormalTexture(other.waveNormalTexture)
 {
 	model = static_cast<Engine::StaticModel*>(GetComponent(L"StaticModel"));
 }
@@ -33,16 +33,18 @@ Engine::GameObject* OceanTile::Clone(void)
 
 HRESULT OceanTile::Start(void)
 {
-	Matrix matrix;
-	DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 0.0f), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(0.0f), DirectX::XMConvertToRadians(0.0f)), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)));
+	//Matrix matrix;
+	//DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 0.0f), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(0.0f), DirectX::XMConvertToRadians(0.0f)), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)));
 
 	//ConvertModel("../Bin/Resources/Environment/Common/Sea/COM_Sea_100km.FBX", L"../Bin/Resources/Environment/Common/Sea/COM_Sea_100km.model", matrix);
-	ConvertModel("../Bin/Resources/Environment/SouthernIsland/Terrain/SOU_OCEAN.FBX", L"../Bin/Resources/Environment/SouthernIsland/Terrain/SOU_OCEAN.model", matrix);
+	//ConvertModel("../Bin/Resources/Environment/SouthernIsland/Terrain/SOU_OCEAN.FBX", L"../Bin/Resources/Environment/SouthernIsland/Terrain/SOU_OCEAN.model", matrix);
 	if (FAILED(CreateTransform()))
 		return E_FAIL;
+
 	//if (FAILED(::LoadStaticModel(L"../Bin/Resources/Environment/Common/Sea/COM_Sea_100km.model", model)))
 	if (FAILED(::LoadStaticModel(L"../Bin/Resources/Environment/SouthernIsland/Terrain/SOU_OCEAN.model", model)))
 		return E_FAIL;
+
 	AddComponent(model, L"StaticModel");
 	if (FAILED(::LoadTexture(L"../Bin/Resources/Environment/Common/Sea/Textures/Sea_SeaWaves_N.dds", L"../Bin/Resources/Environment/Common/Sea/Textures/Sea_SeaWaves_N.dds", waveNormalTexture)))
 		return E_FAIL;
@@ -66,6 +68,9 @@ void OceanTile::FixedUpdate(void)
 
 void OceanTile::Render(void)
 {
+	GetCurrentShader()->PassNumber(2);
+	GetCurrentShader()->BindTexture("globalNormalTexture", waveNormalTexture);
 	transformComponent->Render();
 	model->Render();
+	GetCurrentShader()->PassNumber(0);
 }

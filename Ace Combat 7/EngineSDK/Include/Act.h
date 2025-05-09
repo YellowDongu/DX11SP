@@ -1,7 +1,7 @@
 #pragma once
 #include "Base.h"
 #include "Scene.h"
-
+#include "SceneLoader.h"
 
 namespace Engine
 {
@@ -29,12 +29,14 @@ namespace Engine
 		void ForceSetCurrentScene(UINT sceneNumber) { currentScene = scenes[sceneNumber]; }
 		Scene* CurrentScene(void) { return currentScene; }
 		Scene* LoadingScene(void) { return loadingScene; }
+		bool loadComplete(void) { if (loadingScene == nullptr) return false; return loader->EndLoading(); }
 
 	private:
 		bool Loading = false, loadEnd = false;
 		std::vector<Scene*> scenes;
-		Scene* currentScene;
-		Scene* loadingScene;
+		Scene* currentScene{nullptr};
+		Scene* loadingScene{nullptr};
+		SceneLoader* loader{nullptr};
 	};
 
 }

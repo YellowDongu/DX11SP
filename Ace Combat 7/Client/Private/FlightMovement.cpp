@@ -7,7 +7,7 @@ FlightMovement::FlightMovement(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDe
 {}
 
 FlightMovement::FlightMovement(const FlightMovement& other) : Engine::Component(other), transform(nullptr), airbreakActive(false), yoke(Vector3::zero()), idleThrottle(other.idleThrottle), throttle(0.0f), force(Vector3::zero()), maneuverSpeed(other.maneuverSpeed), EnginePower(other.EnginePower), airbreakPower(other.airbreakPower), mass(other.mass), liftCoefficient(other.liftCoefficient), dragCoefficient(other.dragCoefficient), landingLiftCoefficient(other.landingLiftCoefficient), landingDragCoefficient(other.landingDragCoefficient)
-, stallSpeed(other.stallSpeed), criticalSpeed(other.criticalSpeed), manuverForce(Vector3::zero())
+, stallSpeed(other.stallSpeed), criticalSpeed(other.criticalSpeed), manuverForce(Vector3::zero()), isSuper(other.isSuper)
 {}
 
 void FlightMovement::Free(void)
@@ -193,7 +193,7 @@ void FlightMovement::Update(void)
 		force = force.normalize() * (criticalSpeed * 1.5f);
 
 	//transform->Translate(force * 0.0005f/*deltatime*/ * 50.0f);
-	transform->Translate(force * 0.0005f/*deltatime*/);
+	transform->Translate(force * 0.00025f/*deltatime*/);
 	//transform->Translate(force * 0.0125f/*deltatime*/);
 	//transform->Translate(force * DeltaTime() * 100.0f);
 	//transform->Translate(force * DeltaTime() * 2.0f);

@@ -12,6 +12,7 @@ TitleBackground::TitleBackground(const TitleBackground& other) : Engine::UIObjec
 void TitleBackground::Free(void)
 {
 	Engine::GameObject::Free();
+	backGround.Free();
 }
 
 TitleBackground* TitleBackground::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext)
@@ -40,23 +41,23 @@ Engine::GameObject* TitleBackground::Clone(void)
 	return newInstance;
 }
 
+#define innerErrorCheck(result, errmsg)					   \
+if (FAILED(result))										   \
+{														   \
+	ErrMsg((std::wstring(L"TitleBackground::Failed : ") + errmsg).c_str()); \
+	return E_FAIL;										   \
+}									
 HRESULT TitleBackground::Start(void)
 {
 	HRESULT result = CreateTransform();
 	if (FAILED(result))
 		return result;
 
+	innerErrorCheck(backGround.LoadUITexture(L"../Bin/UI/Menu/Boot/Assets/Title_bg.png"), L"Load texture - Title_bg.png");
+	CreateScale(backGround.texture, backGround.scale);
+	innerErrorCheck(CreateVertex(backGround.vertexBuffer, backGround.indexBuffer, backGround.indexCount,Vector2::one()), L"Vertex/Index Create");
 
-	std::wstring path = L"../Bin/UI/Menu/Boot/Assets/Title_bg.png";
-	result = LoadTexture(path, path, backGroundTexture);
-	if (FAILED(result))
-		return result;
 
-	rectangle = Engine::RectanglePolygon::Create(dxDevice, dxDeviceContext);
-	if (rectangle == nullptr)
-		return E_FAIL;
-
-	AddComponent(rectangle, L"RectanglePolygon");
 
 	return S_OK;
 }
@@ -72,9 +73,6 @@ void TitleBackground::FixedUpdate(void)
 
 void TitleBackground::Update(void)
 {
-	const D3D11_VIEWPORT& viewPortSetting = Device()->ViewPortInfomation();
-	transformComponent->Scale() = Vector3{ viewPortSetting.Width, viewPortSetting.Height, 1.0f };
-
 }
 
 void TitleBackground::LateUpdate(void)
@@ -84,6 +82,16 @@ void TitleBackground::LateUpdate(void)
 
 void TitleBackground::Render(void)
 {
-	transformComponent->Render();
-	rectangle->Render();
+	GetCurrentShader()->PassNumber(2);
+	const D3D11_VIEWPORT& viewPortSetting = Device()->ViewPortInfomation();
+	Vector2 scale = Vector2{ viewPortSetting.Width, viewPortSetting.Height };
+	Matrix worldMatrix;
+
+	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(Vector2::zero(), scale, 180.0f));
+	SetMatrix(world, worldMatrix);
+
+	SetTexture(diffuseTexture, backGround.texture);
+	GetCurrentShader()->Render(backGround.indexBuffer, backGround.vertexBuffer, stride);
+	dxDeviceContext->DrawIndexed(backGround.indexCount, 0, 0);
+	GetCurrentShader()->PassNumber(0);
 }

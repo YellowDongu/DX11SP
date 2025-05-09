@@ -54,3 +54,5 @@ struct F14DMetaData final : public AircraftMetaData { F14DMetaData(); };
 struct SU33MetaData final : public AircraftMetaData { SU33MetaData(); };
 struct TU160MetaData final : public AircraftMetaData { TU160MetaData(); };
 struct TU95MetaData final : public AircraftMetaData { TU95MetaData(); };
+struct SAMMetaData final : public AircraftMetaData { SAMMetaData(); };
+struct AAMetaData final : public AircraftMetaData { AAMetaData(); };

@@ -49,24 +49,26 @@ HRESULT Renderer::Start(void)
 	targetInfomation.pixelFormat = DXGI_FORMAT_R16G16B16A16_UNORM;
 	if (FAILED(Device()->AddRenderTargets(RenderTargetType::Normal, targetInfomation)))
 		return E_FAIL;
-	if (FAILED(Device()->AddRenderTargets(RenderTargetType::Shade, targetInfomation)))
-		return E_FAIL;
 
 	targetInfomation.clearColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	if (FAILED(Device()->AddRenderTargets(RenderTargetType::Depth, targetInfomation)))
+	if (FAILED(Device()->AddRenderTargets(RenderTargetType::Shade, targetInfomation)))
 		return E_FAIL;
 	if (FAILED(Device()->AddRenderTargets(RenderTargetType::Specular, targetInfomation)))
 		return E_FAIL;
+	if (FAILED(Device()->AddRenderTargets(RenderTargetType::MaterialSpecular, targetInfomation)))
+		return E_FAIL;
 
-
-
-
+	targetInfomation.pixelFormat = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	if (FAILED(Device()->AddRenderTargets(RenderTargetType::Depth, targetInfomation)))
+		return E_FAIL;
 
 	if (FAILED(Device()->BindMultiRenderTarget(DeferredRenderOrder::Object, RenderTargetType::Diffuse)))
 		return E_FAIL;
 	if (FAILED(Device()->BindMultiRenderTarget(DeferredRenderOrder::Object, RenderTargetType::Normal)))
 		return E_FAIL;
 	if (FAILED(Device()->BindMultiRenderTarget(DeferredRenderOrder::Object, RenderTargetType::Depth)))
+		return E_FAIL;
+	if (FAILED(Device()->BindMultiRenderTarget(DeferredRenderOrder::Object, RenderTargetType::MaterialSpecular)))
 		return E_FAIL;
 	if (FAILED(Device()->BindMultiRenderTarget(DeferredRenderOrder::Shade, RenderTargetType::Shade)))
 		return E_FAIL;
@@ -103,10 +105,15 @@ void Renderer::Render(void)
 	if (width != pipelineStatus.viewPortInfomation->Width || height != pipelineStatus.viewPortInfomation->Height)
 	{
 		DirectX::XMStoreFloat4x4(&worldMatrix, DirectX::XMMatrixScaling(pipelineStatus.viewPortInfomation->Width, pipelineStatus.viewPortInfomation->Height, 1.f) * DirectX::XMMatrixTranslation(0.0f, 0.0f, 1.0f));
-		DirectX::XMStoreFloat4x4(&viewMatrix, DirectX::XMMatrixIdentity());
 		DirectX::XMStoreFloat4x4(&pipelineStatus.orthoProjectionMatrix, DirectX::XMMatrixOrthographicLH(pipelineStatus.viewPortInfomation->Width, pipelineStatus.viewPortInfomation->Height, 0.1f, 1.0f));
 		width = pipelineStatus.viewPortInfomation->Width;
 		height = pipelineStatus.viewPortInfomation->Height;
+	}
+	if (skip)
+	{
+		skip = false;
+		ClearRenderList();
+		return;
 	}
 
 	BaseCameraSetting();
@@ -167,10 +174,17 @@ void Renderer::ShaderRender(void)
 
 	static std::string normalTextureName = "normalTexture";
 	static std::string depthTextureName = "depthTexture";
+	static std::string materialSpecularTextureName = "materialSpecularTexture";
+	static std::string cameraPosition = "cameraPosition";
+	static std::string viewProjectionMatrixInversed = "viewProjectionMatrixInversed";
 
 	Shader* appliedShader = pipelineStatus.currentShader;
 	pipelineStatus.currentShader = deferredShader;
-
+	DirectX::XMFLOAT3 position = static_cast<DirectX::XMFLOAT3>(pipelineStatus.currnetCamera->GetOwner()->transform()->Position());
+	Matrix inversedViewProjectionMatrix;
+	DirectX::XMStoreFloat4x4(&inversedViewProjectionMatrix, DirectX::XMMatrixInverse(nullptr, DirectX::XMLoadFloat4x4(&pipelineStatus.viewProjectionMatrix)));
+	deferredShader->BindVariable(cameraPosition,&position, sizeof(DirectX::XMFLOAT3));
+	deferredShader->BindMatrix(viewProjectionMatrixInversed, inversedViewProjectionMatrix);
 
 	deferredShader->BindMatrix(worldMatrixName, worldMatrix);
 	deferredShader->BindMatrix(viewProjectionMatrixName, pipelineStatus.orthoProjectionMatrix);
@@ -183,6 +197,11 @@ void Renderer::ShaderRender(void)
 	if (renderTarget == nullptr)
 		return;
 	deferredShader->BindTexture(depthTextureName, renderTarget->GetShaderResourceView());
+	renderTarget = Device()->GetRenderTarget(RenderTargetType::MaterialSpecular);
+	if (renderTarget == nullptr)
+		return;
+	deferredShader->BindTexture(materialSpecularTextureName, renderTarget->GetShaderResourceView());
+
 
 	if (FAILED(deferredShader->SetShader()))
 		return;
@@ -194,6 +213,7 @@ void Renderer::ShaderRender(void)
 
 	deferredShader->BindTexture(normalTextureName, nullptr);
 	deferredShader->BindTexture(depthTextureName, nullptr);
+	deferredShader->BindTexture(materialSpecularTextureName, nullptr);
 
 	pipelineStatus.currentShader = appliedShader;
 
@@ -215,11 +235,14 @@ void Renderer::DifferedRender(void)
 
 	static std::string diffuseTextureName = "diffuseTexture";
 	static std::string shadeTextureName = "shadeTexture";
+	static std::string specularTextureName = "specularTexture";
+	static std::string depthTextureName = "depthTexture";
 
 	Shader* appliedShader = pipelineStatus.currentShader;
 	pipelineStatus.currentShader = deferredShader;
 
-
+	FLOAT farZ = pipelineStatus.currnetCamera->FarZ();
+	deferredShader->BindVariable("farZ", &farZ, sizeof(FLOAT));
 	deferredShader->BindMatrix(worldMatrixName, worldMatrix);
 	deferredShader->BindMatrix(viewProjectionMatrixName, pipelineStatus.orthoProjectionMatrix);
 
@@ -233,6 +256,17 @@ void Renderer::DifferedRender(void)
 		return;
 	deferredShader->BindTexture(shadeTextureName, renderTarget->GetShaderResourceView());
 
+	renderTarget = Device()->GetRenderTarget(RenderTargetType::Specular);
+	if (renderTarget == nullptr)
+		return;
+	deferredShader->BindTexture(specularTextureName, renderTarget->GetShaderResourceView());
+
+	renderTarget = Device()->GetRenderTarget(RenderTargetType::Depth);
+	if (renderTarget == nullptr)
+		return;
+	deferredShader->BindTexture(depthTextureName, renderTarget->GetShaderResourceView());
+
+
 	if (FAILED(deferredShader->SetShader()))
 		return;
 	if (FAILED(deferredShader->ApplyShader()))
@@ -243,6 +277,8 @@ void Renderer::DifferedRender(void)
 
 	deferredShader->BindTexture(diffuseTextureName, nullptr);
 	deferredShader->BindTexture(shadeTextureName, nullptr);
+	deferredShader->BindTexture(specularTextureName, nullptr);
+	deferredShader->BindTexture(depthTextureName, nullptr);
 
 	pipelineStatus.currentShader = appliedShader;
 
@@ -341,24 +377,28 @@ HRESULT Renderer::BindCamera(Camera* camera)
 	return S_OK;
 }
 
-HRESULT Engine::Renderer::BindVariable(const std::string& variableName, void* variable, size_t variableSize)
+HRESULT Renderer::BindVariable(const std::string& variableName, void* variable, size_t variableSize)
 {
-	return E_NOTIMPL;
+	if (pipelineStatus.currentShader == nullptr)
+		return E_FAIL;
+	return pipelineStatus.currentShader->BindVariable(variableName, variable, variableSize);
 }
 
-HRESULT Engine::Renderer::BindVariable(char* variableName, void* variable, size_t variableSize)
+HRESULT Renderer::BindVariable(char* variableName, void* variable, size_t variableSize)
 {
-	return E_NOTIMPL;
+	if (pipelineStatus.currentShader == nullptr)
+		return E_FAIL;
+	return pipelineStatus.currentShader->BindVariable(variableName, variable, variableSize);
 }
 
-HRESULT Engine::Renderer::BindMatrix(const std::string& variableName, const Matrix& matrix)
+HRESULT Renderer::BindMatrix(const std::string& variableName, const Matrix& matrix)
 {
 	if (pipelineStatus.currentShader == nullptr)
 		return E_FAIL;
 	return pipelineStatus.currentShader->BindMatrix(variableName, matrix);
 }
 
-HRESULT Engine::Renderer::BindMatrix(char* variableName, const Matrix& matrix)
+HRESULT Renderer::BindMatrix(char* variableName, const Matrix& matrix)
 {
 	if (pipelineStatus.currentShader == nullptr)
 		return E_FAIL;
@@ -366,14 +406,14 @@ HRESULT Engine::Renderer::BindMatrix(char* variableName, const Matrix& matrix)
 }
 
 
-HRESULT Engine::Renderer::BindWorldMatrix(const Matrix& matrix)
+HRESULT Renderer::BindWorldMatrix(const Matrix& matrix)
 {
 	if (pipelineStatus.currentShader == nullptr)
 		return E_FAIL;
 	return E_NOTIMPL;
 }
 
-HRESULT Engine::Renderer::BindViewProjectionMatrix(const Matrix& viewMatrix, const Matrix& projectionMatrix)
+HRESULT Renderer::BindViewProjectionMatrix(const Matrix& viewMatrix, const Matrix& projectionMatrix)
 {
 	if (pipelineStatus.currentShader == nullptr)
 		return E_FAIL;

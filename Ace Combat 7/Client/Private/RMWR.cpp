@@ -2,7 +2,7 @@
 #include "RMWR.h"
 #include "FireControlSystem.h"
 #include "Missile.h"
-
+#include "Explosion.h"
 RadarMissileWarningReceiver::RadarMissileWarningReceiver(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::Component(dxDevice, dxDeviceContext)
 {
 }
@@ -44,7 +44,7 @@ void RadarMissileWarningReceiver::Update(void)
 		}
 	}
 
-
+	Death();
 }
 
 
@@ -75,4 +75,20 @@ void RadarMissileWarningReceiver::LateUpdate(void)
 
 void RadarMissileWarningReceiver::FixedUpdate(void)
 {
+}
+
+void RadarMissileWarningReceiver::Death(void)
+{
+	if (nonDeath || currentHealth > 0.0f)
+		return;
+
+	Engine::Layer* layer = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"ParticleLayer");
+	if (layer != nullptr)
+	{
+		Explosion* explosion = static_cast<Explosion*>(layer->GetGameObject(L"Explosion"));
+		explosion->AddExplosion(gameObject->transform()->Position(), Vector3{10.0f, 10.0f, 10.0f});
+	}
+
+	gameObject->SetDestroy(true);
+
 }

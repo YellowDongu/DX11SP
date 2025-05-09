@@ -21,11 +21,11 @@ public:
 
 	HRESULT Start(void);
 
-
-	virtual void Update(void);
-	virtual void LateUpdate(void);
-	virtual void FixedUpdate(void);
-	virtual void Render(void);
+	virtual HRESULT Awake(void) override;
+	virtual void Update(void) override;
+	virtual void LateUpdate(void) override;
+	virtual void FixedUpdate(void) override;
+	virtual void Render(void) override;
 
 private:
 	ObjectInfomation metaData;

@@ -36,5 +36,5 @@ private:
 	class MainCamera* camera;
 	int cameraState = -1;
 
-
+	float accelValue = 0.5f;
 };

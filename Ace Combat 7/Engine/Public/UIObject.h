@@ -7,6 +7,7 @@ struct ENGINEDLL UIParts
 	ID3D11Buffer* indexBuffer = nullptr;
 	ID3D11ShaderResourceView* texture = nullptr;
 	UINT indexCount = 0;
+	Vector2 scale;
 
 	HRESULT LoadUITexture(const std::wstring filePath);
 

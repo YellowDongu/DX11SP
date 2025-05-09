@@ -13,7 +13,7 @@
 
 #include "Collider.h"
 
-
+AIPilot* pilot = nullptr;
 F15E::F15E(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : GameObject(dxDevice, dxDeviceContext), model(nullptr), gearModel(nullptr), flightModule(nullptr), boneHandler(nullptr), fcs(nullptr), autoPilot(nullptr), collider(nullptr)
 {
 }
@@ -54,17 +54,18 @@ Engine::GameObject* F15E::Clone(void)
 
 HRESULT F15E::Start(void)
 {
-    AddCollider(collider);
-    CreateTransform();
+    if (FAILED(CreateTransform()))
+        return E_FAIL;
 
-    transformComponent->Position() = Vector3(2000.0f, ConvertFeetToWorld(3000.0f), 2000.0f) * 50.0f;
+    //transformComponent->Position() = Vector3(2000.0f, ConvertFeetToWorld(3000.0f), 2000.0f) * 50.0f;
     transformComponent->Position() = Vector3(2000.0f, ConvertFeetToWorld(3000.0f), 2000.0f);
-    transformComponent->Position().y /= 50.0f;
     transformComponent->SetAngle(Vector3(0.0f, 25.0f, 0.0f));
+    //transformComponent->Scale() = Vector3::one() * 50.0f;
+    //transformComponent->Scale() = Vector3::one();
 
+    metaData.allyInfo = false;
+    metaData.gameObejctName = L"Test";
     metaData.aircraftInfomation = F15EMetaData();
-    transformComponent->Scale() = Vector3::one() * 50.0f;
-    transformComponent->Scale() = Vector3::one();
     Matrix matrix;
     gearGlobalMatrix(matrix);
     ConvertModel(metaData.aircraftInfomation.gearModelfilePathA, metaData.aircraftInfomation.gearModelfilePath, matrix);
@@ -81,21 +82,17 @@ HRESULT F15E::Start(void)
 
     boneHandler = F15EHandler::Create(dxDevice, dxDeviceContext);
     AddComponent(boneHandler, L"AircraftBoneHandler");
-    boneHandler->Awake();
-
-    // model setting
 
     flightModule = FlightMovement::Create(dxDevice, dxDeviceContext, transformComponent, metaData.aircraftInfomation.flightSpec);
     if (flightModule == nullptr) return E_FAIL;
     AddComponent(flightModule, L"FlightMovement");
-    static_cast<AircraftBoneHandler*>(boneHandler)->LinkYoke(flightModule->yoke);
 
     fcs = FireControlSystem::Create(dxDevice, dxDeviceContext, metaData.aircraftInfomation);
     if (fcs == nullptr) return E_FAIL;
     fcs->SetStandardMissile(StandardMissile::Create(dxDevice, dxDeviceContext));
     fcs->SetUniqueMissile(nullptr);
     AddComponent(fcs, L"FCS");
-    autoPilot = AutoPilot::Create(dxDevice, dxDeviceContext, flightModule);
+    autoPilot = AutoPilot::Create(dxDevice, dxDeviceContext);
     if (autoPilot == nullptr) return E_FAIL;
     AddComponent(autoPilot, L"AutoPilot");
 
@@ -113,23 +110,35 @@ HRESULT F15E::Start(void)
     AddComponent(collider, L"Collider");
     AddComponent(RMWR::Create(dxDevice, dxDeviceContext), L"RMWR");
 
-    AIPilot* pilot = AIPilot::Create(dxDevice, dxDeviceContext, metaData);
+    pilot = AIPilot::Create(dxDevice, dxDeviceContext, metaData);
     AddComponent(pilot, L"AIPilot");
-    pilot->Awake();
 
 	return S_OK;
 }
 
+HRESULT F15E::Awake(void)
+{
+    static_cast<AircraftBoneHandler*>(boneHandler)->LinkYoke(flightModule->yoke);
+    if(FAILED(boneHandler->Awake()))
+        return E_FAIL;
+    if(FAILED(autoPilot->Awake()))
+        return E_FAIL;
+    if (FAILED(pilot->Awake()))
+        return E_FAIL;
+
+    return S_OK;
+}
+
 void F15E::Update(void)
 {
-    if (!active)
+    if (!active || destroy)
         return;
     Engine::GameObject::Update();
 }
 float delay = 0.0f;
 void F15E::LateUpdate(void)
 {
-    if (!active)
+    if (!active || destroy)
         return;
     Engine::GameObject::LateUpdate();
     AddRenderObject(RenderType::NonBlend, this);
@@ -137,15 +146,14 @@ void F15E::LateUpdate(void)
 
 void F15E::FixedUpdate(void)
 {
-    if (!active)
+    if (!active || destroy)
         return;
-    AddRenderObject(RenderType::NonBlend, this);
     Engine::GameObject::FixedUpdate();
 }
 
 void F15E::Render(void)
 {
-    if (!active)
+    if (!active || destroy)
         return;
     transformComponent->Render();
     model->Render();

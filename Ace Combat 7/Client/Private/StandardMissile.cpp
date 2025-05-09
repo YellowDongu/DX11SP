@@ -2,6 +2,7 @@
 #include "StandardMissile.h"
 #include "GameObject.h"
 #include "LineDrawer.h"
+#include "MissileTrail.h"
 
 StandardMissile::StandardMissile(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Missile(dxDevice, dxDeviceContext), baseRotation{}
 {
@@ -29,6 +30,7 @@ StandardMissile* StandardMissile::Create(ID3D11Device* dxDevice, ID3D11DeviceCon
 	return newInstance;
 }
 
+#define aircraftGlobalMatrix(matrix) DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 0.0f), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(0.0f)), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)))
 Engine::GameObject* StandardMissile::Clone(void)
 {
 	return new StandardMissile(*this);
@@ -41,8 +43,8 @@ HRESULT StandardMissile::Start(void)
 	
 	transformComponent->Scale() *= 50.0f;
 
-	//::LoadStaticModel(L"../Bin/Resources/Vehicles/Weapons/w_msl_a0/w_msl_a0.model", model);
-	model = Engine::StaticModel::Create(dxDevice, dxDeviceContext, "../Bin/Resources/Vehicles/Weapons/w_msl_a0/w_msl_a0.FBX");
+	::LoadStaticModel(L"../Bin/Resources/Vehicles/Weapons/w_msl_a0/w_msl_a0.model", model);
+	//model = Engine::StaticModel::Create(dxDevice, dxDeviceContext, "../Bin/Resources/Vehicles/Weapons/w_msl_a0/w_msl_a0.FBX");
 	if (model == nullptr)
 		return E_FAIL;
 	AddComponent(model, L"StaticModel");
@@ -53,15 +55,23 @@ HRESULT StandardMissile::Start(void)
 		return E_FAIL;
 	AddComponent(debugDraw, L"DebugChaser");
 	
-	rotationSpeed = Vector2::one() * 0.1f;
+	rotationSpeed = Vector2::one() * 1.0f;
 	speed = ConvertFeetToWorld(4000.0f);
 	maximumLifeTime = 30.0f;
 	lifeTime = 0.0f;
+
 	return S_OK;
 }
 
 void StandardMissile::Update(void)
 {
+	if (target != nullptr && target->Destroy())
+	{
+		target = nullptr;
+		return;
+	}
+
+
 	lifeTime += DeltaTime();
 	if (lifeTime >= maximumLifeTime)
 	{
@@ -88,6 +98,8 @@ void StandardMissile::LateUpdate(void)
 {
 	if(!detonated)
 		AddRenderObject(RenderType::NonBlend, this);
+
+
 }
 
 void StandardMissile::FixedUpdate(void)
@@ -102,7 +114,7 @@ void StandardMissile::Render(void)
 		return;
 	transformComponent->Render();
 	model->Render();
-	debugDraw->Render();
+	//debugDraw->Render();
 }
 
 Missile* StandardMissile::Launch(Engine::GameObject* shooter, Vector3 LaunchOffsetPosition, Engine::GameObject* target)
@@ -118,28 +130,36 @@ Missile* StandardMissile::Launch(Engine::GameObject* shooter, Vector3 LaunchOffs
 	newInstnace->transformComponent->UpdateWorldMatrix();
 	newInstnace->target = target;
 	newInstnace->debugDraw->AddPosition(transform.Position());
+
+
+	Engine::Layer* layer = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"ParticleLayer");
+	MissileTrail* trail = static_cast<MissileTrail*>(layer->GetGameObject(L"MissileTrail"));
+	if (trail != nullptr)
+		trail->AddTrail(newInstnace);
+
 	return newInstnace;
 }
 
 void StandardMissile::Chase(void)
 {
+	static FLOAT detonationDistance = ConvertFeetToWorld(50.0f);
+	transformComponent->Translate(transformComponent->Forward() * 0.005f/*DeltaTime()*/ * speed);
+
+	if (target == nullptr)
+		return;
+
 	Vector3 direction = target->transform()->Position() - transformComponent->Position();
-	if (direction.magnitude() <= ConvertFeetToWorld(50.0f))
+	FLOAT distance = direction.magnitude();
+	if (distance <= detonationDistance)
 	{
 		Detonate(); 
 		return;
 	}
 
+	if (priviousDistance + 2.0f < distance)
+		target = nullptr;
+
+	priviousDistance = distance;
 	Missile::Rotation(direction);
-	transformComponent->Translate(transformComponent->Forward() * 0.005f/*DeltaTime()*/ * speed);
 	rotation = transformComponent->Quaternion();
-	return;
-
-	direction = direction.normalize();
-	float yaw = atan2(direction.x, direction.z);
-	float pitch = asin(-direction.y);
-	transformComponent->SetAngle(DirectX::XMConvertToDegrees(pitch), DirectX::XMConvertToDegrees(yaw), 0.0f);
-	transformComponent->Translate(direction * 0.01f/*DeltaTime()*/ * speed);
-	rotation = transformComponent->Quaternion();
-
 }

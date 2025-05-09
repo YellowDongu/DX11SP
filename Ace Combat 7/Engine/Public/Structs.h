@@ -152,14 +152,24 @@ struct BoneBuffer
 {
     DirectX::XMFLOAT4X4 boneMatrix[256];
 };
+struct TrailBuffer
+{
+	DirectX::XMFLOAT4X4 frontMatrix[256];
+	DirectX::XMFLOAT4X4 rearMatrix[256];
+};
+struct rotationMatrixBuffer
+{
+	DirectX::XMFLOAT4X4 rotationMatrix[6];
+};
+
 
 struct MaterialBufferType
 {
-    DirectX::XMFLOAT4 diffuseColor;
     DirectX::XMFLOAT4 specularColor;
     float shininess;
+    int hasNormalTexture;  // 1이면 specularTexture 있음, 0이면 없음
     int hasSpecularTexture;  // 1이면 specularTexture 있음, 0이면 없음
-    float padding[2]; // 16바이트 정렬
+    float padding; // 16바이트 정렬
 };
 
 struct ENGINEDLL UIVertex

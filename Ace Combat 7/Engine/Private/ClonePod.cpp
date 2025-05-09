@@ -1,6 +1,7 @@
 #include "Foundation.h"
 #include "ClonePod.h"
 #include "GameObject.h"
+#include "Component.h"
 using namespace Engine;
 
 ClonePod* ClonePod::Create(void)
@@ -11,18 +12,28 @@ ClonePod* ClonePod::Create(void)
 
 HRESULT ClonePod::SetPrefab(std::wstring& key, GameObject* gameObject)
 {
-	auto prefabIterator = prefabs.find(key);
-	if (prefabIterator != prefabs.end())
+	auto prefabIterator = gameObjectPrefabs.find(key);
+	if (prefabIterator != gameObjectPrefabs.end())
 		return E_FAIL;
 
-	prefabs[key] = gameObject;
+	gameObjectPrefabs[key] = gameObject;
 	return S_OK;
 }
 
-GameObject* ClonePod::ClonePrefab(std::wstring& key)
+HRESULT ClonePod::SetPrefab(std::wstring& key, Component* component)
 {
-	auto prefabIterator = prefabs.find(key);
-	if (prefabIterator != prefabs.end())
+	auto prefabIterator = componentPrefabs.find(key);
+	if (prefabIterator != componentPrefabs.end())
+		return E_FAIL;
+
+	componentPrefabs[key] = component;
+	return S_OK;
+}
+
+GameObject* ClonePod::CloneGameObjectPrefab(std::wstring& key)
+{
+	auto prefabIterator = gameObjectPrefabs.find(key);
+	if (prefabIterator == gameObjectPrefabs.end())
 		return nullptr;
 
 	GameObject* clone = (*prefabIterator).second->Clone();
@@ -33,23 +44,33 @@ GameObject* ClonePod::ClonePrefab(std::wstring& key)
 	return clone;
 }
 
-void ClonePod::ClearPrefab(void)
+Component* ClonePod::CloneComponentPrefab(std::wstring& key)
 {
-	for (auto& prefab : prefabs)
-	{
-		Base::Destroy(prefab.second);
-	}
-	prefabs.clear();
+	auto prefabIterator = componentPrefabs.find(key);
+	if (prefabIterator == componentPrefabs.end())
+		return nullptr;
+
+	Component* clone = (*prefabIterator).second->Clone();
+	//if(clone->NonDestroyObject())
+	//	liveObjects[key] = clone;
+	//else
+	//	nonDestroyObjects[key] = clone;
+	return clone;
 }
 
-void Engine::ClonePod::ClearAliveObject(void)
+void ClonePod::ClearPrefab(void)
 {
-	for (auto& object : liveObjects)
+	for (auto& prefab : gameObjectPrefabs)
 	{
-		Base::Destroy(object.second);
+		Base::DestroyInstance(prefab.second);
 	}
-	liveObjects.clear();
+	gameObjectPrefabs.clear();
 
+	for (auto& prefab : componentPrefabs)
+	{
+		Base::DestroyInstance(prefab.second);
+	}
+	componentPrefabs.clear();
 }
 
 void ClonePod::Free(void)

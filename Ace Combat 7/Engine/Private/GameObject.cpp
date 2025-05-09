@@ -33,7 +33,7 @@ GameObject* GameObject::Clone(void)
 
 void GameObject::Update(void)
 {
-	if (!active)
+	if (!active || destroy)
 		return;
 	for (auto& component : components)
 	{
@@ -44,7 +44,7 @@ void GameObject::Update(void)
 
 void GameObject::LateUpdate(void)
 {
-	if (!active)
+	if (!active || destroy)
 		return;
 	for (auto& component : components)
 	{
@@ -54,7 +54,7 @@ void GameObject::LateUpdate(void)
 
 void GameObject::FixedUpdate(void)
 {
-	if (!active)
+	if (!active || destroy)
 		return;
 	for (auto& component : components)
 	{

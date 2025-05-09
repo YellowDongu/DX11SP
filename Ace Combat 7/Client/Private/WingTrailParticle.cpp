@@ -2,7 +2,6 @@
 #include "WingTrailParticle.h"
 #include "DefaultParticleShader.h"
 
-Engine::DefaultParticleShader* testShader;
 WingTrailParticle::WingTrailParticle(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::MultiObjectBuffer(dxDevice, dxDeviceContext)
 {
 }
@@ -46,17 +45,23 @@ HRESULT WingTrailParticle::Start(void)
 		return E_FAIL;
 	if (FAILED(CreateWorldBuffer(dxDevice, worldBuffer, instanceNumber, worldStride)))
 		return E_FAIL;
-	testShader = Engine::DefaultParticleShader::Create(dxDevice, dxDeviceContext);
-	AddShader(L"DefaultParticleShader", testShader);
+
 	points.resize(instanceNumber);
 	return S_OK;
 }
 
 HRESULT WingTrailParticle::Awake(void)
 {
-	transform = gameObject->transform();
-	if (transform == nullptr)
-		return E_FAIL;
+	//transform = gameObject->transform();
+	//if (transform == nullptr)
+	//	return E_FAIL;
+
+	shader = GetShader(L"DefaultParticleShader");
+	if (shader == nullptr)
+	{
+		shader = Engine::DefaultParticleShader::Create(dxDevice, dxDeviceContext);
+		AddShader(L"DefaultParticleShader", shader);
+	}
 	return S_OK;
 }
 
@@ -80,8 +85,8 @@ void WingTrailParticle::LateUpdate(void)
 void WingTrailParticle::Render(void)
 {
 	const std::wstring& currentShaderName = ::GetCurrentShaderName();
-	SetShader(testShader);
-	testShader->PassNumber(1);
+	SetShader(shader);
+	shader->PassNumber(1);
 	SetViewProjectionMatrix();
 
 	BindWorldBuffer();

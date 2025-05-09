@@ -170,3 +170,16 @@ ENGINEDLL void AddCollider(Engine::Collider* collider);
 ENGINEDLL HRESULT LoadNavMesh(std::wstring filePath);
 ENGINEDLL Engine::NavMesh* GetNavMesh(void);
 #pragma endregion
+
+#pragma region ClonePod
+ENGINEDLL HRESULT AddPrefabComponent(wchar_t* componentName, Engine::Component* component, Engine::Component** copySlot = nullptr);
+ENGINEDLL HRESULT AddPrefabComponent(std::wstring& componentName, Engine::Component* component, Engine::Component** copySlot = nullptr);
+ENGINEDLL Engine::Component* InstantiateComponent(std::wstring& componentName);
+ENGINEDLL Engine::Component* InstantiateComponent(wchar_t* componentName);
+
+ENGINEDLL HRESULT AddPrefabGameObject(wchar_t* componentName, Engine::Component* component, Engine::GameObject** copySlot = nullptr);
+ENGINEDLL HRESULT AddPrefabGameObject(std::wstring& componentName, Engine::Component* component, Engine::GameObject** copySlot = nullptr);
+ENGINEDLL Engine::GameObject* InstantiateGameObject(std::wstring& componentName);
+ENGINEDLL Engine::GameObject* InstantiateGameObject(wchar_t* componentName);
+
+#pragma endregion

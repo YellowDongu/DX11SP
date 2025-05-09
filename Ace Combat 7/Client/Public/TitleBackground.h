@@ -22,6 +22,10 @@ public:
 	virtual void Render(void);
 
 private:
+	UIParts backGround;
 	ID3D11ShaderResourceView* backGroundTexture{nullptr};
 	Engine::RectanglePolygon* rectangle{nullptr};
+	std::string diffuseTexture = "diffuseTexture";
+	std::string world = "worldMatrix";
+	const UINT stride = sizeof(UIVertex);
 };

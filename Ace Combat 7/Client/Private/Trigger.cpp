@@ -204,6 +204,11 @@ void PositionSpawnTrigger::ActiveTrigger(void)
 		object.gameObject->transform()->Position() = object.position;
 		object.gameObject->transform()->SetAngle(object.angle);
 	}
+	spawnTargets.clear();
+	for (auto& trigger : linkedTrigger)
+	{
+		trigger->SetStandBy();
+	}
 	deleteThis = true;
 }
 
@@ -211,4 +216,93 @@ void Trigger::SetBaseInfomation(Trigger::TriggerDescription* description)
 {
 	standby = description->standByStatus;
 	name = description->triggerName;
+	sceneNumber = description->sceneNumber;
+
+	for (auto& trigger : description->linkedTrigger)
+	{
+		linkedTrigger.push_back(trigger);
+	}
+}
+
+void KillSpawnTrigger::Free(void)
+{
+	for (auto& object : spawnTargets)
+	{
+		Base::DestroyInstance(object.gameObject);
+	}
+	spawnTargets.clear();
+}
+
+KillSpawnTrigger* KillSpawnTrigger::Create(KillSpawnTrigger::TriggerDescription& triggerDescription)
+{
+	KillSpawnTrigger* newInstance = new KillSpawnTrigger();
+	if (FAILED(newInstance->Start(triggerDescription)))
+	{
+		Base::Destroy(newInstance);
+		return nullptr;
+	}
+	return newInstance;
+}
+
+HRESULT KillSpawnTrigger::Start(KillSpawnTrigger::TriggerDescription& description)
+{
+	SetBaseInfomation(&description);
+
+	targetLayerName = description.targetLayer;
+	for (auto& target : description.spawnTargets)
+	{
+		spawnTargets.push_back(target);
+	}
+
+	return S_OK;
+}
+
+HRESULT KillSpawnTrigger::Awake(void)
+{
+	targetLayer = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(targetLayerName);
+	if (targetLayer == nullptr)
+		return E_FAIL;
+
+
+	return S_OK;
+}
+
+void KillSpawnTrigger::Update(void)
+{
+	if (targetLayer->GameObjectList().empty())
+		ActiveTrigger();
+}
+
+void KillSpawnTrigger::LateUpdate(void)
+{
+}
+
+void KillSpawnTrigger::FixedUpdate(void)
+{
+}
+
+void KillSpawnTrigger::ActiveTrigger(void)
+{
+	std::wstring layerName;
+	Engine::Layer* layer = nullptr;
+	for (auto& object : spawnTargets)
+	{
+		if (object.layerName != layerName)
+		{
+			layer = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(object.layerName);
+			layerName = object.layerName;
+		}
+
+		if (layer == nullptr)
+			continue;
+		layer->AddGameObject(object.name, object.gameObject);
+		object.gameObject->transform()->Position() = object.position;
+		object.gameObject->transform()->SetAngle(object.angle);
+	}
+	spawnTargets.clear();
+	for (auto& trigger : linkedTrigger)
+	{
+		trigger->SetStandBy();
+	}
+	deleteThis = true;
 }

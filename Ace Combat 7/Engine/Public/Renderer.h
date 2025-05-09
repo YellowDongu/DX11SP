@@ -59,6 +59,7 @@ namespace Engine
 
 		void ChangeShader(Shader* shader) { SetShader(shader); } // delete this
 		void ChangeUIShader(Shader* shader) { pipelineStatus.currentUIShader = shader; }
+		void SkipRender(void) { skip = true; }
 
 		HRESULT BindCamera(Camera* camera);
 		HRESULT BindVariable(const std::string& variableName, void* variable, size_t variableSize);
@@ -104,5 +105,6 @@ namespace Engine
 
 		Shader* deferredShader;
 		class RectanglePolygon* deferredBuffer;
+		bool skip;
 	};
 }

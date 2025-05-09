@@ -41,5 +41,6 @@ private:
 	std::vector<Engine::VertexMatrix> points;
 	Engine::Transform* transform{nullptr};
 	FLOAT timer{0.0f};
+	Engine::Shader* shader;
 	//y = -3x^(2) + 2
 };

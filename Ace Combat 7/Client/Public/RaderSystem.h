@@ -4,12 +4,13 @@
 
 class RaderSystem : public Engine::Component
 {
-public:
+protected:
 	RaderSystem(void) = delete;
 	RaderSystem(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext);
 	RaderSystem(const RaderSystem& other);
 	virtual ~RaderSystem(void) = default;
 	virtual void Free(void);
+public:
 	static RaderSystem* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext);
 	virtual Engine::Component* Clone(void);
 	
@@ -20,12 +21,23 @@ public:
 
 	void SearchEnemy(void);
 	HRESULT LayerSearch(void);
-private:
-	bool allyFaction = false;
+
+	void CollectLayer(void);
+	void PlayerControl(void);
+
+	void UnTargeting(void) { *currentEnemy = nullptr, currentTargetIndex = -1; }
+	void SetMaxTimer(FLOAT value) { maxTimer = value; }
+	void SetSearchMaxDistance(FLOAT value) { maxDistance = value; }
+protected:
+	bool allyFaction = false, player{ false }, notOnSearchEnemy{false};
+
+	FLOAT timer = 0.0f, maxTimer = 0.0f;
+	FLOAT maxDistance = ConvertFeetToWorld(10000.0f) * 5.0f;
+	INT currentTargetIndex = -1;
 
 	std::vector<Engine::Layer*> allyLayer;
 	std::vector<Engine::Layer*> enemyLayer;
-	//static std::vector<Engine::Layer*> unknownLayer;
+	std::list<std::pair<FLOAT, Engine::GameObject*>> sortedObjects;
 
 	Engine::GameObject** currentEnemy{nullptr}; // fcs에게 줄거
 };

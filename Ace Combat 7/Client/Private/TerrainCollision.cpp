@@ -76,6 +76,8 @@ void TerrainCollision::LateUpdate(void)
 		DirectX::XMStoreFloat3(&reflectedDirection, currentNode->ReflectionDirection(myTransform->Forward()));
 		reflectedDirection = reflectedDirection.getDirection();
 		reflectedDirection.z = myTransform->Angle().z;
+		//if (reflectedDirection.x < 0)
+		//	reflectedDirection.x *= -1.0f;
 
 		myTransform->SetAngle(reflectedDirection);
 	}

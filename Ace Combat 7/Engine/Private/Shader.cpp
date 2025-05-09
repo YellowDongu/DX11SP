@@ -280,8 +280,25 @@ ID3D11Buffer* Shader::ConstantBuffer(std::wstring bufferName)
 	auto bufferIterator = constantBuffers.find(bufferName);
 	if (bufferIterator == constantBuffers.end())
 		return nullptr;
-
 	return bufferIterator->second;
+}
+
+HRESULT Shader::BindConstantBuffer(ID3D11Buffer* buffer, char* bufferName)
+{
+	ID3DX11EffectConstantBuffer* constantBuffer = effect->GetConstantBufferByName(bufferName);
+	if (constantBuffer == nullptr)
+		return E_FAIL;
+
+	return constantBuffer->AsConstantBuffer()->SetConstantBuffer(buffer);
+}
+
+HRESULT Shader::BindConstantBuffer(ID3D11Buffer* buffer, const std::string& bufferName)
+{
+	ID3DX11EffectConstantBuffer* constantBuffer = effect->GetConstantBufferByName(bufferName.c_str());
+	if (constantBuffer == nullptr)
+		return E_FAIL;
+
+	return constantBuffer->AsConstantBuffer()->SetConstantBuffer(buffer);
 }
 
 HRESULT Shader::ConstantBuffer(std::wstring bufferName, ID3D11Buffer* buffer)

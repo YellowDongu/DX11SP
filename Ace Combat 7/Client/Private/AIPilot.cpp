@@ -193,7 +193,7 @@ void AIPilot::Evade(void)
 
 void AIPilot::SearchEnemy(void)
 {
-	leader = target = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"TestLayer")->GetGameObject(L"Player");
+	leader = target = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"Ally")->GetGameObject(L"Player");
 	fcs->SetForceTargetChange(target);
 }
 
@@ -213,4 +213,9 @@ void AIPilot::ChaseEnemy(void)
 		fcs->gunFire = true;
 	else
 		fcs->gunFire = false;
+}
+
+void AIPilot::setDestination(Vector3 position)
+{
+	autoPilot->SetDestination(position);
 }

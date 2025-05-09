@@ -6,9 +6,6 @@
 #include "MS01Terrain.h"
 #include "MS01TerrainA.h"
 #include "MS01TerrainB.h"
-#include "MS01TerrainC.h"
-#include "MS01TerrainD.h"
-#include "MS01TerrainE.h"
 
 ObjectManager::ObjectManager(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : device(dxDevice), context(dxDeviceContext)
 {
@@ -75,45 +72,6 @@ HRESULT ObjectManager::Start(void)
 		LoadGameObject(newInstance, L"MS01Terrain");
 	}
 
-	newInstance = MS01TerrainA::Create(device, context);
-	if (newInstance != nullptr)
-	{
-		newInstance->transform()->Position() = Vector3::zero();
-		newInstance->transform()->UpdateWorldMatrix();
-		LoadGameObject(newInstance, L"MS01TerrainA");
-	}
-
-	newInstance = MS01TerrainB::Create(device, context);
-	if (newInstance != nullptr)
-	{
-		newInstance->transform()->Position() = Vector3::zero();
-		newInstance->transform()->UpdateWorldMatrix();
-		LoadGameObject(newInstance, L"MS01TerrainB");
-	}
-
-	newInstance = MS01TerrainC::Create(device, context);
-	if (newInstance != nullptr)
-	{
-		newInstance->transform()->Position() = Vector3::zero();
-		newInstance->transform()->UpdateWorldMatrix();
-		LoadGameObject(newInstance, L"MS01TerrainC");
-	}
-
-	newInstance = MS01TerrainD::Create(device, context);
-	if (newInstance != nullptr)
-	{
-		newInstance->transform()->Position() = Vector3::zero();
-		newInstance->transform()->UpdateWorldMatrix();
-		LoadGameObject(newInstance, L"MS01TerrainD");
-	}
-
-	newInstance = MS01TerrainE::Create(device, context);
-	if (newInstance != nullptr)
-	{
-		newInstance->transform()->Position() = Vector3::zero();
-		newInstance->transform()->UpdateWorldMatrix();
-		LoadGameObject(newInstance, L"MS01TerrainE");
-	}
 	return S_OK;
 }
 

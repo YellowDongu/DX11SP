@@ -20,5 +20,8 @@ public:
 	void Render(void) override;
 private:
 	UIParts innerCircle, outerCircle;
-
+	Engine::GameObject** target{nullptr};
+	Engine::Transform* transform{ nullptr };
+	bool insideDistance{false};
+	FLOAT distance, maxDistance;
 };
