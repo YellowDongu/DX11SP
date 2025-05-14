@@ -15,6 +15,7 @@ public:
 	static RadarMissileWarningReceiver* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext);
 	virtual Component* Clone(void) override;
 
+	virtual HRESULT Awake(void);
 	virtual void Update(void);
 	virtual void LateUpdate(void);
 	virtual void FixedUpdate(void);
@@ -34,6 +35,7 @@ public:
 
 private:
 	bool warning = false, missileWarning = false, closedWarning = false;
+	bool airUnit = false;
 
 	std::list<FireControlSystem*> hunters;
 	std::list<class Missile*> chasedMissile;

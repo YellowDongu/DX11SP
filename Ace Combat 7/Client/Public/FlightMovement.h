@@ -5,19 +5,22 @@ class FlightMovement : public Engine::Component
 {
 private:
 	FlightMovement(void) = delete;
-	FlightMovement(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, Engine::Transform* transform, FlightSpec& flightSpec);
+	FlightMovement(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, FlightSpec& flightSpec);
 	FlightMovement(const FlightMovement& other);
 	virtual ~FlightMovement(void) = default;
 	virtual void Free(void);
 public:
-	static FlightMovement* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, Engine::Transform* transform, FlightSpec& flightSpec);
+	static FlightMovement* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, FlightSpec& flightSpec);
 	Engine::Component* Clone(void) override;
 
 	HRESULT Start(void);
+	virtual HRESULT Awake(void) override;
 	void Render(void);
 
 	virtual void Update(void) override;
 	virtual void LateUpdate(void) override;
+
+	FLOAT HighGTurn(void);
 
 	void CalculateMovement(void);
 	void CalculatePrimarySurfaceForce(void);
@@ -37,6 +40,7 @@ public:
 	const Vector3& LinkFinalMenuverForce(void) const { return finalMenuverForce; }
 
 	void SetSuper(void) { isSuper = true; }
+
 private:
 	bool isOnGround;
 
@@ -45,6 +49,7 @@ private:
 	FLOAT idleThrottle;
 	// flight spec
 	//using
+	FLOAT highGTurnValue = 1.0f;
 	Vector3 maneuverSpeed;
 	float EnginePower, airbreakPower = 20.0f, mass;
 	FLOAT criticalSpeed;
@@ -73,5 +78,6 @@ public:
 	bool airbreakActive = false;
 	Vector3 yoke = Vector3();	// X,Y,Z => 0 ~ 1
 	float throttle = 1.0f; // 0 ~ 1
+	bool highGTurn = false;
 	// Inputs
 };

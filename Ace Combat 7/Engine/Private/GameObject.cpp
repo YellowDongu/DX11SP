@@ -38,6 +38,10 @@ void GameObject::Update(void)
 	for (auto& component : components)
 	{
 		component.second->Update();
+
+
+		if (transformComponent != nullptr && std::isnan(transformComponent->Position().x))
+			int i = 0;
 	}
 
 }

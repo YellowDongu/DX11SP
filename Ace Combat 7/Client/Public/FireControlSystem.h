@@ -13,7 +13,7 @@ protected:
 	virtual ~FireControlSystem(void) = default;
 	virtual void Free(void) override;
 public:
-	static FireControlSystem* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, AircraftMetaData& metaData);
+	static FireControlSystem* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ObjectInfomation& metaData);
 	Engine::Component* Clone(void) override;
 
 	HRESULT Start(void);
@@ -36,6 +36,7 @@ public:
 	bool Locked(void) { return !static_cast<bool>(lock); }
 	float LockStatus(void) { return lock; }
 	Engine::GameObject*& LinkTarget(void) { return targeted; }
+	RadarMissileWarningReceiver*& LinkTargetRMWR(void) { return targetedRMWR; }
 	float& LinkLockStatus(void) { return lock; }
 	Missile* GetLastMissile(void) { if (activeMissile.empty()) return nullptr; return activeMissile.back(); }
 	const std::list<Missile*>& GetMissiles(void) const { return activeMissile; }
@@ -50,14 +51,14 @@ public:
 	const INT& StandardMissileCount(void) const { return standardMissileCount; }
 	const INT& UniqueMissileCount(void) const { return uniqueMissileCount; }
 	const INT& GunCount(void) const { return gunCount; }
-
+	const ObjectInfomation& LinkMetaData(void) { return metaData; }
 	// interface
 	bool weaponRelease = false;
 	bool gunFire = false;
 protected:
 	bool standardMissileFired, uniqueMissileFired, gunFired;
 
-	struct AircraftMetaData* metaData;
+	ObjectInfomation metaData;
 	Engine::GameObject* targeted{ nullptr };
 	RadarMissileWarningReceiver* targetedRMWR{ nullptr };
 	//std::vector<Engine::GameObject*, RadarMissileWarningReceiver*> multiTargeted;

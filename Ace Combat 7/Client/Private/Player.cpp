@@ -16,6 +16,7 @@
 #include "ActiveRadarHomingMissile.h"
 #include "PlayerEar.h"
 #include "TerrainCollision.h"
+#include "WingVaporTrail.h"
 Engine::GameObject* testEnemy = nullptr;
 
 Player::Player(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::GameObject(dxDevice, dxDeviceContext), model(nullptr), boneHandler(nullptr), flightModule(nullptr)
@@ -133,10 +134,10 @@ HRESULT Player::Start(ObjectInfomation& objectInfomation)
     AddComponent(boneHandler, L"AircraftBoneHandler");
     // model setting
 
-    flightModule = FlightMovement::Create(dxDevice, dxDeviceContext, transformComponent, metaData.flightSpec);
+    flightModule = FlightMovement::Create(dxDevice, dxDeviceContext, metaData.flightSpec);
     AddComponent(flightModule, L"FlightMovement");
 
-    fcs = FireControlSystem::Create(dxDevice, dxDeviceContext, metaData);
+    fcs = FireControlSystem::Create(dxDevice, dxDeviceContext, objectInfomation);
     fcs->SetStandardMissile(StandardMissile::Create(dxDevice, dxDeviceContext));
     fcs->SetUniqueMissile(ARHM::Create(dxDevice, dxDeviceContext));
     AddComponent(fcs, L"FCS");
@@ -179,7 +180,6 @@ HRESULT Player::Start(void)
     if (FAILED(CreateTransform()))
         return E_FAIL;
 
-    transformComponent->Position() = Vector3(1643.0f, 2.0f, 405.0f);
     transformComponent->Scale() = Vector3::one() * 0.5f;
     //transformComponent->SetAngle(Vector3{ 0.0f, -45.0f, 0.0f });
     //transformComponent->Scale() = Vector3::one() * 0.01f;
@@ -229,10 +229,10 @@ HRESULT Player::Start(void)
     AddComponent(boneHandler, L"AircraftBoneHandler");
     // model setting
 
-    flightModule = FlightMovement::Create(dxDevice, dxDeviceContext, transformComponent, metaData.flightSpec);
+    flightModule = FlightMovement::Create(dxDevice, dxDeviceContext, metaData.flightSpec);
     AddComponent(flightModule, L"FlightMovement");
 
-    fcs = FireControlSystem::Create(dxDevice, dxDeviceContext, metaData);
+    fcs = FireControlSystem::Create(dxDevice, dxDeviceContext, objectInfomation);
     fcs->SetStandardMissile(StandardMissile::Create(dxDevice, dxDeviceContext));
     fcs->SetUniqueMissile(ARHM::Create(dxDevice, dxDeviceContext));
     AddComponent(fcs, L"FCS");
@@ -267,6 +267,7 @@ HRESULT Player::Start(void)
 HRESULT Player::Awake(void)
 {
     boneHandler->Awake();
+    flightModule->Awake();
     static_cast<AircraftBoneHandler*>(boneHandler)->LinkYoke(flightModule->yoke);
     playerPilot->Awake();
     comTest2->Awake();
@@ -274,6 +275,15 @@ HRESULT Player::Awake(void)
     raderSystem->Awake();
     cameraState = 0;
 
+    Engine::Layer* layer = ::EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"ParticleLayer");
+    if (layer == nullptr)
+        return E_FAIL;
+
+    WingVaporTrail* wingVaporParticle = static_cast<WingVaporTrail*>(layer->GetGameObject(L"WingVaporTrail"));
+    if (wingVaporParticle == nullptr)
+        return E_FAIL;
+
+    wingVaporParticle->EnlistGameObject(this);
     //for (auto& component : components)
     //    component.second->Awake();
 
@@ -287,7 +297,7 @@ void Player::Update(void)
     if (testEnemy == nullptr)
     {
         //testEnemy = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"MainTargetEnemy")->GetGameObject(L"MainTarget");
-        testEnemy = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"MainTargetEnemy")->GetGameObject(L"MainTargetEnemy");
+        testEnemy = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"Ally")->GetGameObject(L"WingMan");
     }
     boneHandler->Update();
     playerPilot->Update();
@@ -311,9 +321,32 @@ void Player::FixedUpdate(void)
 
 void Player::Render(void)
 {
-    transformComponent->Render();
-    model->Render();
-    gearModel->Render();
+    if (playerPilot->CameraState() == 1)
+    {
+        const Engine::PipelineStatus& pipeLine = ::GetPipeLineStatus();
+        Matrix viewMatrix, identity;
+        memcpy(&viewMatrix, &pipeLine.viewMatrix, sizeof(Matrix));
+        DirectX::XMStoreFloat4x4(&identity, DirectX::XMMatrixIdentity());
+
+        ::SetViewProjectionMatrix(identity, pipeLine.projectionMatrix);
+        Vector3 firstOffset = playerPilot->LinkObjectInfomation().aircraftInfomation.cameraFstViewOffset * -1.0f;
+        identity._41 = firstOffset.x;
+        identity._42 = firstOffset.y;
+        identity._43 = firstOffset.z;
+
+        ::SetWorldMatrix(identity);
+        model->Render();
+
+        ::SetViewProjectionMatrix(viewMatrix, pipeLine.projectionMatrix);
+        transformComponent->Render();
+    }
+    else
+    {
+        transformComponent->Render();
+        model->Render();
+        gearModel->Render();
+    }
+
     collider->Render();
 }
 

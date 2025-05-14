@@ -85,6 +85,7 @@ HRESULT ActiveRadarHomingMissile::Start(void)
 	maximumLockDistance = ConvertFeetToWorld(9000.0f) * 2.5f;
 	maximumLockDirection = std::cosf(DirectX::XMConvertToRadians(25.0f));
 	missileCount = 50;
+	ground = false;
 	return S_OK;
 }
 

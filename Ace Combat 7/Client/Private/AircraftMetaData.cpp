@@ -84,7 +84,7 @@ F14DMetaData::F14DMetaData()
     flightSpec.stallSpeed = 330.0f;
     flightSpec.criticalSpeed = 2000.0f;
     cameraTrdViewOffset = Vector3{ 0.0f ,0.4f, -1.75f };
-    cameraFstViewOffset = Vector3{ 0.0f,0.1f, 0.84f };
+    cameraFstViewOffset = Vector3{ 0.0f,0.1f, 0.70f };
 
 
     // notYet

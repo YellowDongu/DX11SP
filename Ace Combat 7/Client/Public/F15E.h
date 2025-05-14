@@ -17,6 +17,7 @@ private:
 
 public:
 	static F15E* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext);
+	static F15E* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ObjectInfomation& infomation);
 	virtual GameObject* Clone(void);
 
 	HRESULT Start(void);

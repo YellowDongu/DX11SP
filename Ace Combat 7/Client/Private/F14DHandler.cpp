@@ -154,6 +154,8 @@ HRESULT F14DHandler::Awake(void)
 	for (auto& gearSet : gearSets)
 		landingGearParts.push_back(&gearSet.second);
 
+	landingGearApply = false;
+
 	return S_OK;
 }
 
@@ -180,7 +182,6 @@ void F14DHandler::Update(void)
 		wingFold = !wingFold;
 	LandingGear();
 	VariableWing();
-	//std::cout << transformComponent->Position().x << " :   " << transformComponent->Position().y << " :   " << transformComponent->Position().z << std::endl;
 }
 
 void F14DHandler::FixedUpdate(void)

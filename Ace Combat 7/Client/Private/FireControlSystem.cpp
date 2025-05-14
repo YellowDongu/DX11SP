@@ -5,7 +5,7 @@
 #include "SimpleBullet.h"
 
 
-FireControlSystem::FireControlSystem(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::Component(dxDevice, dxDeviceContext), gunFired(false), standardMissileFired(false), uniqueMissileFired(false), lock(0.0f), metaData(nullptr)
+FireControlSystem::FireControlSystem(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::Component(dxDevice, dxDeviceContext), gunFired(false), standardMissileFired(false), uniqueMissileFired(false), lock(0.0f)
 {
 }
 
@@ -40,10 +40,10 @@ void FireControlSystem::Free(void)
 
 }
 
-FireControlSystem* FireControlSystem::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, AircraftMetaData& metaData)
+FireControlSystem* FireControlSystem::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ObjectInfomation& infomation)
 {
 	FCS* newInstance = new FCS(dxDevice, dxDeviceContext);
-	newInstance->metaData = &metaData;
+	newInstance->metaData = infomation;
 	if (FAILED(newInstance->Start()))
 	{
 		Base::Destroy(newInstance);
@@ -171,7 +171,7 @@ void FireControlSystem::WeaponControl(void)
 		if (gunFire && coolDownGun <= 0.0f)
 		{
 			Transform& transform = *gameObject->transform();
-			activeBullet.push_back(bullet->Shoot(gameObject, transform.Position() + transform.Forward() * 100.0f, transform.Quaternion()));
+			activeBullet.push_back(bullet->Shoot(gameObject, transform.Position() + transform.Forward() * 5.0f, transform.Quaternion()));
 			coolDownGun += gunFireTick;
 			gunFired = true;
 		}
@@ -204,7 +204,7 @@ void FireControlSystem::WeaponControl(void)
 			if (gunFire && coolDownGun <= 0.0f)
 			{
 				Transform& transform = *gameObject->transform();
-				activeBullet.push_back(bullet->Shoot(gameObject, transform.Position() + transform.Forward() * 100.0f, transform.Quaternion()));
+				activeBullet.push_back(bullet->Shoot(gameObject, transform.Position() + transform.Forward() * 5.0f, transform.Quaternion()));
 				coolDownGun += gunFireTick;
 				gunFired = true;
 			}

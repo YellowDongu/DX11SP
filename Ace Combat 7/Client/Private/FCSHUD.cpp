@@ -45,7 +45,7 @@ HRESULT FireControlSystemHeadUpDisplay::Start(void)
 
 HRESULT FireControlSystemHeadUpDisplay::Awake(void)
 {
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 void FireControlSystemHeadUpDisplay::FixedUpdate(void)

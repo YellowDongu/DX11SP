@@ -117,9 +117,7 @@ void AttitudeIndicator::Render(void)
 
 	for (INT i = 0; i < 5; i++)
 	{
-		DirectX::XMStoreFloat2(&position, DirectX::XMVector2TransformCoord(
-			DirectX::XMVectorSet(0.0f, indicatorDistanceCalculated * static_cast<FLOAT>(i - 2) + (indicatorDistanceCalculated * PitchAdjustValue), 0.0f, 1.0f),
-			DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(transform->Angle().z))));
+		DirectX::XMStoreFloat2(&position, DirectX::XMVector2TransformCoord(DirectX::XMVectorSet(0.0f, indicatorDistanceCalculated * static_cast<FLOAT>(i - 2) + (indicatorDistanceCalculated * PitchAdjustValue), 0.0f, 1.0f), DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(transform->Angle().z))));
 		position.x /= (windowSizeX/windowSizeY) * 2.0f;
 
 		//scale.x = 1.0f + (1.0f - std::abs(std::abs(transform->Angle().z) - 90.0f) / 90.0f * 0.9f);
@@ -177,7 +175,7 @@ void AttitudeIndicator::Render(void)
 
 	position.x *= -1.0f;
 
-	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 180.0f));
+	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 0.0f));
 	SetMatrix(world, worldMatrix);
 
 	part = &parts.find(PitchSide)->second;

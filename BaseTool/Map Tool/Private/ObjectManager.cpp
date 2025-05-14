@@ -4,8 +4,6 @@
 #include "F15E.h"
 #include "OceanTile.h"
 #include "MS01Terrain.h"
-#include "MS01TerrainA.h"
-#include "MS01TerrainB.h"
 
 ObjectManager::ObjectManager(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : device(dxDevice), context(dxDeviceContext)
 {

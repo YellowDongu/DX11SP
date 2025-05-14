@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RaderSystem.h"
-
+class RadarMissileWarningReceiver;
 class RaderSystem : public Engine::Component
 {
 protected:
@@ -25,14 +25,15 @@ public:
 	void CollectLayer(void);
 	void PlayerControl(void);
 
-	void UnTargeting(void) { *currentEnemy = nullptr, currentTargetIndex = -1; }
+	void UnTargeting(void) { *currentEnemy = nullptr; *currentEmemyRMWR = nullptr; currentTargetIndex = -1; }
 	void SetMaxTimer(FLOAT value) { maxTimer = value; }
 	void SetSearchMaxDistance(FLOAT value) { maxDistance = value; }
+	void SetDefendArea(void) { defend = true; }
 protected:
-	bool allyFaction = false, player{ false }, notOnSearchEnemy{false};
+	bool allyFaction = false, player{ false }, defend{false};
 
-	FLOAT timer = 0.0f, maxTimer = 0.0f;
-	FLOAT maxDistance = ConvertFeetToWorld(10000.0f) * 5.0f;
+	FLOAT timer = 0.0f, maxTimer = 1.0f;
+	FLOAT maxDistance = ConvertFeetToWorld(10000.0f) * 2.5f;
 	INT currentTargetIndex = -1;
 
 	std::vector<Engine::Layer*> allyLayer;
@@ -40,4 +41,5 @@ protected:
 	std::list<std::pair<FLOAT, Engine::GameObject*>> sortedObjects;
 
 	Engine::GameObject** currentEnemy{nullptr}; // fcs에게 줄거
+	RadarMissileWarningReceiver** currentEmemyRMWR{ nullptr };
 };

@@ -19,8 +19,6 @@ public:
 	virtual void Render(void);
 	virtual void End(void);
 
-
-
 private:
-
+	bool loadEnd{ false }, nextScene{false};
 };

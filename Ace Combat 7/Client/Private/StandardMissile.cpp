@@ -142,7 +142,7 @@ Missile* StandardMissile::Launch(Engine::GameObject* shooter, Vector3 LaunchOffs
 
 void StandardMissile::Chase(void)
 {
-	static FLOAT detonationDistance = ConvertFeetToWorld(50.0f);
+	static FLOAT detonationDistance = ConvertFeetToWorld(2.5f) * 2.5f;
 	transformComponent->Translate(transformComponent->Forward() * 0.005f/*DeltaTime()*/ * speed);
 
 	if (target == nullptr)

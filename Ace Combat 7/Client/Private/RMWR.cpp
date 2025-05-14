@@ -26,6 +26,13 @@ Engine::Component* RadarMissileWarningReceiver::Clone(void)
 	return new RadarMissileWarningReceiver(*this);
 }
 
+HRESULT RadarMissileWarningReceiver::Awake(void)
+{
+	const ObjectInfomation& info = static_cast<FCS*>(gameObject->GetComponent(L"FCS"))->LinkMetaData();
+	nonDeath = info.immortality;
+	return S_OK;
+}
+
 void RadarMissileWarningReceiver::Update(void)
 {
 	warning = false;

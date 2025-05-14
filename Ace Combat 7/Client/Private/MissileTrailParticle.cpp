@@ -35,12 +35,13 @@ Engine::Component* MissileTrailParticle::Clone(void)
 
 HRESULT MissileTrailParticle::Start(void)
 {
-	if (FAILED(::LoadTexture(L"../Bin/Resources/VFX/Common/Textures/Missile/smokeTrail_303.dds", L"../Bin/Resources/VFX/Common/Textures/Missile/smokeTrail_303.dds", texture)))
+	//if (FAILED(::LoadTexture(L"../Bin/Resources/VFX/Common/Textures/Missile/smokeTrail_303.dds", L"../Bin/Resources/VFX/Common/Textures/Missile/smokeTrail_303.dds", texture)))
+	if (FAILED(::LoadTexture(L"../Bin/Resources/VFX/Common/Textures/Smoke/Anim_8X8_Wisp_01.dds", L"../Bin/Resources/VFX/Common/Textures/Smoke/Anim_8X8_Wisp_01.dds", texture)))
 		return E_FAIL;
 
 	std::vector<UINT> indices = { 0 };
 	std::vector<StaticModelVertex> vertices = { {{ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }} };
-	instanceNumber = 100;
+	instanceNumber = 250;
 	if (FAILED(CreatePointIndexBuffer(dxDevice, indexBuffer, instanceNumber, indexCount, wholeIndexCount, indices)))
 		return E_FAIL;
 	if (FAILED(CreateVertexBuffer(dxDevice, vertexBuffer, vertexStride, vertices)))
@@ -71,22 +72,11 @@ HRESULT MissileTrailParticle::Awake(void)
 	if (rotationBuffer == nullptr)
 		return E_FAIL;
 
-	DirectX::XMStoreFloat4x4(&rotationStorage.rotationMatrix[0], DirectX::XMMatrixIdentity());
-	DirectX::XMStoreFloat4x4(&rotationStorage.rotationMatrix[1], DirectX::XMMatrixIdentity());
-	DirectX::XMStoreFloat4x4(&rotationStorage.rotationMatrix[2], DirectX::XMMatrixIdentity());
-	DirectX::XMStoreFloat4x4(&rotationStorage.rotationMatrix[3], DirectX::XMMatrixIdentity());
-	DirectX::XMStoreFloat4x4(&rotationStorage.rotationMatrix[4], DirectX::XMMatrixIdentity());
-	DirectX::XMStoreFloat4x4(&rotationStorage.rotationMatrix[5], DirectX::XMMatrixIdentity());
-
 	return S_OK;
 }
 
 void MissileTrailParticle::Render(void)
 {
-	
-	DirectX::XMStoreFloat4x4(&rotationStorage.rotationMatrix[0], DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(EngineInstance()->RenderManager()->CurrentPipeLineStatus().currnetCamera->GetOwner()->transform()->Angle().y)));
-
-
 	const std::wstring& currentShaderName = ::GetCurrentShaderName();
 	if (FAILED(SetShader(shader)))
 	{
@@ -95,9 +85,8 @@ void MissileTrailParticle::Render(void)
 	}
 	shader->PassNumber(3);
 	shader->BindTexture("diffuseTexture", texture);
-	SetViewProjectionMatrix();
+	::SetViewProjectionMatrix();
 
-	BindTrailConstantBuffer();
 	if (FAILED(UpdateInfomation()))
 		return;
 	BindWorldBuffer();
@@ -108,29 +97,11 @@ void MissileTrailParticle::Render(void)
 
 HRESULT MissileTrailParticle::UpdateInfomation(void)
 {
-	if (targets == nullptr)
+	if (targetList == nullptr || targetList->empty())
 		return E_FAIL;
-	auto iterator = targets->begin();
-	if (targets->empty())
-		iterator = targets->end();
 
-	auto iteratorEnd = targets->end();
-
-	for (UINT i = 0; i < instanceNumber; i++)
-	{
-		ZeroMemory(&refinedMatrix[i], sizeof(Engine::VertexMatrix));
-		refinedMatrix[i].right = float4{ static_cast<FLOAT>(i), 0.0f, 0.0f, 0.0f };
-		if (iterator == iteratorEnd)
-			ZeroMemory(&refinedInfomation[i], sizeof(Engine::AdditionalVertexInfomation));
-		else
-			memcpy(&refinedInfomation[i], &iterator->second, sizeof(Engine::AdditionalVertexInfomation));
-
-	}
-
-
-	return S_OK;
-
-	xmMatrix matrix;
+	auto iterator = targetList->begin(), iteratorEnd = targetList->end();
+	xmMatrix identity = DirectX::XMMatrixIdentity();
 	for (UINT i = 0; i < instanceNumber; i++)
 	{
 		if (iterator == iteratorEnd)
@@ -140,20 +111,72 @@ HRESULT MissileTrailParticle::UpdateInfomation(void)
 		}
 		else
 		{
-			matrix = DirectX::XMLoadFloat4x4(&iterator->first);
-			DirectX::XMStoreFloat4(&refinedMatrix[i].right, matrix.r[0]);
-			DirectX::XMStoreFloat4(&refinedMatrix[i].up, matrix.r[1]);
-			DirectX::XMStoreFloat4(&refinedMatrix[i].look, matrix.r[2]);
-			DirectX::XMStoreFloat4(&refinedMatrix[i].position, matrix.r[3]);
+			DirectX::XMStoreFloat4(&refinedMatrix[i].right, identity.r[0]);
+			DirectX::XMStoreFloat4(&refinedMatrix[i].up, identity.r[1]);
+			DirectX::XMStoreFloat4(&refinedMatrix[i].look, identity.r[2]);
+			refinedMatrix[i].position = float4{ iterator->first.first.x, iterator->first.first.y, iterator->first.first.z, 1.0f };
 
 			memcpy(&refinedInfomation[i], &iterator->second, sizeof(Engine::AdditionalVertexInfomation));
-
 			iterator++;
 		}
+
 	}
 
-	targets = nullptr;
+	Matrix viewInverseMatix;
+	DirectX::XMStoreFloat4x4(&viewInverseMatix, DirectX::XMMatrixInverse(nullptr, DirectX::XMLoadFloat4x4(&::GetPipeLineStatus().viewMatrix)));
+	shader->BindMatrix("inversedViewMatrix", viewInverseMatix);
+
 	return S_OK;
+
+	//if (targets == nullptr || targets->empty())
+	//	return E_FAIL;
+	//
+	//auto iterator = targets->begin(), iteratorEnd = targets->end();
+	////UINT size = targets->size() - 1;
+	//
+	//for (UINT i = 0; i < instanceNumber; i++)
+	//{
+	//	ZeroMemory(&refinedMatrix[i], sizeof(Engine::VertexMatrix));
+	//	if (iterator == iteratorEnd)
+	//	{
+	//		refinedMatrix[i].right = float4{ static_cast<FLOAT>(i), 0.0f, 0.0f, 0.0f };
+	//		ZeroMemory(&refinedInfomation[i], sizeof(Engine::AdditionalVertexInfomation));
+	//	}
+	//	else
+	//	{
+	//		refinedMatrix[i].right = float4{ static_cast<FLOAT>(i), iterator->first.second, 0.0f, 0.0f };
+	//		memcpy(&refinedInfomation[i], &iterator->second, sizeof(Engine::AdditionalVertexInfomation));
+	//		iterator++;
+	//	}
+	//
+	//}
+	//
+	//return S_OK;
+	//
+	//xmMatrix matrix;
+	//for (UINT i = 0; i < instanceNumber; i++)
+	//{
+	//	if (iterator == iteratorEnd)
+	//	{
+	//		ZeroMemory(&refinedMatrix[i], sizeof(Engine::VertexMatrix));
+	//		ZeroMemory(&refinedInfomation[i], sizeof(Engine::AdditionalVertexInfomation));
+	//	}
+	//	else
+	//	{
+	//		//matrix = DirectX::XMLoadFloat4x4(&iterator->first);
+	//		DirectX::XMStoreFloat4(&refinedMatrix[i].right, matrix.r[0]);
+	//		DirectX::XMStoreFloat4(&refinedMatrix[i].up, matrix.r[1]);
+	//		DirectX::XMStoreFloat4(&refinedMatrix[i].look, matrix.r[2]);
+	//		DirectX::XMStoreFloat4(&refinedMatrix[i].position, matrix.r[3]);
+	//
+	//		memcpy(&refinedInfomation[i], &iterator->second, sizeof(Engine::AdditionalVertexInfomation));
+	//
+	//		iterator++;
+	//	}
+	//}
+	//
+	//targets = nullptr;
+	//return S_OK;
 }
 
 HRESULT MissileTrailParticle::BindWorldBuffer(void)
@@ -201,8 +224,8 @@ HRESULT MissileTrailParticle::BindTrailConstantBuffer(void)
 		}
 		else
 		{
-			trailBufferStorage.frontMatrix[i] = iterator->first;
-			trailBufferStorage.rearMatrix[i] = iteratorSecond->first;
+			trailBufferStorage.frontMatrix[i] = iterator->first.first;
+			trailBufferStorage.rearMatrix[i] = iteratorSecond->first.first;
 
 			iterator++;
 			iteratorSecond++;

@@ -381,14 +381,14 @@ HRESULT Renderer::BindVariable(const std::string& variableName, void* variable, 
 {
 	if (pipelineStatus.currentShader == nullptr)
 		return E_FAIL;
-	return pipelineStatus.currentShader->BindVariable(variableName, variable, variableSize);
+	return pipelineStatus.currentShader->BindVariable(variableName, variable, static_cast<UINT>(variableSize));
 }
 
 HRESULT Renderer::BindVariable(char* variableName, void* variable, size_t variableSize)
 {
 	if (pipelineStatus.currentShader == nullptr)
 		return E_FAIL;
-	return pipelineStatus.currentShader->BindVariable(variableName, variable, variableSize);
+	return pipelineStatus.currentShader->BindVariable(variableName, variable, static_cast<UINT>(variableSize));
 }
 
 HRESULT Renderer::BindMatrix(const std::string& variableName, const Matrix& matrix)

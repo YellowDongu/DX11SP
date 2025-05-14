@@ -174,7 +174,7 @@
     <ClInclude Include="..\Public\SkyBox.h">
       <Filter>02. CommonGameObject</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\BackGround.h">
+    <ClInclude Include="..\Public\MainMenuParts.h">
       <Filter>01. Act\MainMenu\BackGround</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Title.h">
@@ -237,7 +237,7 @@
     <ClInclude Include="..\Public\AIPilot.h">
       <Filter>03. Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\MS01TerrainA.h">
+    <ClInclude Include="..\Public\CloudEffect.h">
       <Filter>01. Act\MS01\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Cloud.h">
@@ -376,7 +376,7 @@
     <ClCompile Include="..\Private\SkyBox.cpp">
       <Filter>02. CommonGameObject</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\BackGround.cpp">
+    <ClCompile Include="..\Private\MainMenuParts.cpp">
       <Filter>01. Act\MainMenu\BackGround</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Title.cpp">
@@ -439,7 +439,7 @@
     <ClCompile Include="..\Private\AIPilot.cpp">
       <Filter>03. Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\MS01TerrainA.cpp">
+    <ClCompile Include="..\Private\CloudEffect.cpp">
       <Filter>01. Act\MS01\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Cloud.cpp">

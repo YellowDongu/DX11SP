@@ -24,6 +24,7 @@ public:
 	virtual void Collide(Engine::GameObject* target, Engine::Collider* targetCollision) override;
 
 	void SetSpeed(FLOAT value) { bulletSpeed = value; }
+	void SetDamage(FLOAT value) { damage = value; }
 	bool Destroyed(void) { return destroy; }
 private:
 	bool destroy{ false };

@@ -60,7 +60,7 @@ void ScreenFadeOut::Update(void)
 	else if (!fadeOut && fadeOutTimer != 0.0f)
 	{
 		fadeOutTimer -= DeltaTime() * fadeSpeed;
-		if (fadeOutTimer >= 0.0f)
+		if (fadeOutTimer <= 0.0f)
 			fadeOutTimer = 0.0f;
 	}
 

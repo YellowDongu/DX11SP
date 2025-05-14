@@ -241,6 +241,11 @@ ENGINEDLL HRESULT SetTexture(const std::string& variableName, ID3D11ShaderResour
 	else return E_FAIL;
 }
 
+ENGINEDLL const Engine::PipelineStatus& GetPipeLineStatus(void)
+{
+	return ::EngineInstance()->RenderManager()->CurrentPipeLineStatus();
+}
+
 ENGINEDLL HRESULT SetConstantBuffer(const std::string& variableName, ID3D11Buffer* buffer)
 {
 	CheckInstance(E_FAIL);

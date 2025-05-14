@@ -146,6 +146,7 @@ ENGINEDLL HRESULT SetViewProjectionMatrix(fxmMatrix viewMatrix, fxmMatrix projec
 ENGINEDLL void SetViewProjectionMatrix(void);
 ENGINEDLL HRESULT BindConstantBuffer(const std::string& variableName, ID3D11Buffer* buffer);
 ENGINEDLL HRESULT SetTexture(const std::string& variableName, ID3D11ShaderResourceView* texture);
+ENGINEDLL const Engine::PipelineStatus& GetPipeLineStatus(void);
 #pragma endregion
 
 #pragma region texture

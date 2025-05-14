@@ -47,7 +47,7 @@ HRESULT AltitudeIndicator::Start(void)
 
 HRESULT AltitudeIndicator::Awake(void)
 {
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 void AltitudeIndicator::FixedUpdate(void)

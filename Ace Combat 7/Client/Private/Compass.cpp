@@ -53,7 +53,7 @@ HRESULT Compass::Start(void)
 
 HRESULT Compass::Awake(void)
 {
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 void Compass::FixedUpdate(void)

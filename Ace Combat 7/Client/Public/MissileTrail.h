@@ -21,9 +21,13 @@ public:
 	virtual void Render(void) override;
 
 	HRESULT AddTrail(Engine::GameObject* object);
-	void UpdateTrail(MissileTrailParticle::TrailInfo& infomation, bool extinction = false);
+	void UpdateTrail(MissileTrailParticle::TrailInfo& infomation, bool extinction);
+	void UpdateTrail(MissileTrailParticle::TrailInfo& infomation);
+	void GenerateInterpolatedPoints(const Vector3& pointA, const Vector3& pointB, FLOAT frontTime, FLOAT interval, std::vector<std::pair<Vector3, FLOAT>>& result);
 private:
 	MissileTrailParticle* particle{nullptr};
 	FLOAT maxTime = 0.0f;
+	FLOAT Timer = 0.0f, recordTime = 0.05f;
 	std::vector<MissileTrailParticle::TrailInfo> trailInfoamtion;
+	std::vector<MissileTrailParticle::TrailInfo> trails;
 };

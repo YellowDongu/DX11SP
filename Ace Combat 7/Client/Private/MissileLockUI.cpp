@@ -30,7 +30,7 @@ HRESULT MissileLockUI::Start(void)
 
 HRESULT MissileLockUI::Awake(void)
 {
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 void MissileLockUI::FixedUpdate(void)

@@ -102,7 +102,7 @@ HRESULT MultiObjectBuffer::BindWorldBuffer(const std::vector<Engine::VertexMatri
 	return S_OK;
 }
 
-void MultiObjectBuffer::BindAssembler(void)
+void MultiObjectBuffer::BindPointParticleAssembler(void)
 {
 	/* 그리고자하는 자원들을 장치에 바인딩한다. */
 	std::vector<ID3D11Buffer*> vertexBuffers = { vertexBuffer, worldBuffer, additionalBuffer };
@@ -113,9 +113,20 @@ void MultiObjectBuffer::BindAssembler(void)
 	GetCurrentShader()->Render(indexBuffer, vertexBuffers, vertexStrides, static_cast<UINT>(vertexBuffers.size()), offsets, DXGI_FORMAT_R32_UINT, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 }
 
+void Engine::MultiObjectBuffer::BindNonPointParticleAssembler(void)
+{
+	/* 그리고자하는 자원들을 장치에 바인딩한다. */
+	std::vector<ID3D11Buffer*> vertexBuffers = { vertexBuffer, worldBuffer, additionalBuffer };
+
+	std::vector<UINT> vertexStrides = { vertexStride, worldStride, additionalInfoStride };
+	std::vector<UINT> offsets = { 0, 0, 0 };
+
+	GetCurrentShader()->Render(indexBuffer, vertexBuffers, vertexStrides, static_cast<UINT>(vertexBuffers.size()), offsets);
+}
+
 void Engine::MultiObjectBuffer::Render(void)
 {
-	BindAssembler();
+	BindPointParticleAssembler();
 	dxDeviceContext->DrawIndexedInstanced(indexCount, instanceNumber, 0, 0, 0);
 }
 

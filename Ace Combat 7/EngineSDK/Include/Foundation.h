@@ -86,6 +86,7 @@
 #include <cwctype> /*std::iswalpha()*/ 
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include <wrl/client.h>
 namespace wrl = Microsoft::WRL;
 

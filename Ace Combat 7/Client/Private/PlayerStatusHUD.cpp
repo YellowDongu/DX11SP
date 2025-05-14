@@ -70,7 +70,7 @@ HRESULT PlayerStatusHeadUpDisplay::Start(void)
 
 HRESULT PlayerStatusHeadUpDisplay::Awake(void)
 {
-    return E_NOTIMPL;
+    return S_OK;
 }
 
 void PlayerStatusHeadUpDisplay::FixedUpdate(void)
@@ -137,7 +137,7 @@ void PlayerStatusHeadUpDisplay::Render(void)
 
 
 
-    DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, Vector2::one(), 180.0f));
+    DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, Vector2::one(), 0.0f));
     SetWorldMatrix(worldMatrix);
     SetTexture(diffuseTexture, aircraft.texture);
     GetCurrentShader()->Render(aircraft.indexBuffer, aircraft.vertexBuffer, stride);
@@ -195,7 +195,7 @@ void PlayerStatusHeadUpDisplay::LinkData(Player* player)
 void PlayerStatusHeadUpDisplay::RenderMissileStatus(UIParts& parts, UIParts& innerParts, FLOAT coolTime, Vector2& position)
 {
     Matrix worldMatrix;
-    DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, Vector2::one(), 180.0f));
+    DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, Vector2::one(), 0.0f));
     SetWorldMatrix(worldMatrix);
     SetTexture(diffuseTexture, parts.texture);
     GetCurrentShader()->Render(parts.indexBuffer, parts.vertexBuffer, stride);

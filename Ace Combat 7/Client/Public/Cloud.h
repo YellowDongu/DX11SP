@@ -1,4 +1,5 @@
 #pragma once
+#include "CloudEffect.h"
 
 class Cloud : public Engine::GameObject
 {
@@ -9,7 +10,7 @@ private:
 	virtual ~Cloud(void) = default;
 	virtual void Free(void);
 public:
-	static Cloud* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext);
+	static Cloud* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, Vector3 position, Vector3 cloudSize = Vector3{100.0f, 100.0f, 100.0f});
 	virtual Engine::GameObject* Clone(void) override;
 
 	HRESULT Start(void);
@@ -21,4 +22,7 @@ public:
 
 
 private:
+	Vector3 cloudSize, centerPosition;
+	std::vector<Engine::VertexMatrix> distributionMatrix;
+	CloudEffect* particle{nullptr};
 };

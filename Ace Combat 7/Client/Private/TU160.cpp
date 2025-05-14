@@ -10,7 +10,7 @@
 #include "SuperClassAutoPilot.h"
 #include "RMWR.h"
 #include "StandardMissile.h"
-
+#include "WingVaporTrail.h"
 #include "Collider.h"
 
 
@@ -66,7 +66,6 @@ Engine::GameObject* TU160::Clone(void)
 #define aircraftGlobalMatrix(matrix) DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 0.0f), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(0.0f)), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)))
 #define gearGlobalMatrix(matrix) DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 0.0f), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(0.0f)), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)))
 
-
 HRESULT TU160::Start(void)
 {
     AddCollider(collider);
@@ -94,13 +93,13 @@ HRESULT TU160::Start(void)
 
     // model setting
 
-    flightModule = FlightMovement::Create(dxDevice, dxDeviceContext, transformComponent, metaData.aircraftInfomation.flightSpec);
+    flightModule = FlightMovement::Create(dxDevice, dxDeviceContext, metaData.aircraftInfomation.flightSpec);
     if (flightModule == nullptr) return E_FAIL;
     flightModule->SetSuper();
     AddComponent(flightModule, L"FlightMovement");
     //static_cast<AircraftBoneHandler*>(boneHandler)->LinkYoke(flightModule->yoke);
 
-    fcs = FireControlSystem::Create(dxDevice, dxDeviceContext, metaData.aircraftInfomation);
+    fcs = FireControlSystem::Create(dxDevice, dxDeviceContext, metaData);
     if (fcs == nullptr) return E_FAIL;
     fcs->SetStandardMissile(StandardMissile::Create(dxDevice, dxDeviceContext));
     fcs->SetUniqueMissile(nullptr);
@@ -131,7 +130,7 @@ HRESULT TU160::Start(void)
 HRESULT TU160::Awake(void)
 {
     autoPilot->Awake();
-
+    flightModule->Awake();
     SuperClassAIPilot* pilot = static_cast<SuperClassAIPilot*>(GetComponent(L"AIPilot"));
     pilot->Awake();
     //for (auto& component : components)
@@ -140,7 +139,21 @@ HRESULT TU160::Awake(void)
     //}
 
     Vector3 wayPoint = { 0.0f, ConvertFeetToWorld(10000.0f), 0.0f};
-    autoPilot->SetDestination(wayPoint); 
+    autoPilot->QueueWaypoint(wayPoint); 
+
+    Engine::Layer* layer = ::EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"ParticleLayer");
+    if (layer == nullptr)
+        return E_FAIL;
+
+    WingVaporTrail* wingVaporParticle = static_cast<WingVaporTrail*>(layer->GetGameObject(L"WingVaporTrail"));
+    if (wingVaporParticle == nullptr)
+        return E_FAIL;
+
+    wingVaporParticle->EnlistGameObject(this);
+
+
+
+
     return S_OK;
 
 }

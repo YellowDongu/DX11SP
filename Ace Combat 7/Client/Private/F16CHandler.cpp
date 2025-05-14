@@ -165,6 +165,8 @@ HRESULT F16CHandler::Awake(void)
 	for (auto& gearSet : gearSets)
 		landingGearParts.push_back(&gearSet.second);
 
+	landingGearApply = false;
+
 	return S_OK;
 }
 

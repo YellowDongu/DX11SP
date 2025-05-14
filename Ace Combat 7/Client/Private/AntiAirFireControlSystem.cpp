@@ -16,10 +16,10 @@ void AntiAirFireControlSystem::Free(void)
 	FireControlSystem::Free();
 }
 
-AntiAirFireControlSystem* AntiAirFireControlSystem::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, AircraftMetaData& metaData)
+AntiAirFireControlSystem* AntiAirFireControlSystem::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ObjectInfomation& metaData)
 {
 	AntiAirFireControlSystem* newInstance = new AntiAirFireControlSystem(dxDevice, dxDeviceContext);
-	newInstance->metaData = &metaData;
+	newInstance->metaData = metaData;
 	if (FAILED(newInstance->Start()))
 	{
 		Base::Destroy(newInstance);
@@ -38,6 +38,7 @@ HRESULT AntiAirFireControlSystem::Start(void)
 	bullet = SimpleBullet::Create(dxDevice, dxDeviceContext);
 	if (bullet == nullptr)
 		return E_FAIL;
+	bullet->SetDamage(1.0f);
 	standardMissile = nullptr;
 	uniqueMissile = nullptr;
 	uniqueMissileFired = false;
@@ -108,9 +109,9 @@ void AntiAirFireControlSystem::GunControl(void)
 		float4 quaternion;
 		Vector3 direction = (targeted->transform()->Position() - transform.Position()).normalize().getDirection();
 
-		DirectX::XMStoreFloat4(&quaternion, DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToDegrees(direction.x), DirectX::XMConvertToDegrees(direction.y), 0.0f));
+		DirectX::XMStoreFloat4(&quaternion, DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(direction.x), DirectX::XMConvertToRadians(direction.y), 0.0f));
 
-		activeBullet.push_back(bullet->Shoot(gameObject, transform.Position() + transform.Forward() * 100.0f, quaternion));
+		activeBullet.push_back(bullet->Shoot(gameObject, transform.Position() + transform.Forward() * 5.0f, quaternion));
 		coolDownGun += gunFireTick;
 		gunFired = true;
 	}

@@ -19,6 +19,8 @@ public:
 	virtual void Render(void);
 	virtual void End(void);
 
+	HRESULT SetTrigger(void);
+	HRESULT SetTerrain(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, Engine::Layer* layer);
 private:
 
 

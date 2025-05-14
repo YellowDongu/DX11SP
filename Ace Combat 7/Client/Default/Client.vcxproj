@@ -159,7 +159,7 @@
     <ClInclude Include="..\Public\AntiAirGunTruck.h" />
     <ClInclude Include="..\Public\AttitudeIndicator.h" />
     <ClInclude Include="..\Public\AutoPilot.h" />
-    <ClInclude Include="..\Public\BackGround.h" />
+    <ClInclude Include="..\Public\MainMenuParts.h" />
     <ClInclude Include="..\Public\Compass.h" />
     <ClInclude Include="..\Public\DefineArea.h" />
     <ClInclude Include="..\Public\Explosion.h" />
@@ -182,7 +182,7 @@
     <ClInclude Include="..\Public\MS01.h" />
     <ClInclude Include="..\Public\MS01OceanModel.h" />
     <ClInclude Include="..\Public\MS01Terrain.h" />
-    <ClInclude Include="..\Public\MS01TerrainA.h" />
+    <ClInclude Include="..\Public\CloudEffect.h" />
     <ClInclude Include="..\Public\AntiAirFireControlSystem.h" />
     <ClInclude Include="..\Public\MissileTrail.h" />
     <ClInclude Include="..\Public\Cloud.h" />
@@ -232,7 +232,7 @@
     <ClCompile Include="..\Private\AntiAirGunTruck.cpp" />
     <ClCompile Include="..\Private\AttitudeIndicator.cpp" />
     <ClCompile Include="..\Private\AutoPilot.cpp" />
-    <ClCompile Include="..\Private\BackGround.cpp" />
+    <ClCompile Include="..\Private\MainMenuParts.cpp" />
     <ClCompile Include="..\Private\Compass.cpp" />
     <ClCompile Include="..\Private\DefineArea.cpp" />
     <ClCompile Include="..\Private\Explosion.cpp" />
@@ -255,7 +255,7 @@
     <ClCompile Include="..\Private\MS01.cpp" />
     <ClCompile Include="..\Private\MS01OceanModel.cpp" />
     <ClCompile Include="..\Private\MS01Terrain.cpp" />
-    <ClCompile Include="..\Private\MS01TerrainA.cpp" />
+    <ClCompile Include="..\Private\CloudEffect.cpp" />
     <ClCompile Include="..\Private\AntiAirFireControlSystem.cpp" />
     <ClCompile Include="..\Private\MissileTrail.cpp" />
     <ClCompile Include="..\Private\Cloud.cpp" />

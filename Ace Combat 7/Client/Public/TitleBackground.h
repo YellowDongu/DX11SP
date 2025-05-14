@@ -2,16 +2,16 @@
 #include "UIObject.h"
 #include "RectanglePolygon.h"
 
-class TitleBackground : public Engine::UIObject
+class Background : public Engine::UIObject
 {
 private:
-	TitleBackground(void) = delete;
-	TitleBackground(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext);
-	TitleBackground(const TitleBackground& other);
-	virtual ~TitleBackground(void) = default;
+	Background(void) = delete;
+	Background(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext);
+	Background(const Background& other);
+	virtual ~Background(void) = default;
 	virtual void Free(void) override;
 public:
-	static TitleBackground* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext);
+	static Background* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext);
 	virtual Engine::GameObject* Clone(void);
 
 	virtual HRESULT Start(void);
@@ -21,11 +21,20 @@ public:
 	virtual void LateUpdate(void);
 	virtual void Render(void);
 
+	bool IsSplashScreenEnd(void);
+	bool SplashScreen(void) { return splashScreen; }
+	void EndSplashScreen(void) { splashScreen = false; }
 private:
 	UIParts backGround;
 	ID3D11ShaderResourceView* backGroundTexture{nullptr};
+	ID3D11ShaderResourceView* MainMenuTexture{nullptr};
 	Engine::RectanglePolygon* rectangle{nullptr};
 	std::string diffuseTexture = "diffuseTexture";
 	std::string world = "worldMatrix";
 	const UINT stride = sizeof(UIVertex);
+	std::vector<ID3D11ShaderResourceView*> textures;
+	UINT splashScreenCount{ 0 };
+	class ScreenFadeOut* fadeoutScreen{nullptr};
+	bool splashScreen{true};
+	FLOAT timer = 3.0f;
 };

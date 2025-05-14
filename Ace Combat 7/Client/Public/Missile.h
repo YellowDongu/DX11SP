@@ -28,8 +28,11 @@ public:
 	FLOAT CoolTimeSpeed(void) { return coolTimeSpeed; }
 	UINT MaximumShot(void) { return maximumShot; }
 	UINT MissileCount(void) { return missileCount; }
+	bool Air(void) { return air; }
+	bool Ground(void) { return ground; }
 protected:
 	bool detonated = false;
+	bool air = true, ground = true;
 	Engine::StaticModel* model{nullptr};
 	Engine::GameObject* target{nullptr};
 	static class Explosion* explosion;

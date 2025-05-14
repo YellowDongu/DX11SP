@@ -93,7 +93,7 @@ void FlightPathMarker::Render(void)
 	Vector2 scale = Vector2::one();
 	Matrix worldMatrix;
 
-	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 180.0f));
+	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 0.0f));
 	SetMatrix(world, worldMatrix);
 
 	SetTexture(diffuseTexture, centerMarker.texture);
@@ -103,7 +103,7 @@ void FlightPathMarker::Render(void)
 	if (!goingForward)
 		return;
 	position = path;
-	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 180.0f));
+	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 0.0f));
 	SetMatrix(world, worldMatrix);
 
 	SetTexture(diffuseTexture, pathMarker.texture);

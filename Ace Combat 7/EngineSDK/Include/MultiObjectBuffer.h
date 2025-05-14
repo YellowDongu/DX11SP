@@ -26,7 +26,8 @@ namespace Engine
 		HRESULT BindWorldBuffer(const std::vector<Matrix>& matrix);
 		HRESULT BindWorldBuffer(const std::vector<Engine::VertexMatrix>& matrixData);
 
-		virtual void BindAssembler(void);
+		virtual void BindPointParticleAssembler(void);
+		virtual void BindNonPointParticleAssembler(void);
 		virtual void Render(void);
 
 		HRESULT CreatePointIndexBuffer(ID3D11Device* dxDevice, ID3D11Buffer*& indexBuffer, UINT instanceNumber, UINT& indexCount, UINT& wholeIndexCount, std::vector<UINT>& indices);

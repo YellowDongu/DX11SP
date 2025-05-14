@@ -66,7 +66,7 @@ HRESULT SpeedIndicator::Start(void)
 
 HRESULT SpeedIndicator::Awake(void)
 {
-	return E_NOTIMPL;
+	return S_OK;
 }
 #undef innerErrorCheck
 

@@ -38,7 +38,8 @@ void Collider::Free(void)
 	#ifdef ColliderDebug
 	if (!clone)
 	{
-		if (batch != nullptr){
+		if (batch != nullptr)
+		{
 			delete batch;
 			batch = nullptr;
 		}
@@ -79,11 +80,11 @@ HRESULT Collider::Start(void)
 
 void Collider::Update(void)
 {
-	collidingBody->Update(gameObject->transform()->WorldMatrix());
 }
 
 void Collider::LateUpdate(void)
 {
+	collidingBody->Update(gameObject->transform()->WorldMatrix());
 }
 
 void Collider::FixedUpdate(void)
@@ -94,8 +95,9 @@ void Collider::Render(void)
 {
 	#ifdef ColliderDebug
 	effect->SetWorld(DirectX::XMMatrixIdentity());
-	effect->SetView(DirectX::XMLoadFloat4x4(&::EngineInstance()->RenderManager()->ViewMatrix()));
-	effect->SetProjection(DirectX::XMLoadFloat4x4(&::EngineInstance()->RenderManager()->ProjectionMatrix()));
+	const PipelineStatus& pipeline = ::GetPipeLineStatus();
+	effect->SetView(DirectX::XMLoadFloat4x4(&pipeline.viewMatrix));
+	effect->SetProjection(DirectX::XMLoadFloat4x4(&pipeline.projectionMatrix));
 	context->IASetInputLayout(inputLayout);
 
 	effect->Apply(context);

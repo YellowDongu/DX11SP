@@ -46,6 +46,10 @@ struct ObjectInfomation
     Vector3 startPosition;
     Vector3 startDirection;
     std::wstring gameObejctName;
+
+    Engine::GameObject* leader{ nullptr };
+    Vector3 wingmanPosition{ Vector3::zero() };
+    bool immortality{ false };
 };
 
 struct F15EMetaData final : public AircraftMetaData { F15EMetaData(); };

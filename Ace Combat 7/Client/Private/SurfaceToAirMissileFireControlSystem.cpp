@@ -17,10 +17,10 @@ void SurfaceToAirMissileFireControlSystem::Free(void)
 	FCS::Free();
 }
 
-SurfaceToAirMissileFireControlSystem* SurfaceToAirMissileFireControlSystem::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, AircraftMetaData& metaData)
+SurfaceToAirMissileFireControlSystem* SurfaceToAirMissileFireControlSystem::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ObjectInfomation& metaData)
 {
 	SAMFCS* newInstance = new SAMFCS(dxDevice, dxDeviceContext);
-	newInstance->metaData = &metaData;
+	newInstance->metaData = metaData;
 
 	if (FAILED(newInstance->Start()))
 	{

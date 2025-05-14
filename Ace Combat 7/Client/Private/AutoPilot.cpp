@@ -103,12 +103,11 @@ bool AutoPilot::CheckAltitude(void)
 	yoke->y = 0.0f;
 	yoke->z = 0.0f;
 
-	Vector3 currentAngle = Vector3::getDirection(transform->Forward());
-	currentAngle.x = 50.0f;
-	//TurnToDirection(currentAngle);
-	Vector3 directionDifference = currentAngle - Vector3::getDirection(transform->Forward());
-	float angle = 0.0f;
-	angle = transform->Angle().z;
+	Vector3 directionDifference = transform->Angle();
+	directionDifference.y = 0.0f;
+	directionDifference.x = 50.0f - directionDifference.x;
+	//Vector3 directionDifference = currentAngle - Vector3::getDirection(transform->Forward());
+	float angle = directionDifference.z;
 	yoke->x = 0.0f;
 	if (std::abs(angle) > 3.0f)
 	{
@@ -128,10 +127,6 @@ bool AutoPilot::CheckAltitude(void)
 			yoke->x = 0.0f;
 		}
 	}
-
-
-	if (isnan(yoke->x) || isnan(yoke->y) || isnan(yoke->z))
-		TurnToDirection(currentAngle);
 
 	*throttle = 1.0f;
 

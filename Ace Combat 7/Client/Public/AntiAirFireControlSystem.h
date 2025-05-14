@@ -11,7 +11,7 @@ private:
 	virtual ~AntiAirFireControlSystem(void) = default;
 	virtual void Free(void) override;
 public:
-	static AntiAirFireControlSystem* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, AircraftMetaData& metaData);
+	static AntiAirFireControlSystem* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ObjectInfomation& metaData);
 	virtual Engine::Component* Clone(void) override;
 
 	HRESULT Start(void);

@@ -11,7 +11,7 @@ private:
 	virtual ~SurfaceToAirMissileFireControlSystem(void) = default;
 	virtual void Free(void);
 public:
-	static SurfaceToAirMissileFireControlSystem* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, AircraftMetaData& metaData);
+	static SurfaceToAirMissileFireControlSystem* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ObjectInfomation& metaData);
 	virtual Engine::Component* Clone(void);
 
 	HRESULT Start(void);

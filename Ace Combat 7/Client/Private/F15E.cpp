@@ -10,6 +10,8 @@
 #include "RMWR.h"
 #include "AIPilot.h"
 #include "StandardMissile.h"
+#include "WingVaporTrail.h"
+#include "RaderSystem.h"
 
 #include "Collider.h"
 
@@ -37,6 +39,9 @@ void F15E::Free(void)
 F15E* F15E::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext)
 {
 	F15E* newInstance = new F15E(dxDevice, dxDeviceContext);
+    newInstance->metaData.allyInfo = 2;
+    newInstance->metaData.gameObejctName = L"Test";
+    newInstance->metaData.aircraftInfomation = F15EMetaData();
 	if (FAILED(newInstance->Start()))
 	{
 		Base::Destroy(newInstance);
@@ -45,13 +50,26 @@ F15E* F15E::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext)
 	return newInstance;
 }
 
+F15E* F15E::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ObjectInfomation& infomation)
+{
+    F15E* newInstance = new F15E(dxDevice, dxDeviceContext);
+    newInstance->metaData = infomation;
+    newInstance->metaData.aircraftInfomation = F15EMetaData();
+    if (FAILED(newInstance->Start()))
+    {
+        Base::Destroy(newInstance);
+        return nullptr;
+    }
+    return newInstance;
+}
+
 Engine::GameObject* F15E::Clone(void)
 {
 	return new F15E(*this);
 }
 #define aircraftGlobalMatrix(matrix) DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 0.0f), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(0.0f)), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)))
-#define gearGlobalMatrix(matrix) DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 0.0f), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(0.0f), DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(0.0f)), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)))
-
+#define gearGlobalMatrix(matrix) DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixAffineTransformation(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 0.0f), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(-90.0f), DirectX::XMConvertToRadians(0.0f)), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)))
+RaderSystem* radar;
 HRESULT F15E::Start(void)
 {
     if (FAILED(CreateTransform()))
@@ -63,9 +81,6 @@ HRESULT F15E::Start(void)
     //transformComponent->Scale() = Vector3::one() * 50.0f;
     //transformComponent->Scale() = Vector3::one();
 
-    metaData.allyInfo = false;
-    metaData.gameObejctName = L"Test";
-    metaData.aircraftInfomation = F15EMetaData();
     Matrix matrix;
     gearGlobalMatrix(matrix);
     ConvertModel(metaData.aircraftInfomation.gearModelfilePathA, metaData.aircraftInfomation.gearModelfilePath, matrix);
@@ -83,11 +98,11 @@ HRESULT F15E::Start(void)
     boneHandler = F15EHandler::Create(dxDevice, dxDeviceContext);
     AddComponent(boneHandler, L"AircraftBoneHandler");
 
-    flightModule = FlightMovement::Create(dxDevice, dxDeviceContext, transformComponent, metaData.aircraftInfomation.flightSpec);
+    flightModule = FlightMovement::Create(dxDevice, dxDeviceContext, metaData.aircraftInfomation.flightSpec);
     if (flightModule == nullptr) return E_FAIL;
     AddComponent(flightModule, L"FlightMovement");
 
-    fcs = FireControlSystem::Create(dxDevice, dxDeviceContext, metaData.aircraftInfomation);
+    fcs = FireControlSystem::Create(dxDevice, dxDeviceContext, metaData);
     if (fcs == nullptr) return E_FAIL;
     fcs->SetStandardMissile(StandardMissile::Create(dxDevice, dxDeviceContext));
     fcs->SetUniqueMissile(nullptr);
@@ -113,18 +128,38 @@ HRESULT F15E::Start(void)
     pilot = AIPilot::Create(dxDevice, dxDeviceContext, metaData);
     AddComponent(pilot, L"AIPilot");
 
+    RaderSystem* radar = RaderSystem::Create(dxDevice, dxDeviceContext);
+    AddComponent(radar, L"RaderSystem");
 	return S_OK;
 }
 
 HRESULT F15E::Awake(void)
 {
     static_cast<AircraftBoneHandler*>(boneHandler)->LinkYoke(flightModule->yoke);
-    if(FAILED(boneHandler->Awake()))
+    for (auto& component : components)
+    {
+        if (FAILED(component.second->Awake()))
+            return E_FAIL;
+    }
+
+    //if(FAILED(boneHandler->Awake()))
+    //    return E_FAIL;
+    //if(FAILED(autoPilot->Awake()))
+    //    return E_FAIL;
+    //if (FAILED(pilot->Awake()))
+    //    return E_FAIL;
+    //radar->Awake();
+
+    Engine::Layer* layer = ::EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"ParticleLayer");
+    if (layer == nullptr)
         return E_FAIL;
-    if(FAILED(autoPilot->Awake()))
+
+    WingVaporTrail* wingVaporParticle = static_cast<WingVaporTrail*>(layer->GetGameObject(L"WingVaporTrail"));
+    if (wingVaporParticle == nullptr)
         return E_FAIL;
-    if (FAILED(pilot->Awake()))
-        return E_FAIL;
+
+    wingVaporParticle->EnlistGameObject(this);
+
 
     return S_OK;
 }
@@ -142,6 +177,8 @@ void F15E::LateUpdate(void)
         return;
     Engine::GameObject::LateUpdate();
     AddRenderObject(RenderType::NonBlend, this);
+    if (std::isnan(transformComponent->Position().x))
+        int i = 0;
 }
 
 void F15E::FixedUpdate(void)

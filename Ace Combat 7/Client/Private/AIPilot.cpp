@@ -49,6 +49,8 @@ HRESULT AIPilot::Awake(void)
 	autoPilot->SetMinimumAltitude(minimumAltitude);
 	//Engine::Layer* layer = EngineInstance()->SceneManager()->CurrentScene()->FindLayer();
 
+	leader = objectInfomation.leader;
+	wingManPositionLocal = objectInfomation.wingmanPosition;
 	//enemyLayer;
 	return S_OK;
 }
@@ -61,6 +63,8 @@ HRESULT AIPilot::Start(void)
 
 void AIPilot::Update(void)
 {
+	static FLOAT chaseDistance = ConvertFeetToWorld(10000.0f) * 2.5f;
+	static FLOAT throttleMinimunDistance = ConvertFeetToWorld(2000.0f) * 2.5f;
 	timer -= DeltaTime();
 	defend = rmwr->ClosedWarning();
 
@@ -76,28 +80,47 @@ void AIPilot::Update(void)
 		storage.x = -1.0f;
 		storage.y = -1.0f;
 		storage.z = -1.0f;
-		if(target == nullptr)
-			SearchEnemy();
-		else
+		target = fcs->LinkTarget();
+		if (target != nullptr)
 		{
-			NonCombat();
-
-			return;
 			towardEnemy = target->transform()->Position() - gameObject->transform()->Position();
 			direction = towardEnemy.normalize();
 			enemyDistance = towardEnemy.magnitude();
-			if (enemyDistance < ConvertFeetToWorld(7000.0f) * 5.0f)
-			{
+			if (leader == nullptr)
 				ChaseEnemy();
+			else
+			{
 
-				if (flightModule->yoke.x != 0.0f || flightModule->yoke.y != 0.0f || flightModule->yoke.z != 0.0f)
-					flightModule->throttle = 1.0f;
+				if (enemyDistance < chaseDistance)
+				{
+					ChaseEnemy();
+
+					flightModule->throttle = enemyDistance / throttleMinimunDistance;
+					if (flightModule->throttle > 1.0f)
+						flightModule->throttle = 1.0f;
+					else if(flightModule->throttle < flightModule->IdleThrottle())
+						flightModule->ThrottleIdle();
+				}
 				else
-					flightModule->ThrottleIdle();
+				{
+					FormationFlight();
+					fcs->gunFire = false;
+				}
+
 			}
 
-			NonCombat();
 		}
+		else
+		{
+			fcs->gunFire = false;
+
+			if (leader != nullptr)
+				FormationFlight();
+
+			if (target == nullptr)
+				SearchEnemy();
+		}
+
 	}
 }
 
@@ -193,6 +216,7 @@ void AIPilot::Evade(void)
 
 void AIPilot::SearchEnemy(void)
 {
+	return;
 	leader = target = EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"Ally")->GetGameObject(L"Player");
 	fcs->SetForceTargetChange(target);
 }

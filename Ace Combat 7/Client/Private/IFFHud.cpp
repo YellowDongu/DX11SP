@@ -21,7 +21,7 @@ IdentificationFriendorFoeHeadUpDisplay* IdentificationFriendorFoeHeadUpDisplay::
 {
 	IFFHUD* newInstance = new IFFHUD(dxDevice, dxDeviceContext);
 
-	newInstance->AddLayers(scene);
+	//newInstance->AddLayers(scene);
 	newInstance->player = player;
 	newInstance->cameraObject = camera;
 	newInstance->camera = static_cast<Engine::Camera*>(camera->GetComponent(L"Camera"));
@@ -65,7 +65,7 @@ HRESULT IdentificationFriendorFoeHeadUpDisplay::Start(void)
 HRESULT IdentificationFriendorFoeHeadUpDisplay::Awake(void)
 {
 	AddLayers(EngineInstance()->SceneManager()->CurrentScene());
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 void IdentificationFriendorFoeHeadUpDisplay::FixedUpdate(void)
@@ -83,6 +83,7 @@ void IdentificationFriendorFoeHeadUpDisplay::LateUpdate(void)
 
 void IdentificationFriendorFoeHeadUpDisplay::Render(void)
 {
+	static std::string uiColorName = "UIcolor";
 	Vector2 scale = Vector2::one() * 0.65f;
 	if (Enemy != nullptr)
 	{
@@ -98,6 +99,18 @@ void IdentificationFriendorFoeHeadUpDisplay::Render(void)
 		{
 			RenderHUD(object.second, aircraftMarker, markerScale, Vector2::one() * 0.65f, true);
 		}
+	}
+	if (Ally != nullptr)
+	{
+		static DirectX::XMFLOAT4 mint = { 0.0f, 1.0f, 1.0f, 1.0f };
+		GetCurrentShader()->BindVariable(uiColorName, &mint, sizeof(DirectX::XMFLOAT4));
+		for (auto& object : Ally->GameObjectList())
+		{
+			if (object.second == player)
+				continue;
+			RenderHUD(object.second, aircraftMarker, markerScale, Vector2::one() * 0.65f);
+		}
+		GetCurrentShader()->BindVariable(uiColorName, &uiColor, sizeof(DirectX::XMFLOAT4));
 	}
 }
 
@@ -187,7 +200,7 @@ void IdentificationFriendorFoeHeadUpDisplay::AddLayers(Engine::Scene* scene)
 	NonTargetGroundEnemy = nullptr;
 	MainTargetAlly = nullptr;
 	MainTargetAllyGround = nullptr;
-	Ally = nullptr;
+	Ally = scene->FindLayer(L"Ally");
 	GroundAlly = nullptr;
 	NonTargetAlly = nullptr;
 	NonTargetGroundAlly = nullptr;

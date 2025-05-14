@@ -30,24 +30,44 @@ void ColliderManager::Update(void)
 
 void ColliderManager::LateUpdate(void)
 {
-	for (auto& collider : colliders)
+	auto EndIterator = colliders.end();
+	auto iteratorSecond = colliders.begin();
+	for (auto iterator = colliders.begin(); iterator != EndIterator; iterator++)
 	{
-		for (auto& targetCollider : colliders)
+		iteratorSecond = iterator;
+		iteratorSecond++;
+		for (; iteratorSecond != EndIterator; iteratorSecond++)
 		{
-			if (collider == targetCollider)
-				continue;
-
-			if (collider->Intersect(targetCollider))
+			if ((*iterator)->Intersect(*iteratorSecond))
 			{
-				if (collider->GetOwner() != nullptr)
-					collider->GetOwner()->Collide(targetCollider->GetOwner(), targetCollider);
+				if ((*iterator)->GetOwner() != nullptr)
+					(*iterator)->GetOwner()->Collide((*iteratorSecond)->GetOwner(), (*iteratorSecond));
 
-				if (targetCollider->GetOwner() != nullptr)
-					targetCollider->GetOwner()->Collide(collider->GetOwner(), collider);
+				if ((*iteratorSecond)->GetOwner() != nullptr)
+					(*iteratorSecond)->GetOwner()->Collide((*iterator)->GetOwner(), *iterator);
 			}
-
 		}
 	}
+
+
+	//for (auto& collider : colliders)
+	//{
+	//	for (auto& targetCollider : colliders)
+	//	{
+	//		if (collider == targetCollider)
+	//			continue;
+	//
+	//		if (collider->Intersect(targetCollider))
+	//		{
+	//			if (collider->GetOwner() != nullptr)
+	//				collider->GetOwner()->Collide(targetCollider->GetOwner(), targetCollider);
+	//
+	//			if (targetCollider->GetOwner() != nullptr)
+	//				targetCollider->GetOwner()->Collide(collider->GetOwner(), collider);
+	//		}
+	//
+	//	}
+	//}
 	colliders.clear();
 }
 

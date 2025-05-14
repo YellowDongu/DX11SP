@@ -38,7 +38,7 @@ Engine::GameObject* SurfaceToAirMissileTruck::Clone(void)
 HRESULT SurfaceToAirMissileTruck::Start(void)
 {
 	ObjectInfomation infomation;
-	infomation.allyInfo = false;
+	infomation.allyInfo = 2;
 	infomation.startDirection = Vector3::zero();
 	infomation.startPosition = Vector3::zero();
 	infomation.gameObejctName = L"";
@@ -55,7 +55,7 @@ HRESULT SurfaceToAirMissileTruck::Start(void)
 		return E_FAIL;
 	AddComponent(model, L"FullModel");
 
-	SAMFCS* fcs = SAMFCS::Create(dxDevice, dxDeviceContext, infomation.aircraftInfomation);
+	SAMFCS* fcs = SAMFCS::Create(dxDevice, dxDeviceContext, infomation);
 	if (fcs == nullptr)
 		return E_FAIL;
 	AddComponent(fcs, L"FCS");
@@ -69,6 +69,7 @@ HRESULT SurfaceToAirMissileTruck::Start(void)
 	if (radar == nullptr)
 		return E_FAIL;
 	radar->SetSearchMaxDistance(ConvertFeetToWorld(1000.0f) * 2.5f);
+	radar->SetDefendArea();
 	AddComponent(radar, L"RaderSystem");
 
 	GroundAI* aiPilot = GroundAI::Create(dxDevice, dxDeviceContext, infomation);

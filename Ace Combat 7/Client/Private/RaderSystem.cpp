@@ -3,6 +3,7 @@
 #include "FireControlSystem.h"
 #include "SuperClassAIPilot.h"
 #include "PlayerPilot.h"
+#include "RMWR.h"
 
 RaderSystem::RaderSystem(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::Component(dxDevice, dxDeviceContext)
 {
@@ -35,6 +36,7 @@ HRESULT RaderSystem::Awake(void)
 		return E_FAIL;
 
 	currentEnemy = &fcs->LinkTarget();
+	currentEmemyRMWR = &fcs->LinkTargetRMWR();
 
 
 	AIPilot* pilot = static_cast<AIPilot*>(gameObject->GetComponent(L"AIPilot"));
@@ -54,8 +56,8 @@ HRESULT RaderSystem::Awake(void)
 	}
 	else
 	{
-		allyFaction = pilot->LinkObjectInfomation().allyInfo;
-		maxDistance = FLT_MAX;
+		allyFaction = pilot->LinkObjectInfomation().allyInfo != 2;
+		//maxDistance = FLT_MAX;
 	}
 
 	CollectLayer();
@@ -72,6 +74,7 @@ void RaderSystem::Update(void)
 			if (iterator->second == *currentEnemy)
 			{
 				iterator = sortedObjects.erase(iterator);
+				timer = 0.0f;
 				break;
 			}
 			else
@@ -129,7 +132,19 @@ void RaderSystem::SearchEnemy(void)
 
 		if (distance >= maxDistance)
 		{
-			UnTargeting();
+			if (FAILED(LayerSearch()))
+				return;
+
+			if (sortedObjects.empty())
+			{
+				UnTargeting();
+			}
+			else
+			{
+				*currentEnemy = sortedObjects.front().second;
+				*currentEmemyRMWR = static_cast<RMWR*>((*currentEnemy)->GetComponent(L"RMWR"));
+				currentTargetIndex = 0;
+			}
 		}
 	}
 	else
@@ -139,12 +154,12 @@ void RaderSystem::SearchEnemy(void)
 
 		if (sortedObjects.empty())
 		{
-			*currentEnemy = nullptr;
-			currentTargetIndex = -1;
+			UnTargeting();
 		}
 		else
 		{
 			*currentEnemy = sortedObjects.front().second;
+			*currentEmemyRMWR = static_cast<RMWR*>((*currentEnemy)->GetComponent(L"RMWR"));
 			currentTargetIndex = 0;
 		}
 		timer = maxTimer;
@@ -153,7 +168,7 @@ void RaderSystem::SearchEnemy(void)
 
 HRESULT RaderSystem::LayerSearch(void)
 {
-	if (*currentEnemy != nullptr || timer > 0.0f)
+	if (timer > 0.0f)
 		return E_FAIL;
 
 	FLOAT distance = 0.0f, angle = 0.0f;
@@ -191,7 +206,8 @@ HRESULT RaderSystem::LayerSearch(void)
 			{
 				direction = enemyGameObject.second->transform()->Position() - position;
 				distance = direction.magnitude();
-				sortedObjects.push_back({ distance, enemyGameObject.second });
+				if(!defend || distance < maxDistance)
+					sortedObjects.push_back({ distance, enemyGameObject.second });
 			}
 		}
 		sortedObjects.sort([](const std::pair<FLOAT, Engine::GameObject*>& object, const std::pair<FLOAT, Engine::GameObject*>& subject) { return object.first < subject.first; });
@@ -296,22 +312,32 @@ void RaderSystem::PlayerControl(void)
 	if (Input()->getButtonDown(KeyType::T))
 	{
 		LayerSearch();
-		currentTargetIndex++;
-
-		auto iterator = sortedObjects.begin();
-
-		for (INT i = 0; i < currentTargetIndex; i++)
+		if (sortedObjects.empty())
 		{
-			iterator++;
-			if (iterator == sortedObjects.end())
-			{
-				currentTargetIndex = 0;
-				iterator = sortedObjects.begin();
-				break;
-			}
+			currentTargetIndex = -1;
+			*currentEnemy = nullptr;
+			timer = 0.2f;
 		}
-		*currentEnemy = iterator->second;
-		timer = maxTimer;
+		else
+		{
+			currentTargetIndex++;
+
+			auto iterator = sortedObjects.begin();
+
+			for (INT i = 0; i < currentTargetIndex; i++)
+			{
+				iterator++;
+				if (iterator == sortedObjects.end())
+				{
+					currentTargetIndex = 0;
+					iterator = sortedObjects.begin();
+					break;
+				}
+			}
+			*currentEnemy = iterator->second;
+			timer = maxTimer;
+		}
+
 	}
 	else
 	{

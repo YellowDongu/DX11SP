@@ -9,11 +9,11 @@
 #include "AircraftMetaData.h"
 #include "RMWR.h"
 
-PlayerPilot::PlayerPilot(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::Component(dxDevice, dxDeviceContext), flightModule(nullptr)
+PlayerPilot::PlayerPilot(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::Component(dxDevice, dxDeviceContext)
 {
 }
 
-PlayerPilot::PlayerPilot(const Component& other) : Engine::Component(other), flightModule(nullptr)
+PlayerPilot::PlayerPilot(const Component& other) : Engine::Component(other)
 {
 }
 
@@ -49,7 +49,7 @@ HRESULT PlayerPilot::Awake(void)
     cameraTrdViewOffset = objectInfomation.aircraftInfomation.cameraTrdViewOffset * 0.5f;
     cameraFstViewOffset = objectInfomation.aircraftInfomation.cameraFstViewOffset * 0.5f;
 
-    cameraState = 0;
+    cameraState = -2;
 
     return S_OK;
 }
@@ -61,8 +61,23 @@ void PlayerPilot::Update(void)
     if (Input()->getButtonDown(KeyType::Space))
          fcs->weaponRelease = true;
     fcs->gunFire = Input()->getButton(KeyType::LCtrl);
-    if (Input()->getButtonDown(KeyType::R))
+    if (Input()->getButtonDown(KeyType::V))
+    {
         cameraState++;
+        switch (cameraState)
+        {
+        case 1:
+            camera->FOV(10.0f);
+            break;
+        case 3:
+            camera->FOV(45.0f);
+            cameraState = -1;
+            break;
+        default:
+            camera->FOV(45.0f);
+            break;
+        }
+    }
     if (Input()->getButtonDown(KeyType::E))
         fcs->ChangeWeapon();
 
@@ -74,6 +89,10 @@ void PlayerPilot::Update(void)
 
     switch (cameraState)
     {
+    case -2:
+        camera->FOV(10.0f);
+        cameraState = 1;
+        break;
     case -1:
     {
         camera->FOV(45.0f);
@@ -141,56 +160,17 @@ void PlayerPilot::Update(void)
         break;
     case 0:
     {
-        camera->FOV(45.0f);
-        if (Input()->getButton(KeyType::W))
-            flightModule->throttle = 1.0f;
-        else if (Input()->getButton(KeyType::S))
-            flightModule->throttle = 0.0f;
-        else
-            flightModule->ThrottleIdle();
-
-
-        flightModule->yoke.x = static_cast<FLOAT>(Input()->getButton(KeyType::UP)) - static_cast<FLOAT>(Input()->getButton(KeyType::DOWN));
-        flightModule->yoke.y = static_cast<FLOAT>(Input()->getButton(KeyType::A)) - static_cast<FLOAT>(Input()->getButton(KeyType::D));
-        flightModule->yoke.z = static_cast<FLOAT>(Input()->getButton(KeyType::LEFT)) - static_cast<FLOAT>(Input()->getButton(KeyType::RIGHT));
-        flightModule->airbreakActive = Input()->getButton(KeyType::S);
-        flightModule->Update();
+        PlayerControl();
     }
         break;
     case 1:
     {
-        camera->FOV(45.0f);
-        if (Input()->getButton(KeyType::W))
-            flightModule->throttle = 1.0f;
-        else if (Input()->getButton(KeyType::S))
-            flightModule->throttle = 0.0f;
-        else
-            flightModule->ThrottleIdle();
-
-
-        flightModule->yoke.x = static_cast<FLOAT>(Input()->getButton(KeyType::UP)) - static_cast<FLOAT>(Input()->getButton(KeyType::DOWN));
-        flightModule->yoke.y = static_cast<FLOAT>(Input()->getButton(KeyType::A)) - static_cast<FLOAT>(Input()->getButton(KeyType::D));
-        flightModule->yoke.z = static_cast<FLOAT>(Input()->getButton(KeyType::LEFT)) - static_cast<FLOAT>(Input()->getButton(KeyType::RIGHT));
-        flightModule->airbreakActive = Input()->getButton(KeyType::S);
-        flightModule->Update();
+        PlayerControl();
     }
         break;
     case 2:
     {
-        camera->FOV(45.0f);
-        if (Input()->getButton(KeyType::W))
-            flightModule->throttle = 1.0f;
-        else if (Input()->getButton(KeyType::S))
-            flightModule->throttle = 0.0f;
-        else
-            flightModule->ThrottleIdle();
-
-
-        flightModule->yoke.x = static_cast<FLOAT>(Input()->getButton(KeyType::UP)) - static_cast<FLOAT>(Input()->getButton(KeyType::DOWN));
-        flightModule->yoke.y = static_cast<FLOAT>(Input()->getButton(KeyType::A)) - static_cast<FLOAT>(Input()->getButton(KeyType::D));
-        flightModule->yoke.z = static_cast<FLOAT>(Input()->getButton(KeyType::LEFT)) - static_cast<FLOAT>(Input()->getButton(KeyType::RIGHT));
-        flightModule->airbreakActive = Input()->getButton(KeyType::S);
-        flightModule->Update();
+        PlayerControl();
     }
         break;
     default:
@@ -233,7 +213,6 @@ void PlayerPilot::LateUpdate(void)
     accelValue = clamp(accelValue, 0.5f, 1.0f);
 
     cameraTrdViewOffset = objectInfomation.aircraftInfomation.cameraTrdViewOffset * (0.5f + (accelValue - 0.5f) * 0.5f);
-    cameraFstViewOffset = objectInfomation.aircraftInfomation.cameraFstViewOffset * (0.5f + (accelValue - 0.5f) * 0.5f);
 
     switch (cameraState)
     {
@@ -270,11 +249,8 @@ void PlayerPilot::LateUpdate(void)
             break;
         }
         
-        Vector3 position;
         camera->transform()->Synchronization(*testEnemy->transform());
-        position = transformComponent->Forward() * cameraTrdViewOffset.z + transformComponent->Up() * cameraTrdViewOffset.y;
-        camera->transform()->Position() += position;
-        
+        camera->transform()->Position() += testEnemy->transform()->Forward() * cameraTrdViewOffset.z + testEnemy->transform()->Up() * cameraTrdViewOffset.y;
         camera->transform()->UpdateWorldMatrix();
         
         break;
@@ -291,11 +267,9 @@ void PlayerPilot::LateUpdate(void)
             break;
         }
 
-
         camera->transform()->Synchronization(*launchedMissile->transform());
-        position = launchedMissile->transform()->Forward() * -100.0f + launchedMissile->transform()->Up() * 25.0f;
         //Vector3 position = launchedMissile->transform()->Forward() * cameraFstViewOffset.z * 3.0f;
-        camera->transform()->Position() += position;
+        camera->transform()->Position() += launchedMissile->transform()->Forward() * -100.0f + launchedMissile->transform()->Up() * 25.0f;
         if(fcs->WeaponSelectedStatus() == 0)
             camera->transform()->SetAngle(static_cast<StandardMissile*>(launchedMissile)->Rotation());
         else
@@ -317,14 +291,33 @@ void PlayerPilot::LateUpdate(void)
     }
         break;
     }
-    //std::cout << transformComponent->Position().x << " :   " << transformComponent->Position().y << " :   " << transformComponent->Position().z << std::endl;
-    //std::cout << camera->transform()->Position().x << " :   " << camera->transform()->Position().y << " :   " << camera->transform()->Position().z << std::endl;
-    //std::cout << transformComponent->Quaternion().x << " :   " << transformComponent->Quaternion().y << " :   " << transformComponent->Quaternion().z << " :   " << transformComponent->Quaternion().w << std::endl;
-    //std::cout << camera->transform()->Quaternion().x << " :   " << camera->transform()->Quaternion().y << " :   " << camera->transform()->Quaternion().z << " :   " << camera->transform()->Quaternion().w << std::endl;
 }
 
 void PlayerPilot::FixedUpdate(void)
 {
 	//if (flightModule == nullptr)
 	//	return;
+}
+
+void PlayerPilot::PlayerControl(void)
+{
+    bool accel = Input()->getButton(KeyType::W);
+    bool deccel = Input()->getButton(KeyType::S);
+
+    flightModule->highGTurn = accel && deccel;
+    if (flightModule->highGTurn)
+        flightModule->ThrottleIdle();
+    else if (accel)
+        flightModule->throttle = 1.0f;
+    else if (deccel)
+        flightModule->throttle = 0.0f;
+    else
+        flightModule->ThrottleIdle();
+
+
+    flightModule->yoke.x = static_cast<FLOAT>(Input()->getButton(KeyType::UP)) - static_cast<FLOAT>(Input()->getButton(KeyType::DOWN));
+    flightModule->yoke.y = static_cast<FLOAT>(Input()->getButton(KeyType::A)) - static_cast<FLOAT>(Input()->getButton(KeyType::D));
+    flightModule->yoke.z = static_cast<FLOAT>(Input()->getButton(KeyType::LEFT)) - static_cast<FLOAT>(Input()->getButton(KeyType::RIGHT));
+    flightModule->airbreakActive = deccel;
+    flightModule->Update();
 }

@@ -45,7 +45,7 @@ HRESULT SimpleBullet::Start(void)
 	if (model == nullptr)
 		return E_FAIL;
 	AddComponent(model, L"CubePolygon");
-	transformComponent->Scale().z = 50.0f;
+	transformComponent->Scale() = Vector3{ 0.01f, 0.01f, 2.5f };
 
 	Engine::OBB::Description description;
 	description.center = Vector3::zero();
@@ -73,6 +73,7 @@ void SimpleBullet::Update(void)
 
 void SimpleBullet::LateUpdate(void)
 {
+	collider->LateUpdate();
 	AddRenderObject(RenderType::NonBlend, this);
 }
 
@@ -132,7 +133,7 @@ void SimpleBullet::CreateCustomVertex(std::vector<CubeVertex>& vertices, std::ve
 	vertices[6].position = { 0.5f,-0.5f, 0.5f };
 	vertices[7].position = { -0.5f,-0.5f, 0.5f };
 
-	DirectX::XMFLOAT3 color = { 0.8f, 0.8f, 0.0f };
+	DirectX::XMFLOAT3 color = { 1.0f, 1.0f, 0.0f };
 	for (size_t i = 0; i < 8; i++)
 	{
 		memcpy(&vertices[i].texturePosition, &color, sizeof(DirectX::XMFLOAT3));

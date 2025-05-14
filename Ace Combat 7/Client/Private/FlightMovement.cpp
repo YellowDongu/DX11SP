@@ -2,7 +2,7 @@
 #include "FlightMovement.h"
 
 
-FlightMovement::FlightMovement(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, Engine::Transform* _transform, FlightSpec& flightSpec) : Engine::Component(dxDevice, dxDeviceContext), transform(_transform), airbreakActive(false), yoke(Vector3::zero()), idleThrottle(0.0f), throttle(0.0f), force(Vector3::zero()), maneuverSpeed(flightSpec.maneuverSpeed), EnginePower(flightSpec.EnginePower), airbreakPower(flightSpec.airbreakPower), mass(flightSpec.mass), liftCoefficient(flightSpec.liftCoefficient), dragCoefficient(flightSpec.dragCoefficient), landingLiftCoefficient(flightSpec.landingLiftCoefficient), landingDragCoefficient(flightSpec.landingDragCoefficient)
+FlightMovement::FlightMovement(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, FlightSpec& flightSpec) : Engine::Component(dxDevice, dxDeviceContext), transform(nullptr), airbreakActive(false), yoke(Vector3::zero()), idleThrottle(0.0f), throttle(0.0f), force(Vector3::zero()), maneuverSpeed(flightSpec.maneuverSpeed), EnginePower(flightSpec.EnginePower), airbreakPower(flightSpec.airbreakPower), mass(flightSpec.mass), liftCoefficient(flightSpec.liftCoefficient), dragCoefficient(flightSpec.dragCoefficient), landingLiftCoefficient(flightSpec.landingLiftCoefficient), landingDragCoefficient(flightSpec.landingDragCoefficient)
 ,stallSpeed(flightSpec.stallSpeed), criticalSpeed(flightSpec.criticalSpeed), manuverForce(Vector3::zero())
 {}
 
@@ -14,9 +14,9 @@ void FlightMovement::Free(void)
 {
 }
 
-FlightMovement* FlightMovement::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, Engine::Transform* transform, FlightSpec& flightSpec)
+FlightMovement* FlightMovement::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, FlightSpec& flightSpec)
 {
-	FlightMovement* newInstance = new FlightMovement(dxDevice, dxDeviceContext, transform, flightSpec);
+	FlightMovement* newInstance = new FlightMovement(dxDevice, dxDeviceContext, flightSpec);
 	if (FAILED(newInstance->Start()))
 	{
 		Base::Destroy(newInstance);
@@ -30,14 +30,17 @@ void FlightMovement::CalculateMovement(void)
 	if (throttle < 0.0f) throttle = 0.0f;
 
 	speedFactor = (velocity - stallSpeed) / (criticalSpeed - stallSpeed);
-	float newVelocity = (EnginePower * throttle - velocity) - velocity * speedFactor - airbreakPower * static_cast<FLOAT>(airbreakActive);
-
+	float newVelocity = (EnginePower * throttle - velocity) - velocity * speedFactor - airbreakPower * static_cast<FLOAT>(airbreakActive) * 3.0f;
 
 	gravity = Vector3(0.0f, -1.0f, 0.0f) * 9.8f * (mass * 0.1f);
 	Lift = transform->Up().normalize() * (1 + speedFactor) * 9.8f * (mass * 0.1f);
 	Vector3 newDirection = gravity + Lift;
 	float gravityFactor = newVelocity * (transform->Angle().x / -180.0f);
 	velocity += ((newVelocity + gravityFactor) - 1000.0f * speedFactor * std::abs(finalMenuverForce.x)) * 0.00025f;
+
+	if (std::isnan(velocity))
+		int i = 0;
+
 	//velocity -= velocity * airbreakPower;
 	thrust = transform->Forward().normalize() * velocity;
 
@@ -101,14 +104,14 @@ void FlightMovement::CalculatePrimarySurfaceForce(void)
 			manuverForce.z /= std::abs(manuverForce.z);
 	}
 
-	finalMenuverForce.x = maneuverSpeed.x * manuverForce.x * 0.5f;
+	finalMenuverForce.x = maneuverSpeed.x * manuverForce.x * 0.5f * HighGTurn();
 	finalMenuverForce.y = maneuverSpeed.y * manuverForce.y * 0.5f;
 	finalMenuverForce.z = maneuverSpeed.z * manuverForce.z * 0.75f;
 
 	if(isSuper)
 		transform->Rotate(Vector3{ 0.0f, sinf((transform->Angle().z / 2.0f) * (3.14159265357989f / 90.0f)) * -0.01f/*deltatime*/, 0.0f } * 5.0f);
 	else
-		transform->Rotate(Vector3{ 0.0f, sinf((transform->Angle().z / 2.0f) * (3.14159265357989f / 90.0f)) * -0.01f/*deltatime*/, 0.0f });
+		transform->Rotate(Vector3{ 0.0f, sinf((transform->Angle().z / 2.0f) * (3.14159265357989f / 90.0f)) * -0.01f/*deltatime*/, 0.0f});
 	transform->RelativeRotate(finalMenuverForce * 0.01f/*deltatime*/);
 	//transform->RelativeRotate(manuverForce * DeltaTime());
 }
@@ -169,10 +172,17 @@ HRESULT FlightMovement::Start(void)
 {
 	velocity = stallSpeed;
 	throttle = idleThrottle = IdlePower(EnginePower, stallSpeed);
-	DirectX::XMStoreFloat3(&force, DirectX::XMVector3Rotate(DirectX::XMVectorSet(0.0f, 0.0f, stallSpeed, 1.0f), DirectX::XMLoadFloat4(&transform->Quaternion())));
 
 	// Real AeroDynamics Test -> Failed :(
 	//throttle = idleThrottle = IdlePower(EnginePower, mass, idleVelocity, dragCoefficient);
+	return S_OK;
+}
+
+HRESULT FlightMovement::Awake(void)
+{
+	transform = gameObject->transform();
+
+	DirectX::XMStoreFloat3(&force, DirectX::XMVector3Rotate(DirectX::XMVectorSet(0.0f, 0.0f, stallSpeed, 1.0f), DirectX::XMLoadFloat4(&transform->Quaternion())));
 	return S_OK;
 }
 
@@ -204,4 +214,21 @@ void FlightMovement::LateUpdate(void)
 
 }
 
+FLOAT FlightMovement::HighGTurn(void)
+{
+	if (highGTurn)
+	{
+		highGTurnValue -= DeltaTime();
+
+		if (highGTurnValue < 0.0f)
+			return 1.0f;
+		else
+			return (1.0f + highGTurnValue * 2.0f);
+	}
+	else
+	{
+		highGTurnValue = 1.0f;
+		return 1.0f;
+	}
+}
 

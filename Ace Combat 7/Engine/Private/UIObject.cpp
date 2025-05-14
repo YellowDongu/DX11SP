@@ -1,9 +1,8 @@
 #include "Foundation.h"
 #include "UIObject.h"
+#include "GameInstance.h"
 
 using namespace Engine;
-
-
 
 HRESULT UIObject::CreateScale(ID3D11ShaderResourceView* textureView, Vector2& scale)
 {
@@ -79,9 +78,34 @@ HRESULT UIObject::CreateBuffer(ID3D11Device* dxDevice, ID3D11Buffer*& vertexBuff
 
 void UIObject::CreateVertex(std::vector<UIVertex>& vertex, std::vector<UINT>& index, const Vector2& scale)
 {
-	vertex.clear();
 	UIVertex newVertex;
+	vertex.clear();
 
+	newVertex.position = { scale.x * -0.5f, scale.y * 0.5f };
+	newVertex.texturePosition = { 0.0f, 0.0f };
+	vertex.push_back(newVertex);
+
+	newVertex.position = { scale.x * 0.5f, scale.y * 0.5f };
+	newVertex.texturePosition = { 1.0f, 0.0f };
+	vertex.push_back(newVertex);
+
+	newVertex.position = { scale.x * 0.5f, scale.y * -0.5f };
+	newVertex.texturePosition = { 1.0f, 1.0f };
+	vertex.push_back(newVertex);
+
+	newVertex.position = { scale.x * -0.5f, scale.y * -0.5f };
+	newVertex.texturePosition = { 0.0f, 1.0f };
+	vertex.push_back(newVertex);
+
+	index.push_back(0);
+	index.push_back(1);
+	index.push_back(2);
+
+	index.push_back(0);
+	index.push_back(2);
+	index.push_back(3);
+
+	return;
 	newVertex.position = { scale.x / -2.0f, scale.y / -2.0f };
 	newVertex.texturePosition = { 0.0f, 0.0f };
 	vertex.push_back(newVertex);
@@ -106,8 +130,6 @@ void UIObject::CreateVertex(std::vector<UIVertex>& vertex, std::vector<UINT>& in
 	index.push_back(3);
 	index.push_back(2);
 }
-
-#include "GameInstance.h"
 
 HRESULT UIParts::LoadUITexture(const std::wstring filePath)
 {

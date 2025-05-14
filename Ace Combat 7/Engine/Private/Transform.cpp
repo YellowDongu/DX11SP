@@ -220,19 +220,24 @@ void Transform::UnLinkChild(Transform* object)
 Vector3 Transform::EulerAngle(const DirectX::XMFLOAT4& quaternion)
 {
 	float yaw = atan2f(2.0f * (quaternion.w * quaternion.y + quaternion.x * quaternion.z), 1.0f - 2.0f * (quaternion.y * quaternion.y + quaternion.z * quaternion.z));
-	float pitch = -asinf(2.0f * (quaternion.w * quaternion.x - quaternion.z * quaternion.y));  // LH 좌표계이므로 부호 반전
+	float pitch = -asinf(2.0f * clamp(quaternion.w * quaternion.x - quaternion.z * quaternion.y, -1.0f, 1.0f));  // LH 좌표계이므로 부호 반전
 	float roll = atan2f(2.0f * (quaternion.w * quaternion.z + quaternion.y * quaternion.x), 1.0f - 2.0f * (quaternion.x * quaternion.x + quaternion.z * quaternion.z));
 
 	// 결과 적용
+
+	if (std::isnan(pitch) || std::isnan(yaw) || std::isnan(roll))
+		int i = 0;
 	return Vector3(XMConvertToDegrees(pitch), XMConvertToDegrees(yaw), XMConvertToDegrees(roll));
 }
 
 void Transform::EulerAngle(DirectX::XMFLOAT3& angle, const DirectX::XMFLOAT4& quaternion)
 {
 	float yaw = atan2f(2.0f * (quaternion.w * quaternion.y + quaternion.x * quaternion.z), 1.0f - 2.0f * (quaternion.y * quaternion.y + quaternion.z * quaternion.z));
-	float pitch = -asinf(2.0f * (quaternion.w * quaternion.x - quaternion.z * quaternion.y));  // LH 좌표계이므로 부호 반전
+	float pitch = -asinf(2.0f * clamp(quaternion.w * quaternion.x - quaternion.z * quaternion.y, -1.0f, 1.0f));  // LH 좌표계이므로 부호 반전
 	float roll = atan2f(2.0f * (quaternion.w * quaternion.z + quaternion.y * quaternion.x), 1.0f - 2.0f * (quaternion.x * quaternion.x + quaternion.z * quaternion.z));
 
+	if (std::isnan(pitch) || std::isnan(yaw) || std::isnan(roll))
+		int i = 0;
 	// 결과 적용
 	angle.x = XMConvertToDegrees(pitch);
 	angle.y = XMConvertToDegrees(yaw);
