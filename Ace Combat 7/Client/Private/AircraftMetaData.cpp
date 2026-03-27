@@ -20,8 +20,8 @@ F15EMetaData::F15EMetaData()
     flightSpec.stallSpeed = 330.0f;
     flightSpec.criticalSpeed = 2000.0f;
     cameraTrdViewOffset = Vector3{ 0.0f ,0.4f, -1.75f };
-    cameraFstViewOffset = Vector3{ 0.0f,0.12f, 0.88f };
-
+    cameraFstViewOffset = Vector3{ 0.0f,0.12f, 0.825f };
+    unitType = AirUnit;
 
     // notYet
     colliderCenter = Vector3{ 0.0f, 0.1f, 0.25f };
@@ -53,7 +53,7 @@ F16CMetaData::F16CMetaData()
     flightSpec.criticalSpeed = 1800.0f;
     cameraTrdViewOffset = Vector3{ 0.0f ,0.4f, -1.5f };
     cameraFstViewOffset = Vector3{ 0.0f,0.09f, 0.53f };
-
+    unitType = AirUnit;
 
     // notYet
     colliderCenter = Vector3{ 0.0f, 0.1f, 0.25f };
@@ -85,7 +85,7 @@ F14DMetaData::F14DMetaData()
     flightSpec.criticalSpeed = 2000.0f;
     cameraTrdViewOffset = Vector3{ 0.0f ,0.4f, -1.75f };
     cameraFstViewOffset = Vector3{ 0.0f,0.1f, 0.70f };
-
+    unitType = AirUnit;
 
     // notYet
     colliderCenter = Vector3{ 0.0f, 0.1f, 0.25f };
@@ -117,7 +117,7 @@ SU33MetaData::SU33MetaData()
     flightSpec.criticalSpeed = 2000.0f;
     cameraTrdViewOffset = Vector3::zero();
     cameraFstViewOffset = Vector3::zero();
-
+    unitType = AirUnit;
 
     // notYet
     colliderCenter = Vector3{ 0.0f, 0.1f, 0.25f };
@@ -148,6 +148,7 @@ TU160MetaData::TU160MetaData()
     flightSpec.criticalSpeed = 2000.0f;
     cameraTrdViewOffset = Vector3::zero();
     cameraFstViewOffset = Vector3::zero();
+    unitType = AirUnit;
 
     // notYet
     colliderCenter = Vector3{ 0.0f, 0.1f, 0.25f };
@@ -178,6 +179,7 @@ TU95MetaData::TU95MetaData()
     flightSpec.criticalSpeed = 2000.0f;
     cameraTrdViewOffset = Vector3::zero();
     cameraFstViewOffset = Vector3::zero();
+    unitType = AirUnit;
 
     // notYet
     colliderCenter = Vector3{ 0.0f, 0.1f, 0.25f };
@@ -208,6 +210,7 @@ SAMMetaData::SAMMetaData()
     flightSpec.criticalSpeed = 0.0f;
     cameraTrdViewOffset = Vector3::zero();
     cameraFstViewOffset = Vector3::zero();
+    unitType = GroundUnit;
 
     // notYet
     colliderCenter = Vector3::zero();
@@ -238,7 +241,8 @@ AAMetaData::AAMetaData()
     flightSpec.criticalSpeed = 0.0f;
     cameraTrdViewOffset = Vector3::zero();
     cameraFstViewOffset = Vector3::zero();
-
+    unitType = GroundUnit;
+    
     // notYet
     colliderCenter = Vector3::zero();
     colliderExtent = Vector3::zero();

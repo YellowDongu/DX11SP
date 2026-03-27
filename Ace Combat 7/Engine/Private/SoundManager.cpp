@@ -3,7 +3,7 @@
 
 using namespace Engine;
 
-SoundManager::SoundManager(void) : sounds{}, channels{}, fmodSys(nullptr), BGMchannel(nullptr)
+SoundManager::SoundManager(void) : sounds{}, channels{}, fmodSys(nullptr)
 {
 }
 
@@ -16,7 +16,7 @@ SoundManager::~SoundManager(void)
 SoundManager* SoundManager::Create(void)
 {
 	SoundManager* newInstance = new SoundManager();
-	if (FAILED(newInstance->StartSoundDevice()))
+	if (FAILED(newInstance->Start()))
 	{
 		Base::Destroy(newInstance);
 		return nullptr;
@@ -24,7 +24,7 @@ SoundManager* SoundManager::Create(void)
 	return newInstance;
 }
 
-HRESULT SoundManager::StartSoundDevice(void)
+HRESULT SoundManager::Start(void)
 {
 	if (FMOD::System_Create(&fmodSys) != FMOD_OK)
 		return E_FAIL;
@@ -42,7 +42,7 @@ void SoundManager::Update(void)
 	if (fmodSys->update() != FMOD_OK)
 	{
 		Free();
-		if (FAILED(StartSoundDevice()))
+		if (FAILED(Start()))
 		{
 			Free();
 			PostQuitMessage(0);
@@ -62,82 +62,81 @@ HRESULT SoundManager::LoadSound(std::string path, std::string fileName)
 	return S_OK;
 }
 
-FMOD::Sound*& SoundManager::FindSound(std::wstring soundName)
+HRESULT Engine::SoundManager::LoadSound(std::string path, std::string fileName, FMOD::Sound*& newSound)
 {
-	FMOD::Sound* result = nullptr;
+	auto iterator = sounds.find(To_WString(fileName));
+	if (iterator != sounds.end())
+	{
+		newSound = iterator->second;
+		return S_OK;
+	}
+
+	if (fmodSys->createSound((path + fileName).c_str(), FMOD_DEFAULT, 0, &newSound) != FMOD_OK)
+	{
+		newSound = nullptr;
+		return E_FAIL;
+	}
+	sounds[To_WString(fileName)] = newSound;
+	return S_OK;
+}
+
+FMOD::Sound* SoundManager::FindSound(std::wstring soundName)
+{
 	auto sound = sounds.find(soundName);
 	if (sound == sounds.end())
-		return result;
+		return nullptr;
 	return (*sound).second;
 }
 
-void SoundManager::playBGM(std::wstring soundName)
-{
-	if (checkPlaying(BGMchannel))
-		BGMchannel->stop();
-
-	auto sound = sounds.find(soundName);
-	if (sound == sounds.end()) return;
-
-	fmodSys->playSound(sound->second, 0, false, &BGMchannel);
-	BGMchannel->setMode(FMOD_LOOP_NORMAL);
-	BGMchannel->setLoopCount(-1);
-}
-
-FMOD::Channel* SoundManager::playNew(std::wstring soundName)
-{
-	FMOD::Channel* newChannel = nullptr;
-
-	auto sound = sounds.find(soundName);
-	if (sound == sounds.end()) return nullptr;
-
-	fmodSys->playSound(sound->second, 0, false, &newChannel);
-	return newChannel;
-}
-
-FMOD::Channel* SoundManager::Play(FMOD::Channel*& channel, FMOD::Sound*& sound, float time)
+HRESULT SoundManager::Play(FMOD::Channel*& channel, FMOD::Sound*& sound, bool loop, float time)
 {
 	if (sound == nullptr)
-		return nullptr;
+		return E_FAIL;
 
 	if (time == 0.0f)
 	{
 		if (fmodSys->playSound(sound, 0, false, &channel) != FMOD_OK)
-			return nullptr;
+			return E_FAIL;
+
+		if (loop)
+		{
+			channel->setMode(FMOD_LOOP_NORMAL);
+			channel->setLoopCount(-1);
+		}
 	}
 	else
 	{
 		if (fmodSys->playSound(sound, 0, true, &channel) != FMOD_OK)
-			return nullptr;
-		int startPos;
-		float frequency;
+			return E_FAIL;
 
-		sound->getFormat(nullptr, nullptr, nullptr, &startPos);
-		sound->getDefaults(&frequency, nullptr);
-		unsigned int pcmStart = static_cast<unsigned int>((time / 1000.0f) * frequency);
-		channel->setPosition(pcmStart, FMOD_TIMEUNIT_PCM);
+		channel->setPosition(static_cast<unsigned int>(time), FMOD_TIMEUNIT_MS);
+		if (loop)
+		{
+			channel->setMode(FMOD_LOOP_NORMAL);
+			channel->setLoopCount(-1);
+		}
 
 		channel->setPaused(false);
 	}
 
-	return channel;
+	return S_OK;
 }
 
-FMOD::Channel* SoundManager::Play(FMOD::Channel*& channel, wchar_t* soundName, float time)
+HRESULT SoundManager::Play(FMOD::Channel*& channel, wchar_t* soundName, bool loop, float time)
 {
 	auto sound = sounds.find(soundName);
 	if (sound == sounds.end())
-		return nullptr;
+		return E_FAIL;
 
 	if (time == 0.0f)
 	{
 		if (fmodSys->playSound(sound->second, 0, false, &channel) != FMOD_OK)
-			return nullptr;
+			return E_FAIL;
 	}
 	else
 	{
 		if (fmodSys->playSound(sound->second, 0, true, &channel) != FMOD_OK)
-			return nullptr;
+			return E_FAIL;
 
 		int startPos;
 		float frequency;
@@ -148,24 +147,24 @@ FMOD::Channel* SoundManager::Play(FMOD::Channel*& channel, wchar_t* soundName, f
 		channel->setPosition(pcmStart, FMOD_TIMEUNIT_PCM);
 		channel->setPaused(false);
 	}
-	return channel;
+	return S_OK;
 }
 
-FMOD::Channel* SoundManager::Play(FMOD::Channel*& channel, const std::wstring& soundName, float time)
+HRESULT SoundManager::Play(FMOD::Channel*& channel, const std::wstring& soundName, bool loop, float time)
 {
 	auto sound = sounds.find(soundName);
 	if (sound == sounds.end())
-		return nullptr;
+		return E_FAIL;
 
 	if (time == 0.0f)
 	{
 		if (fmodSys->playSound(sound->second, 0, false, &channel) != FMOD_OK)
-			return nullptr;
+			return E_FAIL;
 	}
 	else
 	{
 		if (fmodSys->playSound(sound->second, 0, true, &channel) != FMOD_OK)
-			return nullptr;
+			return E_FAIL;
 
 		int startPos;
 		float frequency;
@@ -176,7 +175,7 @@ FMOD::Channel* SoundManager::Play(FMOD::Channel*& channel, const std::wstring& s
 		channel->setPosition(pcmStart, FMOD_TIMEUNIT_PCM);
 		channel->setPaused(false);
 	}
-	return channel;
+	return S_OK;
 }
 
 HRESULT SoundManager::stopSound(FMOD::Channel*& channel)
@@ -210,9 +209,6 @@ void SoundManager::changePitch(FMOD::Channel*& channel, FLOAT value)
 
 void SoundManager::Free(void)
 {
-	if (BGMchannel)
-		stopSound(BGMchannel);
-
 	for (auto& sound : sounds)
 	{
 		sound.second->release();

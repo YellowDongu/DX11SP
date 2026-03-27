@@ -21,7 +21,7 @@ public:
 	virtual void Render(void) override;
 
 	void RenderUI(Engine::Layer* layer, UIParts& parts);
-	void RenderHUD(Engine::GameObject* gameObject, UIParts& parts, Vector2 markerScale, Vector2 scale, bool mainTarget = false);
+	void RenderHUD(Engine::GameObject* gameObject, UIParts& parts, Vector2 markerScale, Vector2 scale, bool mainTarget = false, bool aimNegative = false);
 	void AddLayers(Engine::Scene* scene);
 
 	void SetUIColor(float4 color) { uiColor = color; }
@@ -48,11 +48,13 @@ private:
 	Engine::GameObject* cameraObject;
 	class Engine::Camera* camera;
 	const D3D11_VIEWPORT* deviceInfomation;
+	class FireControlSystem* fcs;
 	Engine::Text* text;
 
 	UIParts aircraftMarker;
 	UIParts groundMarker;
 	UIParts nonTargetMarker;
+	UIParts negativeMarker;
 	// * 30.2f / 50.0f
 	float maxDistance = 5000.0f;
 	Vector2 markerScale;

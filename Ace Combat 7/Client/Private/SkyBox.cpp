@@ -35,9 +35,13 @@ HRESULT SkyBox::Start(void)
 {
 	CreateTransform();
 	//transformComponent->Scale() *= 50.0f;
-	shader = Engine::DefaultCubeShader::Create(dxDevice, dxDeviceContext);
-    if (FAILED(AddShader(shader->shaderFile, shader)))
-        Base::DestroyInstance(shader);
+	shader = ::GetShader(L"DefaultCubeShader.hlsl");
+	if (shader == nullptr)
+	{
+		shader = Engine::DefaultCubeShader::Create(dxDevice, dxDeviceContext);
+		if (FAILED(AddShader(shader->shaderFile, shader)))
+			Base::DestroyInstance(shader);
+	}
 
     if (FAILED(CreateMesh(dxDevice, vertexBuffer, indexBuffer, offset, stride, indexCount)))
         return E_FAIL;

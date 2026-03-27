@@ -92,7 +92,7 @@ HRESULT StaticModel::LoadModel(const std::wstring& filePath, ModelLoader& modelL
 
 	for (auto item : loadedModel.subMeshes)
 	{
-		submesh.push_back(Mesh::Create(dxDevice, dxDeviceContext, item, saveVertex));
+		submesh.push_back(Mesh::Create(dxDevice, dxDeviceContext, item, saveVertex, true));
 	}
 	for (auto item : loadedModel.materials)
 	{

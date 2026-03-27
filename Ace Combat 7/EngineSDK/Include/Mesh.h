@@ -15,7 +15,7 @@ namespace Engine
 		virtual ~Mesh(void) = default;
 		virtual void Free(void) override;
     public:
-		static Mesh* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ModelConverter::FullModelMesh& subMesh, bool saveVertex = false);
+		static Mesh* Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ModelConverter::FullModelMesh& subMesh, bool staticModel = false, bool saveVertex = false);
 
 		void Render(void);
 
@@ -24,8 +24,8 @@ namespace Engine
 
 		bool RayToMeshCollision(const Vector3& rayPosition, const Vector3& rayDirection, Vector3& outHitPoint);
 	private:
-		HRESULT LoadMesh(ModelConverter::FullModelMesh& subMesh, bool saveVertex = false);
-		HRESULT ConvertVertexData(std::vector<ModelVertex>& vertices, std::vector<ModelConverter::FullModelVertex>& otherVertices);
+		HRESULT LoadMesh(ModelConverter::FullModelMesh& subMesh, bool saveVertex = false, bool staticModel = false);
+		HRESULT ConvertVertexData(std::vector<ModelVertex>& vertices, std::vector<ModelConverter::FullModelVertex>& otherVertices, bool staticModel = false);
 		HRESULT CreateBuffer(ID3D11Device* dxDevice, ID3D11Buffer*& vertexBuffer, ID3D11Buffer*& indexBuffer, std::vector<ModelVertex>& vertices, std::vector<UINT>& indices);
 
 		#ifdef useAssimp

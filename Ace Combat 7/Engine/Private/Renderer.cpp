@@ -121,7 +121,7 @@ void Renderer::Render(void)
 
 	NonAlphaRender();
 	ShaderRender();
-	DifferedRender();
+	DeferredRender();
 
 	NonAlphaNonLightRender();
 	AlphaRender();
@@ -226,7 +226,7 @@ void Renderer::ShaderRender(void)
 
 }
 
-void Renderer::DifferedRender(void)
+void Renderer::DeferredRender(void)
 {
 	Device()->ApplyBackBuffer();
 

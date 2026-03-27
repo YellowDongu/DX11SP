@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "SpeedIndicator.h"
 #include "FlightMovement.h"
+#include "RMWR.h"
 
 SpeedIndicator::SpeedIndicator(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::UIObject(dxDevice, dxDeviceContext)
 {
@@ -33,6 +34,7 @@ SpeedIndicator* SpeedIndicator::Create(ID3D11Device* dxDevice, ID3D11DeviceConte
 
 	SpeedIndicator* newInstance = new SpeedIndicator(dxDevice, dxDeviceContext);
 	newInstance->velocity = &component->Velocity();
+	newInstance->warning = static_cast<RMWR*>(player->GetComponent(L"RMWR"))->LinkMissileWarning();
 	if (FAILED(newInstance->Start()))
 	{
 		Base::Destroy(newInstance);
@@ -56,9 +58,9 @@ HRESULT SpeedIndicator::Start(void)
 	CreateScale(speedMeter.texture, scale);
 	innerErrorCheck(CreateVertex(speedMeter.vertexBuffer, speedMeter.indexBuffer, speedMeter.indexCount, scale), L"Vertex/Index Create");
 
-	LoadFont(L"../Bin/ACES07.spritefont");
-	LoadFont(L"../Bin/ACES07KR.spritefont");
-	text = CreateText(L"../Bin/ACES07.spritefont");
+	::LoadFont(L"../Bin/ACES07.spritefont");
+	::LoadFont(L"../Bin/ACES07KR.spritefont");
+	text = ::CreateText(L"../Bin/ACES07.spritefont");
 	if (text == nullptr)
 		return E_FAIL;
 	return S_OK;
@@ -94,6 +96,13 @@ void SpeedIndicator::Render(void)
 	//localScale.y *= 1.5f;
 	Matrix worldMatrix;
 
+	if (*warning)
+		color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	else
+		color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+	GetCurrentShader()->BindVariable("UIcolor", &color, sizeof(float4));
+
 	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, localScale, 0.0f));
 	SetMatrix(world, worldMatrix);
 
@@ -103,10 +112,10 @@ void SpeedIndicator::Render(void)
 
 	position.x -= (scale.x * 0.45f);
 	position.y += (scale.y * 0.25f);
-	text->RenderText(std::to_wstring(static_cast<INT>(*velocity)), position, float2{ 1.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }, 0.0f);
+	text->RenderText(std::to_wstring(static_cast<INT>(*velocity)), position, float2{ 1.0f, 1.0f }, color, 0.0f);
 
 	position.x -= (scale.x * 0.05f);
 	position.y += (scale.y) * 0.75f;
-	text->RenderText(L"SPEED", position, float2{ 1.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }, 0.0f);
+	text->RenderText(L"SPEED", position, float2{ 1.0f, 1.0f }, color, 0.0f);
 }
 

@@ -21,6 +21,7 @@ public:
 	virtual Missile* Launch(Engine::GameObject* shooter, Vector3 LaunchOffsetPosition, Engine::GameObject* target) = 0;
 	virtual void Rotation(const Vector3& currentDestination);
 	void Detonate(void);
+
 	bool Detonated(void) { return detonated; }
 	Engine::GameObject* Target(void) { return target; }
 	FLOAT MaximumLockDistance(void) { return maximumLockDistance; }
@@ -30,6 +31,9 @@ public:
 	UINT MissileCount(void) { return missileCount; }
 	bool Air(void) { return air; }
 	bool Ground(void) { return ground; }
+
+	void SetDetonationDistance(FLOAT value) { detonationDistance = value; }
+	void SetDamage(FLOAT value) { damage = value; }
 protected:
 	bool detonated = false;
 	bool air = true, ground = true;
@@ -37,9 +41,10 @@ protected:
 	Engine::GameObject* target{nullptr};
 	static class Explosion* explosion;
 
+	FLOAT detonationDistance = ConvertFeetToWorld(2.5f) * 2.5f;
 	FLOAT damage = 30.0f;
 	FLOAT lifeTime = 0.0f;
-	FLOAT maximumLifeTime = 15.0f;
+	FLOAT maximumLifeTime = 10.0f;
 	FLOAT maximumLockDistance = ConvertFeetToWorld(6000.0f) * 2.5f;
 	FLOAT speed = ConvertFeetToWorld(4000.0f);
 	FLOAT maximumLockDirection = std::cosf(DirectX::XMConvertToRadians(15.0f));

@@ -78,9 +78,11 @@ HRESULT TU160::Start(void)
     metaData.aircraftInfomation = TU160MetaData();
     transformComponent->Scale() = Vector3::one() * 50.0f;
     transformComponent->Scale() = Vector3::one();
-    Matrix matrix;
-    aircraftGlobalMatrix(matrix);
-    ConvertModel(metaData.aircraftInfomation.modelFilePathA, metaData.aircraftInfomation.modelFilePath, matrix);
+
+    /*ModelConvert*/
+    //Matrix matrix;
+    //aircraftGlobalMatrix(matrix);
+    //ConvertModel(metaData.aircraftInfomation.modelFilePathA, metaData.aircraftInfomation.modelFilePath, matrix);
 
     if (FAILED(LoadModel(metaData.aircraftInfomation.modelFilePath, model))) return E_FAIL;
 
@@ -119,7 +121,10 @@ HRESULT TU160::Start(void)
     if (collider == nullptr) return E_FAIL;
 
     AddComponent(collider, L"Collider");
-    AddComponent(RMWR::Create(dxDevice, dxDeviceContext), L"RMWR");
+
+    RMWR* rmwr = RMWR::Create(dxDevice, dxDeviceContext);
+    rmwr->SetMAXHealth(70.0f);
+    AddComponent(rmwr, L"RMWR");
 
     SuperClassAIPilot* pilot = SuperClassAIPilot::Create(dxDevice, dxDeviceContext, metaData);
     AddComponent(pilot, L"AIPilot");
@@ -145,11 +150,10 @@ HRESULT TU160::Awake(void)
     if (layer == nullptr)
         return E_FAIL;
 
-    WingVaporTrail* wingVaporParticle = static_cast<WingVaporTrail*>(layer->GetGameObject(L"WingVaporTrail"));
-    if (wingVaporParticle == nullptr)
-        return E_FAIL;
-
-    wingVaporParticle->EnlistGameObject(this);
+    //WingVaporTrail* wingVaporParticle = static_cast<WingVaporTrail*>(layer->GetGameObject(L"WingVaporTrail"));
+    //if (wingVaporParticle == nullptr)
+    //    return E_FAIL;
+    //wingVaporParticle->EnlistGameObject(this);
 
 
 
@@ -162,6 +166,7 @@ void TU160::Update(void)
 {
     if (!active || destroy)
         return;
+    AddCollider(collider);
     Engine::GameObject::Update();
 }
 

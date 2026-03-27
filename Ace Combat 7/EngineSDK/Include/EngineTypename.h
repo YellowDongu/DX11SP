@@ -406,15 +406,38 @@ typedef struct Vector3 : DirectX::XMFLOAT3
 	}
 	Vector3 getDirection(void)
 	{
-		Vector3 direction = this->normalize();
-		float toDegree = (180.0f / 3.14159265358979f);
-		return Vector3(asin(-direction.y) * toDegree, atan2(direction.x, direction.z) * toDegree, 0.0f);
+		if (x != 0.0f || z != 0.0f)
+		{
+			Vector3 direction = this->normalize();
+			float toDegree = (180.0f / 3.14159265358979f);
+			return Vector3(asin(-direction.y) * toDegree, atan2(direction.x, direction.z) * toDegree, 0.0f);
+		}
+		else if (y != 0.0f)
+		{
+			Vector3 direction = this->normalize();
+			float toDegree = (180.0f / 3.14159265358979f);
+			return Vector3(asin(-direction.y) * toDegree, 0.0f, 0.0f);
+		}
+		else
+			return Vector3::zero();
+
 	}
 	static Vector3 getDirection(const Vector3& directionVector)
 	{
-		Vector3 direction = directionVector.normalize();
-		float toDegree = (180.0f / 3.14159265358979f);
-		return Vector3(asin(-direction.y) * toDegree, atan2(direction.x, direction.z) * toDegree, 0.0f);
+		if (directionVector.x != 0.0f || directionVector.z != 0.0f)
+		{
+			Vector3 direction = directionVector.normalize();
+			float toDegree = (180.0f / 3.14159265358979f);
+			return Vector3(asin(-direction.y) * toDegree, atan2(direction.x, direction.z) * toDegree, 0.0f);
+		}
+		else if (directionVector.y != 0.0f)
+		{
+			Vector3 direction = directionVector.normalize();
+			float toDegree = (180.0f / 3.14159265358979f);
+			return Vector3(asin(-direction.y) * toDegree, 0.0f, 0.0f);
+		}
+		else
+			return Vector3::zero();
 	}
 
 	// 3차원 수직벡터(y축)

@@ -123,7 +123,9 @@ HRESULT F15E::Start(void)
     if (collider == nullptr) return E_FAIL;
 
     AddComponent(collider, L"Collider");
-    AddComponent(RMWR::Create(dxDevice, dxDeviceContext), L"RMWR");
+    RMWR* rmwr = RMWR::Create(dxDevice, dxDeviceContext);
+    rmwr->SetMAXHealth(40.0f);
+    AddComponent(rmwr, L"RMWR");
 
     pilot = AIPilot::Create(dxDevice, dxDeviceContext, metaData);
     AddComponent(pilot, L"AIPilot");
@@ -168,6 +170,7 @@ void F15E::Update(void)
 {
     if (!active || destroy)
         return;
+    AddCollider(collider);
     Engine::GameObject::Update();
 }
 float delay = 0.0f;

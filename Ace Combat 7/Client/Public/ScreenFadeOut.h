@@ -22,6 +22,7 @@ public:
 	void SetFadeOut(bool value) { fadeOut = value; }
 	bool IsFadeOut(void) { return fadeOut; }
 	FLOAT fadeOutStatus(void) { return fadeOutTimer; }
+	void SetFadeOutStatus(FLOAT value) { fadeOutTimer = value; }
 	void SetFadeSpeed(FLOAT value) { fadeSpeed = value; }
 private:
 	bool fadeOut{false};

@@ -1,13 +1,15 @@
 #include "pch.h"
 #include "Title.h"
 
-#include "TitleBackground.h"
+#include "Background.h"
 #include "MainCamera.h"
 #include "DefaultModelShader.h"
 #include "ScreenFadeOut.h"
 #include "MainMenuParts.h"
+#include "SelectPreview.h"
 ScreenFadeOut* fadeout = nullptr;
 MainMenuParts* parts = nullptr;
+SelectPreview* previewParts = nullptr;
 void Title::Free(void)
 {
 	End();
@@ -29,7 +31,6 @@ void Title::Start(void)
 	Engine::Shader* newShader = Engine::DefaultModelShader::Create(dxDevice, dxContext);
 	AddShader(L"BaseShader", newShader);
 
-
 	Engine::Layer* baseLayer = Engine::Layer::Create();
 	AddLayer(baseLayer, L"BaseLayer");
 	Background* title = Background::Create(dxDevice, dxContext);
@@ -40,8 +41,12 @@ void Title::Start(void)
 	fadeout->SetFadeOut(1.0f);
 	baseLayer->AddGameObject(L"ZZZScreenFadeOut", fadeout);
 	parts = MainMenuParts::Create(dxDevice, dxContext);
+	parts->LinkNextSceneTrigger(nextScene);
 	baseLayer->AddGameObject(L"MainMenuParts", parts);
-	
+
+	previewParts = SelectPreview::Create(dxDevice, dxContext);
+	previewParts->Awake();
+	baseLayer->AddGameObject(L"SelectPreview", previewParts);
 }
 
 void Title::Awake(void)
@@ -68,26 +73,13 @@ void Title::Render(void)
 {
 	SetShader(L"BaseShader");
 	Scene::Render();
-	if (!loadEnd)
-		loadEnd = EngineInstance()->SceneManager()->loadComplete();
-	else
+	loadEnd = EngineInstance()->SceneManager()->loadComplete();
+	if(loadEnd && nextScene)
 	{
-		if (!nextScene)
-		{
-			if (parts->IsInMainMenu())
-			{
-				nextScene = Input()->getButtonDown(KeyType::Space);
-				if(nextScene)
-					fadeout->SetFadeOut(true);
-			}
-		}
-		else
-		{
-			if (fadeout->fadeOutStatus() == 1.0f)
-				EngineInstance()->SceneManager()->CompleteLoadingScene();
-		}
+		fadeout->SetFadeOut(true);
+		if (fadeout->fadeOutStatus() == 1.0f)
+			EngineInstance()->SceneManager()->CompleteLoadingScene();
 	}
-	
 }
 
 void Title::End(void)

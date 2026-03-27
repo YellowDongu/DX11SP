@@ -11,6 +11,13 @@ struct FlightSpec
     float stallSpeed; // stall speed(ground speed)
 };
 
+enum UnitType
+{
+    GroundUnit,
+    AirUnit,
+    SeaUnit
+};
+
 struct AircraftMetaData
 {
     // Model Infomation
@@ -20,6 +27,7 @@ struct AircraftMetaData
     std::string gearModelfilePathA;
     std::wstring gearModelfilePath;
     std::wstring BoneHandlerName;
+    UnitType unitType;
     // Model Infomation
     // For FlightMovement Component
     FlightSpec flightSpec;

@@ -93,6 +93,7 @@ void Collider::FixedUpdate(void)
 
 void Collider::Render(void)
 {
+	return;
 	#ifdef ColliderDebug
 	effect->SetWorld(DirectX::XMMatrixIdentity());
 	const PipelineStatus& pipeline = ::GetPipeLineStatus();

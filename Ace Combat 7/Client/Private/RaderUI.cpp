@@ -78,7 +78,6 @@ HRESULT RaderUI::Start(void)
 	innerErrorCheck(CreateVertex(targetAircraft.vertexBuffer, targetAircraft.indexBuffer, targetAircraft.indexCount, scale), L"Vertex/Index Create");
 
 	CenterPosition = { windowSizeX * -0.375f, windowSizeY * -0.3f };
-
 	//innerErrorCheck(DirectX::CreateDDSTextureFromFile(dxDevice, L"../Bin/Resources/UI/HUD/Rader/hud_alt_outline.dds", nullptr, &part.texture), L"Load texture - hud_alt_outline.dds");
 	//innerErrorCheck(CreateVertex(part.vertexBuffer, part.indexBuffer, part.indexCount, scale), L"Vertex/Index Create");
 	//innerErrorCheck(DirectX::CreateWICTextureFromFile(dxDevice, L"../Bin/Resources/UI/HUD/Rader/hud_alt_outline.png", nullptr, &part.texture), L"Load texture - hud_alt_outline.png");
@@ -142,11 +141,11 @@ void RaderUI::MiniMapModeRender(void)
 	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 0.0f));
 	SetMatrix(world, worldMatrix);
 
-	SetTexture(diffuseTexture, HUDOutline.texture);
+	shader->BindTexture(diffuseTexture, HUDOutline.texture);
 	shader->Render(HUDOutline.indexBuffer, HUDOutline.vertexBuffer, stride);
 	dxDeviceContext->DrawIndexed(HUDOutline.indexCount, 0, 0);
 
-	SetTexture(diffuseTexture, RaderInnerLines.texture);
+	shader->BindTexture(diffuseTexture, RaderInnerLines.texture);
 	shader->Render(RaderInnerLines.indexBuffer, RaderInnerLines.vertexBuffer, stride);
 	dxDeviceContext->DrawIndexed(RaderInnerLines.indexCount, 0, 0);
 
@@ -154,11 +153,11 @@ void RaderUI::MiniMapModeRender(void)
 	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 0.0f));
 	SetMatrix(world, worldMatrix);
 
-	SetTexture(diffuseTexture, HUDCircleS.texture);
+	shader->BindTexture(diffuseTexture, HUDCircleS.texture);
 	shader->Render(HUDCircleS.indexBuffer, HUDCircleS.vertexBuffer, stride);
 	dxDeviceContext->DrawIndexed(HUDCircleS.indexCount, 0, 0);
 
-	SetTexture(diffuseTexture, HUDCircleM.texture);
+	shader->BindTexture(diffuseTexture, HUDCircleM.texture);
 	shader->Render(HUDCircleM.indexBuffer, HUDCircleM.vertexBuffer, stride);
 	dxDeviceContext->DrawIndexed(HUDCircleM.indexCount, 0, 0);
 
@@ -166,7 +165,7 @@ void RaderUI::MiniMapModeRender(void)
 	scale.y = 0.825f;
 	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 180.0f));
 	SetMatrix(world, worldMatrix);
-	SetTexture(diffuseTexture, HUDCircleL.texture);
+	shader->BindTexture(diffuseTexture, HUDCircleL.texture);
 	shader->Render(HUDCircleL.indexBuffer, HUDCircleL.vertexBuffer, stride);
 	dxDeviceContext->DrawIndexed(HUDCircleL.indexCount, 0, 0);
 
@@ -210,10 +209,92 @@ void RaderUI::MiniMapModeRender(void)
 		dxDeviceContext->DrawIndexed(aircraft.indexCount, 0, 0);
 	}
 	shader->BindVariable(uiColorName, &green, sizeof(DirectX::XMFLOAT4));
+
+	CollectGameObjects(Enemylayer, relativePositions);
+
+	for (auto& relativePosition : relativePositions)
+	{
+		position = CenterPosition;
+		position.x += relativePosition.first.x * 0.25f;
+		position.y += relativePosition.first.y * 0.25f;
+
+		DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, relativePosition.second * -1.0f));
+		shader->BindMatrix(world, worldMatrix);
+		shader->BindTexture(diffuseTexture, aircraft.texture);
+		shader->Render(aircraft.indexBuffer, aircraft.vertexBuffer, stride);
+		dxDeviceContext->DrawIndexed(aircraft.indexCount, 0, 0);
+	}
 }
 
 void RaderUI::LargeMapModeRender(void)
 {
+	Vector2 scale = {1.25f, 1.5f};
+	Matrix worldMatrix;
+	Vector2 position = CenterPosition;
+	position.y -= CenterPosition.y * 0.15f;
+	Engine::Shader* shader = GetCurrentShader();
+
+	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 0.0f));
+	SetMatrix(world, worldMatrix);
+
+	shader->BindTexture(diffuseTexture, HUDOutline.texture);
+	shader->Render(HUDOutline.indexBuffer, HUDOutline.vertexBuffer, stride);
+	dxDeviceContext->DrawIndexed(HUDOutline.indexCount, 0, 0);
+
+	static std::string uiColorName = "UIcolor";
+	static DirectX::XMFLOAT4 mint = { 0.0f, 1.0f, 1.0f, 1.0f };
+	static DirectX::XMFLOAT4 green = { 0.0f, 1.0f, 0.0f, 1.0f };
+	static DirectX::XMFLOAT4 red = { 1.0f, 0.0f, 0.0f, 1.0f };
+
+	CollectGameObjectsWorld(Allylayer, relativePositions);
+	scale = Vector2::one();
+
+	shader->BindVariable(uiColorName, &mint, sizeof(DirectX::XMFLOAT4));
+	for (auto& relativePosition : relativePositions)
+	{
+		position = CenterPosition;
+		position.x += (relativePosition.first.x - 0.5f) * 225.0f;
+		position.y += (relativePosition.first.y - 0.5f) * 250.0f;
+
+		DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, relativePosition.second * -1.0f));
+		shader->BindMatrix(world, worldMatrix);
+		shader->BindTexture(diffuseTexture, aircraft.texture);
+		shader->Render(aircraft.indexBuffer, aircraft.vertexBuffer, stride);
+		dxDeviceContext->DrawIndexed(aircraft.indexCount, 0, 0);
+	}
+
+
+	CollectGameObjectsWorld(MainTargetlayer, relativePositions);
+
+	shader->BindVariable(uiColorName, &red, sizeof(DirectX::XMFLOAT4));
+	for (auto& relativePosition : relativePositions)
+	{
+		position = CenterPosition;
+		position.x += (relativePosition.first.x - 0.5f) * 225.0f;
+		position.y += (relativePosition.first.y - 0.5f) * 250.0f;
+
+		DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, relativePosition.second * -1.0f));
+		shader->BindMatrix(world, worldMatrix);
+		shader->BindTexture(diffuseTexture, aircraft.texture);
+		shader->Render(aircraft.indexBuffer, aircraft.vertexBuffer, stride);
+		dxDeviceContext->DrawIndexed(aircraft.indexCount, 0, 0);
+	}
+	shader->BindVariable(uiColorName, &green, sizeof(DirectX::XMFLOAT4));
+
+	CollectGameObjectsWorld(Enemylayer, relativePositions);
+
+	for (auto& relativePosition : relativePositions)
+	{
+		position = CenterPosition;
+		position.x += (relativePosition.first.x - 0.5f) * 225.0f;
+		position.y += (relativePosition.first.y - 0.5f) * 250.0f;
+
+		DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, relativePosition.second * -1.0f));
+		shader->BindMatrix(world, worldMatrix);
+		shader->BindTexture(diffuseTexture, aircraft.texture);
+		shader->Render(aircraft.indexBuffer, aircraft.vertexBuffer, stride);
+		dxDeviceContext->DrawIndexed(aircraft.indexCount, 0, 0);
+	}
 }
 
 HRESULT RaderUI::CollectLayers(void)
@@ -270,12 +351,14 @@ void RaderUI::CollectGameObjectsWorld(Engine::Layer* layer, std::vector<std::pai
 	relativePositionsList.clear();
 	if (layer == nullptr)
 		return;
+	Vector2 calibratedPosition;
 
 	for (auto& gameObject : layer->GameObjectList())
 	{
-		if (gameObject.second == player)
-			continue;
-		relativePositionsList.push_back({ {gameObject.second->transform()->Position().x, gameObject.second->transform()->Position().z}, Vector3::getDirection(gameObject.second->transform()->Forward()).y });
+		calibratedPosition.x = gameObject.second->transform()->Position().x / mapPositionInfomation.x;
+		calibratedPosition.y = gameObject.second->transform()->Position().z / mapPositionInfomation.y;
+		
+		relativePositionsList.push_back({ calibratedPosition, Vector3::getDirection(gameObject.second->transform()->Forward()).y });
 	}
 }
 
@@ -286,17 +369,19 @@ void RaderUI::CollectGameObjects(Engine::Layer* layer, std::vector<std::pair<Vec
 		return;
 
 	Vector3& playerPosition = player->transform()->Position();
-	FLOAT angle = Vector3::getDirection(player->transform()->Forward()).y;
-	static Vector2 outlineScale = HUDOutlineScale * 0.5f;
-	FLOAT relativeAngle = 0.0f;
 	Vector3 relativePosition;
+	FLOAT angle = Vector3::getDirection(player->transform()->Forward()).y;
+	//static Vector2 outlineScale = HUDOutlineScale * 0.5f;
+	Vector2 outlineScale = HUDOutlineScale * 1.7f;
+	static FLOAT offset = HUDOutlineScale.y * 0.55f;
+	FLOAT relativeAngle = 0.0f;
 	for (auto& gameObject : layer->GameObjectList())
 	{
 		relativePosition = gameObject.second->transform()->Position() - playerPosition;
 
 		DirectX::XMStoreFloat3(&relativePosition, DirectX::XMVector3Rotate(DirectX::XMLoadFloat3(&relativePosition), DirectX::XMQuaternionRotationRollPitchYaw(0.0f, DirectX::XMConvertToRadians(-angle), 0.0f)));
-
-		if (relativePosition.x > outlineScale.x || relativePosition.z > outlineScale.y)
+		relativePosition.z -= offset;
+		if (std::abs(relativePosition.x) > outlineScale.x || std::abs(relativePosition.z) > outlineScale.y)
 			continue;
 
 		relativeAngle = Vector3::getDirection(gameObject.second->transform()->Forward()).y - angle;

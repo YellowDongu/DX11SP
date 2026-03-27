@@ -87,7 +87,7 @@ namespace Engine
 		void PriorityRender(void);
 		void NonAlphaRender(void);
 		void ShaderRender(void);
-		void DifferedRender(void);
+		void DeferredRender(void);
 		void NonAlphaNonLightRender(void);
 		void AlphaRender(void);
 		void EffectRender(void);

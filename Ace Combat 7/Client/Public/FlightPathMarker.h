@@ -25,8 +25,9 @@ public:
 private:
 	UIParts pathMarker;
 	UIParts centerMarker;
-
+	const bool* warning{nullptr};
 	const Vector3 *forward, *force;
+	float4 color;
 	Vector2 path;
 	bool goingForward; // for test
 };

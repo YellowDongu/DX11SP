@@ -11,6 +11,10 @@ SurfaceToAirMissileTruck::SurfaceToAirMissileTruck(ID3D11Device* dxDevice, ID3D1
 
 SurfaceToAirMissileTruck::SurfaceToAirMissileTruck(const SurfaceToAirMissileTruck& other) : Engine::GameObject(other)
 {
+	model = static_cast<Engine::StaticModel*>(GetComponent(L"FullModel"));
+	collider = static_cast<Engine::Collider*>(GetComponent(L"Collider"));
+	rmwr = static_cast<RadarMissileWarningReceiver*>(GetComponent(L"RMWR"));
+	fcs = static_cast<FireControlSystem*>(GetComponent(L"FCS"));
 }
 
 void SurfaceToAirMissileTruck::Free(void)
@@ -61,6 +65,7 @@ HRESULT SurfaceToAirMissileTruck::Start(void)
 	AddComponent(fcs, L"FCS");
 
 	rmwr = RMWR::Create(dxDevice, dxDeviceContext);
+	rmwr->SetMAXHealth(20.0f);
 	if (rmwr == nullptr)
 		return E_FAIL;
 	AddComponent(rmwr, L"RMWR");
@@ -68,7 +73,7 @@ HRESULT SurfaceToAirMissileTruck::Start(void)
 	RaderSystem* radar = RaderSystem::Create(dxDevice, dxDeviceContext);
 	if (radar == nullptr)
 		return E_FAIL;
-	radar->SetSearchMaxDistance(ConvertFeetToWorld(1000.0f) * 2.5f);
+	radar->SetSearchMaxDistance(ConvertFeetToWorld(2000.0f) * 2.5f);
 	radar->SetDefendArea();
 	AddComponent(radar, L"RaderSystem");
 
@@ -77,6 +82,10 @@ HRESULT SurfaceToAirMissileTruck::Start(void)
 		return E_FAIL;
 	AddComponent(aiPilot, L"AIPilot");
 
+	Engine::AABB::Description description;
+	description.extents = Vector3::one() * 2.0f;
+	collider = Engine::Collider::Create(dxDevice, dxDeviceContext, &description);
+	AddComponent(collider, L"Collider");
 
 	return S_OK;
 }
@@ -88,19 +97,19 @@ HRESULT SurfaceToAirMissileTruck::Awake(void)
 		if (FAILED(component.second->Awake()))
 			return E_FAIL;
 	}
-
-
 	return S_OK;
 }
 
 void SurfaceToAirMissileTruck::Update(void)
 {
 	Engine::GameObject::Update();
+	AddCollider(collider);
 }
 
 void SurfaceToAirMissileTruck::LateUpdate(void)
 {
 	Engine::GameObject::LateUpdate();
+	::AddRenderObject(RenderType::NonBlend, this);
 }
 
 void SurfaceToAirMissileTruck::FixedUpdate(void)
@@ -112,4 +121,5 @@ void SurfaceToAirMissileTruck::Render(void)
 {
 	transformComponent->Render();
 	model->Render();
+	collider->Render();
 }

@@ -23,6 +23,7 @@ public:
 
 private:
 	ExplosionParticle* particle{nullptr};
+	class PlayerEar* playerEar{ nullptr };
 
 	std::vector<Engine::VertexMatrix> targetPoints;
 	std::vector<Engine::AdditionalVertexInfomation> additionalInfomations;

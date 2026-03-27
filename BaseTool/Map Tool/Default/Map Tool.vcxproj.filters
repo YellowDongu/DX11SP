@@ -350,6 +350,72 @@
     <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MissileTrailParticle.cpp">
       <Filter>99. References</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\AboveText.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\AntiAirFireControlSystem.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\AntiAirGunTruck.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\Cloud.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\CloudEffect.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\EndText.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\GroundAI.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MainMenuParts.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\MS01OceanModel.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\RaderSystem.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\ScreenFadeOut.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\SelectPreview.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\SU33.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\SuperClassAutoPilot.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\SurfaceToAirMissileFireControlSystem.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\SurfaceToAirMissileTruck.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\TerrainCollision.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\Trigger.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\TU160.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\WingTrailParticle.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Private\WingVaporTrail.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Ace Combat 7\Client\Public\SuperClassAIPilot.cpp">
+      <Filter>99. References</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Map Tool.rc">

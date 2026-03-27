@@ -159,6 +159,7 @@
     <ClInclude Include="..\Public\AntiAirGunTruck.h" />
     <ClInclude Include="..\Public\AttitudeIndicator.h" />
     <ClInclude Include="..\Public\AutoPilot.h" />
+    <ClInclude Include="..\Public\EndText.h" />
     <ClInclude Include="..\Public\MainMenuParts.h" />
     <ClInclude Include="..\Public\Compass.h" />
     <ClInclude Include="..\Public\DefineArea.h" />
@@ -176,7 +177,7 @@
     <ClInclude Include="..\Public\IFFHud.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MainCamera.h" />
-    <ClInclude Include="..\Public\MainMenu.h" />
+    <ClInclude Include="..\Public\AboveText.h" />
     <ClInclude Include="..\Public\Missile.h" />
     <ClInclude Include="..\Public\MissileLockUI.h" />
     <ClInclude Include="..\Public\MS01.h" />
@@ -197,10 +198,12 @@
     <ClInclude Include="..\Public\RaderUI.h" />
     <ClInclude Include="..\Public\RMWR.h" />
     <ClInclude Include="..\Public\ScreenFadeOut.h" />
+    <ClInclude Include="..\Public\SelectPreview.h" />
     <ClInclude Include="..\Public\SimpleBullet.h" />
     <ClInclude Include="..\Public\SkyBox.h" />
     <ClInclude Include="..\Public\SpeedIndicator.h" />
     <ClInclude Include="..\Public\StandardMissile.h" />
+    <ClInclude Include="..\Public\SU33.h" />
     <ClInclude Include="..\Public\SU33Handler.h" />
     <ClInclude Include="..\Public\SuperClassAIPilot.h" />
     <ClInclude Include="..\Public\SuperClassAutoPilot.h" />
@@ -209,7 +212,7 @@
     <ClInclude Include="..\Public\TargetDummy.h" />
     <ClInclude Include="..\Public\AIPilot.h" />
     <ClInclude Include="..\Public\Title.h" />
-    <ClInclude Include="..\Public\TitleBackground.h" />
+    <ClInclude Include="..\Public\Background.h" />
     <ClInclude Include="..\Public\Trigger.h" />
     <ClInclude Include="..\Public\TU160.h" />
     <ClInclude Include="..\Public\TerrainCollision.h" />
@@ -232,6 +235,7 @@
     <ClCompile Include="..\Private\AntiAirGunTruck.cpp" />
     <ClCompile Include="..\Private\AttitudeIndicator.cpp" />
     <ClCompile Include="..\Private\AutoPilot.cpp" />
+    <ClCompile Include="..\Private\EndText.cpp" />
     <ClCompile Include="..\Private\MainMenuParts.cpp" />
     <ClCompile Include="..\Private\Compass.cpp" />
     <ClCompile Include="..\Private\DefineArea.cpp" />
@@ -249,7 +253,7 @@
     <ClCompile Include="..\Private\IFFHud.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MainCamera.cpp" />
-    <ClCompile Include="..\Private\MainMenu.cpp" />
+    <ClCompile Include="..\Private\AboveText.cpp" />
     <ClCompile Include="..\Private\Missile.cpp" />
     <ClCompile Include="..\Private\MissileLockUI.cpp" />
     <ClCompile Include="..\Private\MS01.cpp" />
@@ -270,10 +274,12 @@
     <ClCompile Include="..\Private\RaderUI.cpp" />
     <ClCompile Include="..\Private\RMWR.cpp" />
     <ClCompile Include="..\Private\ScreenFadeOut.cpp" />
+    <ClCompile Include="..\Private\SelectPreview.cpp" />
     <ClCompile Include="..\Private\SimpleBullet.cpp" />
     <ClCompile Include="..\Private\SkyBox.cpp" />
     <ClCompile Include="..\Private\SpeedIndicator.cpp" />
     <ClCompile Include="..\Private\StandardMissile.cpp" />
+    <ClCompile Include="..\Private\SU33.cpp" />
     <ClCompile Include="..\Private\SU33Handler.cpp" />
     <ClCompile Include="..\Private\SuperClassAutoPilot.cpp" />
     <ClCompile Include="..\Private\SurfaceToAirMissileFireControlSystem.cpp" />
@@ -281,7 +287,7 @@
     <ClCompile Include="..\Private\TargetDummy.cpp" />
     <ClCompile Include="..\Private\AIPilot.cpp" />
     <ClCompile Include="..\Private\Title.cpp" />
-    <ClCompile Include="..\Private\TitleBackground.cpp" />
+    <ClCompile Include="..\Private\Background.cpp" />
     <ClCompile Include="..\Private\Trigger.cpp" />
     <ClCompile Include="..\Private\TU160.cpp" />
     <ClCompile Include="..\Private\TerrainCollision.cpp" />

@@ -23,4 +23,6 @@ private:
 	Vector3* position;
 	INT altitude;
 	Engine::Text* text;
+	const bool* warning;
+	float4 color;
 };

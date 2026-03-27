@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "AltitudeIndicator.h"
-
+#include "RMWR.h"
 AltitudeIndicator::AltitudeIndicator(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::UIObject(dxDevice, dxDeviceContext)
 {
 }
@@ -15,6 +15,7 @@ AltitudeIndicator* AltitudeIndicator::Create(ID3D11Device* dxDevice, ID3D11Devic
 {
 	AltitudeIndicator* newInstance = new AltitudeIndicator(dxDevice, dxDeviceContext);
 	newInstance->position = &player->transform()->Position();
+	newInstance->warning = static_cast<RMWR*>(player->GetComponent(L"RMWR"))->LinkMissileWarning();
 	if (FAILED(newInstance->Start()))
 	{
 		Base::Destroy(newInstance);
@@ -38,7 +39,7 @@ HRESULT AltitudeIndicator::Start(void)
 	CreateScale(AltMeter.texture, scale);
 	innerErrorCheck(CreateVertex(AltMeter.vertexBuffer, AltMeter.indexBuffer, AltMeter.indexCount, scale), L"FullModelVertex/Index Create");
 
-	text = CreateText(L"../Bin/ACES07.spritefont");
+	text = ::CreateText(L"../Bin/ACES07.spritefont");
 	if (text == nullptr)
 		return E_FAIL;
 	return S_OK;
@@ -60,8 +61,8 @@ void AltitudeIndicator::Update(void)
 
 void AltitudeIndicator::LateUpdate(void)
 {
-	AddRenderObject(RenderType::UI, this);
-	altitude = static_cast<INT>(ConvertWorldToFeet(position->y));
+	::AddRenderObject(RenderType::UI, this);
+	altitude = static_cast<INT>(::ConvertWorldToFeet(position->y));
 }
 
 void AltitudeIndicator::Render(void)
@@ -74,16 +75,23 @@ void AltitudeIndicator::Render(void)
 	Vector2 localScale = Vector2::one();
 	Matrix worldMatrix;
 
-	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, localScale, 0.0f));
-	SetMatrix(world, worldMatrix);
+	if (*warning)
+		color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	else
+		color = { 0.0f, 1.0f, 0.0f, 1.0f };
 
-	SetTexture(diffuseTexture, AltMeter.texture);
-	GetCurrentShader()->Render(AltMeter.indexBuffer, AltMeter.vertexBuffer, SIUIstride);
+	::GetCurrentShader()->BindVariable("UIcolor", &color, sizeof(float4));
+
+	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, localScale, 0.0f));
+	::SetMatrix(world, worldMatrix);
+
+	::SetTexture(diffuseTexture, AltMeter.texture);
+	::GetCurrentShader()->Render(AltMeter.indexBuffer, AltMeter.vertexBuffer, SIUIstride);
 	dxDeviceContext->DrawIndexed(AltMeter.indexCount, 0, 0);
 
 	position.x -= (scale.x * 0.35f);
 	position.y += scale.y * 1.0f;
-	text->RenderText(L"ALT", position, float2{ 1.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }, 0.0f);
+	text->RenderText(L"ALT", position, float2{ 1.0f, 1.0f }, color, 0.0f);
 
 	position.x += (scale.x * 0.5f);
 	if (altitude >= 100)
@@ -95,6 +103,5 @@ void AltitudeIndicator::Render(void)
 		position.x -= 16.0f;
 
 	position.y -= (scale.y * 0.7f);
-	text->RenderText(std::to_wstring(altitude), position, float2{ 1.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }, 0.0f);
-
+	text->RenderText(std::to_wstring(altitude), position, float2{ 1.0f, 1.0f }, color, 0.0f);
 }

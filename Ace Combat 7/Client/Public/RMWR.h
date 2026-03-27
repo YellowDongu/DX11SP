@@ -30,8 +30,12 @@ public:
 	bool Warning(void) { return warning; }
 	bool MissileWarning(void) { return missileWarning; }
 	bool ClosedWarning(void) { return closedWarning; }
+	const bool* LinkWarning(void) { return &warning; }
+	const bool* LinkMissileWarning(void) { return &missileWarning; }
+	const bool* LinkClosedWarning(void) { return &closedWarning; }
 	FLOAT Health(void) { return currentHealth; }
 	FLOAT MAXHealth(void) { return maxHealth; }
+	void SetMAXHealth(FLOAT value) { maxHealth = currentHealth = value; }
 
 private:
 	bool warning = false, missileWarning = false, closedWarning = false;

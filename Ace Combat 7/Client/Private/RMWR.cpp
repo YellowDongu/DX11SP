@@ -45,8 +45,7 @@ void RadarMissileWarningReceiver::Update(void)
 		{
 			if (!warning)
 				warning = (*iterator)->LockStatus() != 1.0f;
-			else
-				break;
+
 			iterator++;
 		}
 	}
@@ -59,24 +58,22 @@ void RadarMissileWarningReceiver::LateUpdate(void)
 {
 	missileWarning = false;
 	closedWarning = false;
+	static FLOAT closedDistance = ConvertFeetToWorld(1000.0f) * 2.5f;
+	Vector3& position = gameObject->transform()->Position();
 	for (auto iterator = chasedMissile.begin(); iterator != chasedMissile.end(); )
 	{
-		if (closedWarning)
-			break;
 		if ((*iterator)->Detonated())
-			iterator = chasedMissile.erase(iterator);
-		else
 		{
-			if (!closedWarning)
-			{
-				missileWarning = true;
-				closedWarning = (gameObject->transform()->Position() - (*iterator)->transform()->Position()).magnitude() < ConvertFeetToWorld(1500.0f);
-				float test = (gameObject->transform()->Position() - (*iterator)->transform()->Position()).magnitude();
-				if (test < ConvertFeetToWorld(2000.0f))
-					int alarm = 0;
-			}
-			iterator++;
+			iterator = chasedMissile.erase(iterator);
+			continue;
 		}
+		if (!closedWarning)
+		{
+			missileWarning = true;
+			closedWarning = (position - (*iterator)->transform()->Position()).magnitude() < closedDistance;
+
+		}
+		iterator++;
 	}
 }
 

@@ -145,3 +145,12 @@ void Act::ReadyOtherScene(UINT loadingSceneNumber, UINT targetSceneNumber)
 
 	loader->BeginLoading(currentScene);
 }
+
+void Engine::Act::PassiveLoadScene(UINT sceneIndex)
+{
+	loader->BeginLoading(scenes[sceneIndex]);
+
+	Loading = true;
+	loadEnd = false;
+	loader->ResetStatus();
+}

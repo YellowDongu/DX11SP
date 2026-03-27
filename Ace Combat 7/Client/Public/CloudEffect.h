@@ -24,9 +24,9 @@ public:
 	HRESULT BindWorldBuffer(void);
 	void LinkMatrixList(std::vector<Engine::VertexMatrix>& pointer) { vertexMatrix = &pointer; }
 private:
-	std::vector<Engine::VertexMatrix>* vertexMatrix{nullptr};
 	//std::vector<Engine::AdditionalVertexInfomation>* vertexMatrix{nullptr};
-	ID3D11ShaderResourceView* cloudTexture;
+	Engine::Shader* shader{nullptr};
+	ID3D11ShaderResourceView* cloudTexture{nullptr};
+	std::vector<Engine::VertexMatrix>* vertexMatrix{nullptr};
 	Vector2 textureFrameSize;
-	Engine::Shader* shader;
 };

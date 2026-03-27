@@ -21,7 +21,8 @@ public:
 
 private:
 	Engine::StaticModel* model{nullptr};
-	class RadarMissileWarningReceiver* rmwr;
-	class FireControlSystem* fcs;
+	Engine::Collider* collider{ nullptr };
+	class RadarMissileWarningReceiver* rmwr{nullptr};
+	class FireControlSystem* fcs{nullptr};
 }typedef SAM;
 

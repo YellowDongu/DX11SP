@@ -43,6 +43,7 @@ Missile* ActiveRadarHomingMissile::Launch(Engine::GameObject* shooter, Vector3 L
 	ARHM* newInstnace = new ARHM(*this);
 	Engine::Transform& transform = *shooter->transform();
 	newInstnace->transform()->Synchronization(transform);
+	newInstnace->transform()->SetAngle(Vector3::getDirection(transform.Forward()));
 	Vector3 position = transform.Position() + LaunchOffsetPosition;
 	memcpy(&newInstnace->transformComponent->Position(), &position, sizeof(Vector3));
 	newInstnace->transformComponent->UpdateWorldMatrix();
@@ -64,14 +65,17 @@ HRESULT ActiveRadarHomingMissile::Start(void)
 	if (FAILED(CreateTransform()))
 		return E_FAIL;
 
-	transformComponent->Scale() *= 50.0f;
+	Matrix offset;
+	DirectX::XMStoreFloat4x4(&offset, DirectX::XMMatrixMultiply(DirectX::XMMatrixScaling(0.05f, 0.05f, 0.05f), DirectX::XMMatrixRotationRollPitchYaw(0.0f, DirectX::XMConvertToRadians(90.0f), DirectX::XMConvertToRadians(90.0f))));
+	::ConvertModel("../Bin/Resources/Vehicles/Weapons/w_msl_a0/w_msl_a0.FBX", L"../Bin/Resources/Vehicles/Weapons/w_msl_a0/w_msl_a0.model",offset);
 
 	::LoadStaticModel(L"../Bin/Resources/Vehicles/Weapons/w_msl_a0/w_msl_a0.model", model);
 	//model = Engine::StaticModel::Create(dxDevice, dxDeviceContext, "../Bin/Resources/Vehicles/Weapons/w_msl_a0/w_msl_a0.FBX");
 	if (model == nullptr)
 		return E_FAIL;
 	AddComponent(model, L"StaticModel");
-	DirectX::XMStoreFloat4(&baseRotation, DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(90.0f), 0.0f, 0.0f));
+	//DirectX::XMStoreFloat4(&baseRotation, DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(90.0f), 0.0f, 0.0f));
+	DirectX::XMStoreFloat4(&baseRotation, DirectX::XMQuaternionIdentity());
 
 	debugDraw = Engine::LineDrawer::Create(dxDevice, dxDeviceContext);
 	if (debugDraw == nullptr)
@@ -166,7 +170,7 @@ void ActiveRadarHomingMissile::Chase(void)
 	{
 		Vector3 direction = target->transform()->Position() - transformComponent->Position();
 		float distance = direction.magnitude();
-		if (distance <= ConvertFeetToWorld(50.0f))
+		if (distance <= detonationDistance)
 		{
 			Detonate();
 			return;

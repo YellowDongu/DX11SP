@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Compass.h"
+#include "RMWR.h"
 
 Compass::Compass(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::UIObject(dxDevice, dxDeviceContext)
 {
@@ -15,6 +16,7 @@ Compass* Compass::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceCo
 {
 	Compass* newInstance = new Compass(dxDevice, dxDeviceContext);
 	newInstance->forward = &player->transform()->Forward();
+	newInstance->warning = static_cast<RMWR*>(player->GetComponent(L"RMWR"))->LinkMissileWarning();
 
 	if (FAILED(newInstance->Start()))
 	{
@@ -39,7 +41,7 @@ HRESULT Compass::Start(void)
 	CreateScale(compassLine.texture, scale);
 	innerErrorCheck(CreateVertex(compassLine.vertexBuffer, compassLine.indexBuffer, compassLine.indexCount, scale), L"Vertex/Index Create");
 
-	text = CreateText(L"../Bin/ACES07.spritefont");
+	text = ::CreateText(L"../Bin/ACES07.spritefont");
 	if (text == nullptr)
 		return E_FAIL;
 	totalSize = 100.0f;
@@ -66,7 +68,7 @@ void Compass::Update(void)
 
 void Compass::LateUpdate(void)
 {
-	AddRenderObject(RenderType::UI, this);
+	::AddRenderObject(RenderType::UI, this);
 	currentAngle = static_cast<UINT>(GetDirection(DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(forward))));
 }
 float fontSize = 16.0f;
@@ -76,15 +78,22 @@ void Compass::Render(void)
 	float angleStart = currentAngle - 20.5f;
 	float angleEnd = currentAngle + 20.5f;
 	float angleScale = totalSize / 21.0f;  // 1도당 이동 거리
+
+	if(*warning)
+		color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	else
+		color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+	::GetCurrentShader()->BindVariable("UIcolor", &color, sizeof(float4));
 	for (float theta = std::ceil(angleStart / 5.0f) * 5.0f; theta <= angleEnd; theta += 5.0f)
 	{
 		position.x = angleScale * (theta - currentAngle);
 		
 		DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, localScale, 0.0f));
-		SetMatrix(world, worldMatrix);
+		::SetMatrix(world, worldMatrix);
 		
-		SetTexture(diffuseTexture, compassLine.texture);
-		GetCurrentShader()->Render(compassLine.indexBuffer, compassLine.vertexBuffer, CMPUIstride);
+		::SetTexture(diffuseTexture, compassLine.texture);
+		::GetCurrentShader()->Render(compassLine.indexBuffer, compassLine.vertexBuffer, CMPUIstride);
 		dxDeviceContext->DrawIndexed(compassLine.indexCount, 0, 0);
 
 		if (std::abs(position.x) < (fontSize + 1.0f) * 1.25f)
@@ -113,7 +122,7 @@ FLOAT Compass::GetDirection(fxmVector forward)
 	DirectX::XMVECTOR Up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	float dotProduct = DirectX::XMVectorGetX(DirectX::XMVector3Dot(forward, North));
-	dotProduct = clamp(dotProduct, -1.0f, 1.0f);
+	dotProduct = ::clamp(dotProduct, -1.0f, 1.0f);
 
 	float degree = DirectX::XMConvertToDegrees(acosf(dotProduct));
 

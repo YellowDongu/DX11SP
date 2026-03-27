@@ -9,7 +9,7 @@ Missile::Missile(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) :
 {
 }
 
-Missile::Missile(const Missile& other) : Engine::GameObject(other), model(nullptr), target(nullptr), rotationSpeed(other.rotationSpeed), speed(other.speed), air(other.air), ground(other.ground)
+Missile::Missile(const Missile& other) : Engine::GameObject(other), model(nullptr), target(nullptr), rotationSpeed(other.rotationSpeed), speed(other.speed), air(other.air), ground(other.ground), detonationDistance(other.detonationDistance)
 {
 	model = static_cast<Engine::StaticModel*>(GetComponent(L"StaticModel"));
 }

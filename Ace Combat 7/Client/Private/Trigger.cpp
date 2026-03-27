@@ -306,3 +306,90 @@ void KillSpawnTrigger::ActiveTrigger(void)
 	}
 	deleteThis = true;
 }
+
+
+void MS01EndTrigger::Free(void)
+{
+	Base::DestroyInstance(text);
+}
+
+MS01EndTrigger* MS01EndTrigger::Create(void)
+{
+	MS01EndTrigger* newInstance = new MS01EndTrigger();
+	if (FAILED(newInstance->Start()))
+	{
+		Base::Destroy(newInstance);
+		return nullptr;
+	}
+	return newInstance;
+}
+
+#include "ScreenFadeOut.h"
+#include "PlayerStatusHUD.h"
+
+HRESULT MS01EndTrigger::Start(void)
+{
+	Engine::Layer* layer = ::EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"UILayer");
+
+	if (layer == nullptr)
+		return E_FAIL;
+
+	fadeOutScreen = static_cast<ScreenFadeOut*>(layer->GetGameObject(L"ZZZScreenFadeOut"));
+	if (fadeOutScreen == nullptr)
+		return E_FAIL;
+	psHUD = static_cast<PlayerStatusHeadUpDisplay*>(layer->GetGameObject(L"PlayerStatusHUD"));
+	if (psHUD == nullptr)
+		return E_FAIL;
+
+
+	if(FAILED(::Sound()->LoadSound("../Bin/Resources/Sounds/Effects/", "MissionSuccess.wav", missionEndSound)))
+		return E_FAIL;
+
+	text = ::CreateText(L"../Bin/ACES07.spritefont");
+	if (text == nullptr)
+		return E_FAIL;
+	
+	return S_OK;
+}
+
+HRESULT MS01EndTrigger::Awake(void)
+{
+	return S_OK;
+}
+
+void MS01EndTrigger::Update(void)
+{
+	if (activeTimer > 0.0f)
+	{
+		activeTimer -= DeltaTime();
+		if (activeTimer < 0.0f)
+		{
+			psHUD->MissionEnd();
+			::Sound()->Play(missionEndSound);
+		}
+	}
+	else if (timer > 0.0f)
+	{
+		timer -= DeltaTime();
+		if (timer < 0.0f)
+		{
+			fadeOutScreen->SetFadeOut(true);
+		}
+	}
+	else
+	{
+		if (fadeOutScreen->fadeOutStatus() == 1.0f)
+		{
+			::EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"UILayer")->GetGameObject(L"ZZZZEndText")->SetActive(true);
+		}
+	}
+
+}
+
+void MS01EndTrigger::LateUpdate(void)
+{
+}
+
+void MS01EndTrigger::ActiveTrigger(void)
+{
+}

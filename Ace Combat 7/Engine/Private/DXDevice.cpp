@@ -415,6 +415,9 @@ void DXDevice::Free(void)
 	#endif
 }
 
+
+
+
 RenderTarget::RenderTarget(ID3D11Device* _device, ID3D11DeviceContext* _context) : device(_device), context(_context)
 {
 }

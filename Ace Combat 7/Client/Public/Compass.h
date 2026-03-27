@@ -23,6 +23,7 @@ public:
 
 	FLOAT GetDirection(fxmVector forward);
 private:
+	const bool* warning;
 	UIParts compassLine;
 	const Vector3* forward;
 	UINT currentAngle;

@@ -18,10 +18,10 @@ void Mesh::Free(void)
     indexBuffer = nullptr;
 }
 
-Mesh* Mesh::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ModelConverter::FullModelMesh& subMesh, bool saveVertex)
+Mesh* Mesh::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, ModelConverter::FullModelMesh& subMesh, bool saveVertex, bool staticModel)
 {
     Mesh* newInstance = new Mesh(dxDevice, dxDeviceContext);
-    if (FAILED(newInstance->LoadMesh(subMesh, saveVertex)))
+    if (FAILED(newInstance->LoadMesh(subMesh, saveVertex, staticModel)))
     {
         delete newInstance;
         return nullptr;
@@ -59,14 +59,14 @@ bool Mesh::RayToMeshCollision(const Vector3& rayPosition, const Vector3& rayDire
     return hit;
 }
 
-HRESULT Mesh::LoadMesh(ModelConverter::FullModelMesh& subMesh, bool saveVertex)
+HRESULT Mesh::LoadMesh(ModelConverter::FullModelMesh& subMesh, bool saveVertex, bool staticModel)
 {
     std::vector<ModelVertex> vertices;
     size_t indicesSize = subMesh.index.size();
     std::vector<UINT> indices(indicesSize, 0);
     vertices.reserve(subMesh.vertex.size());
 
-    ConvertVertexData(vertices, subMesh.vertex);
+    ConvertVertexData(vertices, subMesh.vertex, staticModel);
     memcpy(indices.data(), subMesh.index.data(), sizeof(UINT) * indicesSize);
     memcpy(&materialIndex, &subMesh.materialIndex, sizeof(UINT));
 
@@ -85,22 +85,44 @@ HRESULT Mesh::LoadMesh(ModelConverter::FullModelMesh& subMesh, bool saveVertex)
     return CreateBuffer(dxDevice, vertexBuffer, indexBuffer, vertices, indices);
 }
 
-HRESULT Mesh::ConvertVertexData(std::vector<ModelVertex>& vertices, std::vector<ModelConverter::FullModelVertex>& otherVertices)
+HRESULT Mesh::ConvertVertexData(std::vector<ModelVertex>& vertices, std::vector<ModelConverter::FullModelVertex>& otherVertices, bool staticModel)
 {
     ModelVertex vertex;
-    for (auto& otherVertice : otherVertices)
-    {
-        memcpy(&vertex.position, &otherVertice.position, sizeof(DirectX::XMFLOAT3));
-        memcpy(&vertex.normal, &otherVertice.normal, sizeof(DirectX::XMFLOAT3));
-        memcpy(&vertex.texcoord, &otherVertice.texcoord, sizeof(DirectX::XMFLOAT2));
-        //memcpy(&vertex.texcoord, &otherVertice.texcoord, sizeof(DirectX::XMFLOAT2) * 8);
-        //memcpy(&vertex.tangent, &otherVertice.tangent, sizeof(DirectX::XMFLOAT3));
-        //memcpy(&vertex.bitTangent, &otherVertice.bitTangent, sizeof(DirectX::XMFLOAT3));
-        memcpy(&vertex.boneIDs, &otherVertice.boneIDs, sizeof(UINT) * 4);
-        memcpy(&vertex.weights, &otherVertice.weights, sizeof(FLOAT) * 4);
 
-        vertices.push_back(vertex);
+    if (staticModel)
+    {
+        for (auto& otherVertice : otherVertices)
+        {
+            memcpy(&vertex.position, &otherVertice.position, sizeof(DirectX::XMFLOAT3));
+            memcpy(&vertex.normal, &otherVertice.normal, sizeof(DirectX::XMFLOAT3));
+            memcpy(&vertex.texcoord, &otherVertice.texcoord, sizeof(DirectX::XMFLOAT2));
+            //memcpy(&vertex.texcoord, &otherVertice.texcoord, sizeof(DirectX::XMFLOAT2) * 8);
+            //memcpy(&vertex.tangent, &otherVertice.tangent, sizeof(DirectX::XMFLOAT3));
+            //memcpy(&vertex.bitTangent, &otherVertice.bitTangent, sizeof(DirectX::XMFLOAT3));
+            ZeroMemory(&vertex.boneIDs, sizeof(UINT) * 4);
+            ZeroMemory(&vertex.weights, sizeof(FLOAT) * 4);
+            vertex.weights[0] = 1.0f;
+
+            vertices.push_back(vertex);
+        }
     }
+    else
+    {
+        for (auto& otherVertice : otherVertices)
+        {
+            memcpy(&vertex.position, &otherVertice.position, sizeof(DirectX::XMFLOAT3));
+            memcpy(&vertex.normal, &otherVertice.normal, sizeof(DirectX::XMFLOAT3));
+            memcpy(&vertex.texcoord, &otherVertice.texcoord, sizeof(DirectX::XMFLOAT2));
+            //memcpy(&vertex.texcoord, &otherVertice.texcoord, sizeof(DirectX::XMFLOAT2) * 8);
+            //memcpy(&vertex.tangent, &otherVertice.tangent, sizeof(DirectX::XMFLOAT3));
+            //memcpy(&vertex.bitTangent, &otherVertice.bitTangent, sizeof(DirectX::XMFLOAT3));
+            memcpy(&vertex.boneIDs, &otherVertice.boneIDs, sizeof(UINT) * 4);
+            memcpy(&vertex.weights, &otherVertice.weights, sizeof(FLOAT) * 4);
+
+            vertices.push_back(vertex);
+        }
+    }
+
 
     return S_OK;
 }

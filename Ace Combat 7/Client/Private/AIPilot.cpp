@@ -10,7 +10,7 @@ AIPilot::AIPilot(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) :
 {
 }
 
-AIPilot::AIPilot(const AIPilot& other) : Engine::Component(other)
+AIPilot::AIPilot(const AIPilot& other) : Engine::Component(other), objectInfomation(other.objectInfomation)
 {
 }
 
@@ -63,6 +63,10 @@ HRESULT AIPilot::Start(void)
 
 void AIPilot::Update(void)
 {
+	if (leader != nullptr && leader->Destroy())
+		leader = nullptr;
+
+
 	static FLOAT chaseDistance = ConvertFeetToWorld(10000.0f) * 2.5f;
 	static FLOAT throttleMinimunDistance = ConvertFeetToWorld(2000.0f) * 2.5f;
 	timer -= DeltaTime();
@@ -130,6 +134,10 @@ void AIPilot::FixedUpdate(void)
 
 void AIPilot::LateUpdate(void)
 {
+	if (leader != nullptr && leader->Destroy())
+		leader = nullptr;
+
+
 	//if (!target->IsActive())
 	//	target = nullptr;
 	//

@@ -50,6 +50,7 @@ HRESULT Camera::SetCamera(float _fov, float _aspectRatio, float _nearZ, float _f
 	nearZ = _nearZ;
 	farZ = _farZ;
 	DirectX::XMStoreFloat4x4(&projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(fov), aspectRatio, nearZ, farZ));
+	::SetViewProjectionMatrix(::EngineInstance()->RenderManager()->ViewMatrix(), projectionMatrix);
 	return S_OK;
 }
 

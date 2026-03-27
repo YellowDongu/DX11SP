@@ -26,6 +26,7 @@ namespace Engine
 		void CompleteLoadingScene(void);
 		void ChangeLoadingScene(UINT loadingSceneNumber);
 		void ReadyOtherScene(UINT loadingSceneNumber, UINT targetSceneNumber);
+		void PassiveLoadScene(UINT sceneIndex);
 		void ForceSetCurrentScene(UINT sceneNumber) { currentScene = scenes[sceneNumber]; }
 		Scene* CurrentScene(void) { return currentScene; }
 		Scene* LoadingScene(void) { return loadingScene; }

@@ -24,4 +24,5 @@ public:
 	virtual void Render(void) override;
 private:
 	Engine::StaticModel* model{ nullptr };
+	Engine::Collider* collider{ nullptr };
 } typedef AAGUN;

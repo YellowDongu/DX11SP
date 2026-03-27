@@ -67,7 +67,7 @@ void PlayerPilot::Update(void)
         switch (cameraState)
         {
         case 1:
-            camera->FOV(10.0f);
+            camera->FOV(45.0f);
             break;
         case 3:
             camera->FOV(45.0f);
@@ -90,11 +90,12 @@ void PlayerPilot::Update(void)
     switch (cameraState)
     {
     case -2:
-        camera->FOV(10.0f);
-        cameraState = 1;
+        cameraState = 0;
         break;
     case -1:
     {
+        cameraState = 0;
+        break;
         camera->FOV(45.0f);
         if (Input()->getButton(KeyType::W))
         {
@@ -174,6 +175,8 @@ void PlayerPilot::Update(void)
     }
         break;
     default:
+        cameraState = 0;
+        break;
     {
         camera->transform()->Synchronization(*transformComponent);
         Vector3 position = transformComponent->Forward() * cameraTrdViewOffset.z + transformComponent->Up() * cameraTrdViewOffset.y;
@@ -196,6 +199,79 @@ float roundByFloatPrecision(float value, int steps)
 }
 
 void PlayerPilot::LateUpdate(void)
+{
+    if (flightModule->throttle > flightModule->IdleThrottle())
+        accelValue += DeltaTime() * 0.1f;
+    else if(flightModule->throttle < flightModule->IdleThrottle())
+        accelValue -= DeltaTime() * 0.1f;
+    else
+    {
+        if (accelValue > 0.61f)
+            accelValue -= DeltaTime() * 0.1f;
+        else if (accelValue < 0.59f)
+            accelValue += DeltaTime() * 0.1f;
+        else
+            accelValue = 0.6f;
+    }
+    accelValue = clamp(accelValue, 0.5f, 1.0f);
+
+    cameraTrdViewOffset = objectInfomation.aircraftInfomation.cameraTrdViewOffset * (0.5f + (accelValue - 0.5f) * 0.5f);
+
+    switch (cameraState)
+    {
+    case -1:
+        camera->transform()->UpdateWorldMatrix();
+        break;
+    case 0:
+    {
+        camera->transform()->Synchronization(*transformComponent);
+        Vector3 position = transformComponent->Forward() * cameraTrdViewOffset.z + transformComponent->Up() * cameraTrdViewOffset.y;
+        camera->transform()->Position() += position;
+
+
+        xmMatrix transform = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+        camera->transform()->WorldMatrix(DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&transformComponent->WorldMatrix()), transform));
+        break;
+    }
+    case 1:
+    {
+        camera->transform()->Synchronization(*transformComponent);
+        Vector3 position = transformComponent->Forward() * cameraFstViewOffset.z + transformComponent->Up() * cameraFstViewOffset.y;
+        camera->transform()->Position() += position;
+
+
+        xmMatrix transform = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+        camera->transform()->WorldMatrix(DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&transformComponent->WorldMatrix()), transform));
+        break;
+    }
+    case 2:
+    {
+        camera->transform()->Synchronization(*transformComponent);
+        Vector3 position = transformComponent->Forward() * cameraFstViewOffset.z + transformComponent->Up() * cameraFstViewOffset.y;
+        camera->transform()->Position() += position;
+
+
+        xmMatrix transform = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+        camera->transform()->WorldMatrix(DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&transformComponent->WorldMatrix()), transform));
+        break;
+    }
+    default:
+    {
+        camera->transform()->Synchronization(*transformComponent);
+        Vector3 position = transformComponent->Forward() * cameraTrdViewOffset.z + transformComponent->Up() * cameraTrdViewOffset.y;
+        camera->transform()->Position() += position;
+
+        xmMatrix transform = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+        camera->transform()->WorldMatrix(DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&transformComponent->WorldMatrix()), transform));
+        cameraState = -1;
+
+    }
+        break;
+    }
+
+
+    /*
+    
 {
     if (flightModule->throttle > flightModule->IdleThrottle())
         accelValue += DeltaTime() * 0.1f;
@@ -291,6 +367,8 @@ void PlayerPilot::LateUpdate(void)
     }
         break;
     }
+    
+    */
 }
 
 void PlayerPilot::FixedUpdate(void)

@@ -168,7 +168,7 @@
     <ClInclude Include="..\Public\PlayerPilot.h">
       <Filter>03. Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\MainMenu.h">
+    <ClInclude Include="..\Public\AboveText.h">
       <Filter>01. Act\MainMenu</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\SkyBox.h">
@@ -176,12 +176,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\MainMenuParts.h">
       <Filter>01. Act\MainMenu\BackGround</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Title.h">
-      <Filter>01. Act\Title</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\TitleBackground.h">
-      <Filter>01. Act\Title\TitleBackground</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\MainCamera.h">
       <Filter>02. CommonGameObject</Filter>
@@ -236,15 +230,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\AIPilot.h">
       <Filter>03. Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\CloudEffect.h">
-      <Filter>01. Act\MS01\GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Cloud.h">
-      <Filter>01. Act\MS01\GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\GroundAI.h">
-      <Filter>01. Act\MS01\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\SimpleBullet.h">
       <Filter>02. CommonGameObject\Weapon</Filter>
@@ -302,6 +287,30 @@
     </ClInclude>
     <ClInclude Include="..\Public\MissileTrail.h">
       <Filter>041. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Background.h">
+      <Filter>01. Act\MainMenu\BackGround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Title.h">
+      <Filter>01. Act\MainMenu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Cloud.h">
+      <Filter>041. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CloudEffect.h">
+      <Filter>041. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GroundAI.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SU33.h">
+      <Filter>02. CommonGameObject\Vehicle\SU33</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SelectPreview.h">
+      <Filter>01. Act\MainMenu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EndText.h">
+      <Filter>04. UIObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -370,7 +379,7 @@
     <ClCompile Include="..\Private\PlayerPilot.cpp">
       <Filter>03. Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\MainMenu.cpp">
+    <ClCompile Include="..\Private\AboveText.cpp">
       <Filter>01. Act\MainMenu</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\SkyBox.cpp">
@@ -378,12 +387,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\MainMenuParts.cpp">
       <Filter>01. Act\MainMenu\BackGround</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Title.cpp">
-      <Filter>01. Act\Title</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\TitleBackground.cpp">
-      <Filter>01. Act\Title\TitleBackground</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MainCamera.cpp">
       <Filter>02. CommonGameObject</Filter>
@@ -438,15 +441,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\AIPilot.cpp">
       <Filter>03. Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\CloudEffect.cpp">
-      <Filter>01. Act\MS01\GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Cloud.cpp">
-      <Filter>01. Act\MS01\GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\GroundAI.cpp">
-      <Filter>01. Act\MS01\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\SimpleBullet.cpp">
       <Filter>02. CommonGameObject\Weapon</Filter>
@@ -504,6 +498,30 @@
     </ClCompile>
     <ClCompile Include="..\Private\MissileTrail.cpp">
       <Filter>041. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Background.cpp">
+      <Filter>01. Act\MainMenu\BackGround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Title.cpp">
+      <Filter>01. Act\MainMenu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Cloud.cpp">
+      <Filter>041. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CloudEffect.cpp">
+      <Filter>041. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GroundAI.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SU33.cpp">
+      <Filter>02. CommonGameObject\Vehicle\SU33</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SelectPreview.cpp">
+      <Filter>01. Act\MainMenu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EndText.cpp">
+      <Filter>04. UIObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

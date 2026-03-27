@@ -3,7 +3,7 @@
 #include "Camera.h"
 #include "TargetDummy.h"
 #include "FireControlSystem.h"
-
+#include "Missile.h"
 #include "AIPilot.h"
 #include "SuperClassAIPilot.h"
 
@@ -14,6 +14,7 @@ IdentificationFriendorFoeHeadUpDisplay::IdentificationFriendorFoeHeadUpDisplay(I
 void IdentificationFriendorFoeHeadUpDisplay::Free(void)
 {
 	aircraftMarker.Free();
+	negativeMarker.Free();
 	Base::DestroyInstance(text);
 }
 
@@ -26,7 +27,8 @@ IdentificationFriendorFoeHeadUpDisplay* IdentificationFriendorFoeHeadUpDisplay::
 	newInstance->cameraObject = camera;
 	newInstance->camera = static_cast<Engine::Camera*>(camera->GetComponent(L"Camera"));
 	newInstance->deviceInfomation = &Device()->ViewPortInfomation();
-	newInstance->targeted = &static_cast<FireControlSystem*>(player->GetComponent(L"FCS"))->LinkTarget();
+	newInstance->fcs = static_cast<FireControlSystem*>(player->GetComponent(L"FCS"));
+	newInstance->targeted = &newInstance->fcs->LinkTarget();
 	if (camera == nullptr)
 	{
 		Base::Destroy(newInstance);
@@ -55,7 +57,12 @@ HRESULT IdentificationFriendorFoeHeadUpDisplay::Start(void)
 	CreateScale(aircraftMarker.texture, markerScale);
 	innerErrorCheck(CreateVertex(aircraftMarker.vertexBuffer, aircraftMarker.indexBuffer, aircraftMarker.indexCount, markerScale), L"Vertex/Index Create");
 
-	text = CreateText(L"../Bin/ACES07.spritefont");
+	innerErrorCheck(negativeMarker.LoadUITexture(L"../Bin/Resources/UI/HUD/Container/hud_lockNG.dds"), L"Load texture - hud_lockNG.dds");
+	CreateScale(negativeMarker.texture, markerScale);
+	innerErrorCheck(CreateVertex(negativeMarker.vertexBuffer, negativeMarker.indexBuffer, negativeMarker.indexCount, markerScale), L"Vertex/Index Create");
+
+	
+	text = ::CreateText(L"../Bin/ACES07.spritefont");
 	if (text == nullptr)
 		return E_FAIL;
 	return S_OK;
@@ -83,34 +90,91 @@ void IdentificationFriendorFoeHeadUpDisplay::LateUpdate(void)
 
 void IdentificationFriendorFoeHeadUpDisplay::Render(void)
 {
+	static std::wstring pilot = L"AIPilot";
+	const ObjectInfomation* infomation = nullptr;
+	bool groundAim, airAim, canAim;
+	switch (fcs->WeaponSelectedStatus())
+	{
+	case -1:
+		groundAim = false;
+		airAim = false;
+		break;
+	case 0:
+		groundAim = true;
+		airAim = true;
+		break;
+	case 1:
+	{
+		Missile* missile = fcs->GetUniqueMissile();
+		groundAim = missile->Ground();
+		airAim = missile->Air();
+		break;
+	}
+	default:
+		break;
+	}
+
+
 	static std::string uiColorName = "UIcolor";
 	Vector2 scale = Vector2::one() * 0.65f;
+	::GetCurrentShader()->BindVariable(uiColorName, &uiColor, sizeof(DirectX::XMFLOAT4));
 	if (Enemy != nullptr)
 	{
 		for (auto& object : Enemy->GameObjectList())
 		{
-			RenderHUD(object.second, aircraftMarker, markerScale, Vector2::one() * 0.65f);
-
+			infomation = &static_cast<AIPilot*>(object.second->GetComponent(pilot))->LinkObjectInfomation();
+			switch (infomation->aircraftInfomation.unitType)
+			{
+			case GroundUnit:
+				canAim = groundAim;
+				break;
+			case AirUnit:
+				canAim = airAim;
+				break;
+			case SeaUnit:
+				canAim = false;
+				break;
+			default:
+				canAim = false;
+				break;
+			}
+			RenderHUD(object.second, aircraftMarker, markerScale, Vector2::one() * 0.65f, false, !canAim);
 		}
 	}
 	if (MainTargetEnemy != nullptr)
 	{
 		for (auto& object : MainTargetEnemy->GameObjectList())
 		{
-			RenderHUD(object.second, aircraftMarker, markerScale, Vector2::one() * 0.65f, true);
+			infomation = &static_cast<AIPilot*>(object.second->GetComponent(pilot))->LinkObjectInfomation();
+			switch (infomation->aircraftInfomation.unitType)
+			{
+			case GroundUnit:
+				canAim = groundAim;
+				break;
+			case AirUnit:
+				canAim = airAim;
+				break;
+			case SeaUnit:
+				canAim = false;
+				break;
+			default:
+				canAim = false;
+				break;
+			}
+			RenderHUD(object.second, aircraftMarker, markerScale, Vector2::one() * 0.65f, true, !canAim);
 		}
 	}
 	if (Ally != nullptr)
 	{
 		static DirectX::XMFLOAT4 mint = { 0.0f, 1.0f, 1.0f, 1.0f };
-		GetCurrentShader()->BindVariable(uiColorName, &mint, sizeof(DirectX::XMFLOAT4));
+		::GetCurrentShader()->BindVariable(uiColorName, &mint, sizeof(DirectX::XMFLOAT4));
 		for (auto& object : Ally->GameObjectList())
 		{
 			if (object.second == player)
 				continue;
 			RenderHUD(object.second, aircraftMarker, markerScale, Vector2::one() * 0.65f);
 		}
-		GetCurrentShader()->BindVariable(uiColorName, &uiColor, sizeof(DirectX::XMFLOAT4));
+		::GetCurrentShader()->BindVariable(uiColorName, &uiColor, sizeof(DirectX::XMFLOAT4));
 	}
 }
 
@@ -118,7 +182,7 @@ void IdentificationFriendorFoeHeadUpDisplay::RenderUI(Engine::Layer* layer, UIPa
 {
 }
 
-void IdentificationFriendorFoeHeadUpDisplay::RenderHUD(Engine::GameObject* object, UIParts& parts, Vector2 markerScale, Vector2 scale, bool mainTarget)
+void IdentificationFriendorFoeHeadUpDisplay::RenderHUD(Engine::GameObject* object, UIParts& parts, Vector2 markerScale, Vector2 scale, bool mainTarget, bool aimNegative)
 {
 	static std::wstring aiPilotComponentName = L"AIPilot";
 	static std::wstring aiSuperClassPilotComponentName = L"SuperClassAIPilot";
@@ -133,12 +197,12 @@ void IdentificationFriendorFoeHeadUpDisplay::RenderHUD(Engine::GameObject* objec
 	float distance;
 
 	distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&object->transform()->Position()), DirectX::XMLoadFloat3(&player->transform()->Position()))));
-	distance = ConvertWorldToFeet(distance) / 2.5f;
+	distance = ::ConvertWorldToFeet(distance) / 2.5f;
 
 	//if (distance >= maxDistance)
 	//	continue;
 
-	screenPosition = Vector2(WorldToScreen(object->transform()->Position(), DirectX::XMLoadFloat4x4(&camera->ViewProjectionMatrix()), deviceInfomation, inScreen));
+	screenPosition = Vector2(::WorldToScreen(object->transform()->Position(), DirectX::XMLoadFloat4x4(&camera->ViewProjectionMatrix()), deviceInfomation, inScreen));
 	if (!inScreen)
 		return;
 
@@ -146,11 +210,19 @@ void IdentificationFriendorFoeHeadUpDisplay::RenderHUD(Engine::GameObject* objec
 	screenPosition.y *= (deviceInfomation->Height * 0.5f);
 
 	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(screenPosition, scale, 0.0f));
-	SetMatrix(world, worldMatrix);
+	::SetMatrix(world, worldMatrix);
 
-	SetTexture(diffuseTexture, parts.texture);
-	GetCurrentShader()->Render(parts.indexBuffer, parts.vertexBuffer, SIUIstride);
+	::SetTexture(diffuseTexture, parts.texture);
+	::GetCurrentShader()->Render(parts.indexBuffer, parts.vertexBuffer, SIUIstride);
 	dxDeviceContext->DrawIndexed(parts.indexCount, 0, 0);
+
+	if (aimNegative)
+	{
+		::SetTexture(diffuseTexture, negativeMarker.texture);
+		::GetCurrentShader()->Render(negativeMarker.indexBuffer, negativeMarker.vertexBuffer, SIUIstride);
+		dxDeviceContext->DrawIndexed(negativeMarker.indexCount, 0, 0);
+	}
+
 
 	if (mainTarget)
 	{
@@ -165,29 +237,35 @@ void IdentificationFriendorFoeHeadUpDisplay::RenderHUD(Engine::GameObject* objec
 	//if (*targeted != object.second)
 	//	continue;
 
-	SetTexture(diffuseTexture, parts.texture);
-	GetCurrentShader()->Render(parts.indexBuffer, parts.vertexBuffer, SIUIstride);
+	::SetTexture(diffuseTexture, parts.texture);
+	::GetCurrentShader()->Render(parts.indexBuffer, parts.vertexBuffer, SIUIstride);
 	dxDeviceContext->DrawIndexed(parts.indexCount, 0, 0);
-	screenPosition.y += markerScale.y * 0.325f;
-	screenPosition.x += markerScale.x * 0.25f;
+	screenPosition.y += markerScale.y * 0.35f;
+	screenPosition.x += markerScale.x * 0.325f;
 	text->RenderText(std::to_wstring(static_cast<INT>(distance)), screenPosition, float2{ 0.55f, 0.5f }, uiColor, 0.0f);
 
 	//Test
-	if (*targeted != object)
-		return;
 	pilot = static_cast<AIPilot*>(object->GetComponent(aiPilotComponentName));
 	if (pilot == nullptr)
 	{
 		pilot = static_cast<AIPilot*>(object->GetComponent(aiSuperClassPilotComponentName));
 	}
 
+	if (pilot->LinkObjectInfomation().allyInfo == 1)
+	{
+		screenPosition.y -= markerScale.y * 0.35f;
 
-	screenPosition.y -= markerScale.y * 0.325f;
+		text->RenderText(L"ALLY", screenPosition, float2{ 0.55f, 0.5f }, uiColor, 0.0f);
+	}
+	else if (*targeted == object)
+	{
+		screenPosition.y -= markerScale.y * 0.35f;
 
-	if (pilot == nullptr)
-		text->RenderText(L"CURRENTTARGET", screenPosition, float2{ 0.55f, 0.5f }, uiColor, 0.0f);
-	else
-		text->RenderText(pilot->LinkObjectInfomation().aircraftInfomation.AircraftModelName, screenPosition, float2{ 0.55f, 0.5f }, uiColor, 0.0f);
+		if (pilot == nullptr)
+			text->RenderText(L"CURRENTTARGET", screenPosition, float2{ 0.55f, 0.5f }, uiColor, 0.0f);
+		else
+			text->RenderText(pilot->LinkObjectInfomation().aircraftInfomation.AircraftModelName, screenPosition, float2{ 0.55f, 0.5f }, uiColor, 0.0f);
+	}
 }
 
 void IdentificationFriendorFoeHeadUpDisplay::AddLayers(Engine::Scene* scene)

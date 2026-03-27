@@ -5,6 +5,7 @@
 #include "RMWR.h"
 #include "RaderSystem.h"
 #include "AntiAirFireControlSystem.h"
+#include "Collider.h"
 
 AntiAirGunTruck::AntiAirGunTruck(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::GameObject(dxDevice, dxDeviceContext)
 {
@@ -12,6 +13,8 @@ AntiAirGunTruck::AntiAirGunTruck(ID3D11Device* dxDevice, ID3D11DeviceContext* dx
 
 AntiAirGunTruck::AntiAirGunTruck(const AntiAirGunTruck& other) : Engine::GameObject(other)
 {
+	model = static_cast<Engine::StaticModel*>(GetComponent(L"FullModel"));
+	collider = static_cast<Engine::Collider*>(GetComponent(L"Collider"));
 }
 
 void AntiAirGunTruck::Free(void)
@@ -61,10 +64,10 @@ HRESULT AntiAirGunTruck::Start(void)
 	AAFCS* fcs = AAFCS::Create(dxDevice, dxDeviceContext, infomation);
 	if (fcs == nullptr)
 		return E_FAIL;
-	fcs->SetGunRPM(120.0f);
 	AddComponent(fcs, L"FCS");
 
 	RMWR* rmwr = RMWR::Create(dxDevice, dxDeviceContext);
+	rmwr->SetMAXHealth(20.0f);
 	if (rmwr == nullptr)
 		return E_FAIL;
 	AddComponent(rmwr, L"RMWR");
@@ -81,6 +84,10 @@ HRESULT AntiAirGunTruck::Start(void)
 		return E_FAIL;
 	AddComponent(aiPilot, L"AIPilot");
 
+	Engine::AABB::Description description;
+	description.extents = Vector3::one() * 2.0f;
+	collider = Engine::Collider::Create(dxDevice, dxDeviceContext, &description);
+	AddComponent(collider, L"Collider");
 
 	return S_OK;
 }
@@ -99,11 +106,13 @@ HRESULT AntiAirGunTruck::Awake(void)
 void AntiAirGunTruck::Update(void)
 {
 	Engine::GameObject::Update();
+	AddCollider(collider);
 }
 
 void AntiAirGunTruck::LateUpdate(void)
 {
 	Engine::GameObject::LateUpdate();
+	::AddRenderObject(RenderType::NonBlend, this);
 }
 
 void AntiAirGunTruck::FixedUpdate(void)
@@ -115,4 +124,5 @@ void AntiAirGunTruck::Render(void)
 {
 	transformComponent->Render();
 	model->Render();
+	collider->Render();
 }

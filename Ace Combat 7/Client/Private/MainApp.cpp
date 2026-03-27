@@ -23,16 +23,14 @@ void MainApp::Start(void)
 	deviceInfo.hInstance = hInstance;
 	deviceInfo.isWindowed = true;
 	
-
-	//deviceInfo.viewpoirtLength = windowSizeX;
-	//deviceInfo.viewpoirtWidth = windowSizeY;
 	deviceInfo.viewpoirtLength = windowSizeY;
 	deviceInfo.viewpoirtWidth = windowSizeX;
 
 	Engine::GameInstance* gameInstance = Engine::GameInstance::Create(deviceInfo);
 	gameInstance->EntireInitialize();
 	gameInstance->Time()->setTargetFPS(144);
-	gameInstance->Device()->SetBackBufferColor({153.0f / 256.0f * 0.8f, 217.0f / 256.0f * 0.6f, 234.0f / 256.0f * 0.8f, 1.0f});
+	//gameInstance->Device()->SetBackBufferColor({153.0f / 256.0f * 0.8f, 217.0f / 256.0f * 0.6f, 234.0f / 256.0f * 0.8f, 1.0f});
+	gameInstance->Device()->SetBackBufferColor({0.0f, 0.0f, 0.0f, 1.0f});
 	auto device = DxDevice();
 	auto context = DxDeviceContext();
 

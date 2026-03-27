@@ -3,7 +3,7 @@
 #include "StandardMissile.h"
 #include "RMWR.h"
 #include "SimpleBullet.h"
-
+#include "AIPilot.h"
 
 FireControlSystem::FireControlSystem(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::Component(dxDevice, dxDeviceContext), gunFired(false), standardMissileFired(false), uniqueMissileFired(false), lock(0.0f)
 {
@@ -153,8 +153,10 @@ void FireControlSystem::WeaponControl(void)
 				coolDownLStandardMissile = 1.0f;
 				standardMissileCount--;
 
+				targetedRMWR = static_cast<RMWR*>(targeted->GetComponent(L"RMWR"));
 				if (targetedRMWR != nullptr)
 					targetedRMWR->FiredToMe(activeMissile.back());
+
 				standardMissileFired = true;
 			}
 			else if (coolDownRStandardMissile <= 0.0f)
@@ -162,18 +164,25 @@ void FireControlSystem::WeaponControl(void)
 				activeMissile.push_back(standardMissile->Launch(gameObject, Vector3::zero(), targeted));
 				coolDownRStandardMissile = 1.0f;
 				standardMissileCount--;
+
+				targetedRMWR = static_cast<RMWR*>(targeted->GetComponent(L"RMWR"));
 				if (targetedRMWR != nullptr)
 					targetedRMWR->FiredToMe(activeMissile.back());
+
 				standardMissileFired = true;
 			}
 			weaponRelease = false;
 		}
 		if (gunFire && coolDownGun <= 0.0f)
 		{
-			Transform& transform = *gameObject->transform();
-			activeBullet.push_back(bullet->Shoot(gameObject, transform.Position() + transform.Forward() * 5.0f, transform.Quaternion()));
-			coolDownGun += gunFireTick;
-			gunFired = true;
+			if (gunCount > 0)
+			{
+				Transform& transform = *gameObject->transform();
+				activeBullet.push_back(bullet->Shoot(gameObject, transform.Position() + transform.Forward() * 5.0f, transform.Quaternion()));
+				coolDownGun += gunFireTick;
+				gunCount--;
+				gunFired = true;
+			}
 		}
 		break;
 	case 1: //uniqueWeapon
@@ -194,21 +203,27 @@ void FireControlSystem::WeaponControl(void)
 				if (missile != nullptr)
 					activeMissile.push_back(missile);
 
+				targetedRMWR = static_cast<RMWR*>(targeted->GetComponent(L"RMWR"));
 				if (targetedRMWR != nullptr)
-					targetedRMWR->FiredToMe(missile);
+					targetedRMWR->FiredToMe(activeMissile.back());
+
 				uniqueMissileFired = true;
 				coolTime.first = 1.0f;
 				uniqueMissileCount--;
 				break;
 			}
-			if (gunFire && coolDownGun <= 0.0f)
+			weaponRelease = false;
+		}
+		if (gunFire && coolDownGun <= 0.0f)
+		{
+			if (gunCount > 0)
 			{
 				Transform& transform = *gameObject->transform();
 				activeBullet.push_back(bullet->Shoot(gameObject, transform.Position() + transform.Forward() * 5.0f, transform.Quaternion()));
 				coolDownGun += gunFireTick;
+				gunCount--;
 				gunFired = true;
 			}
-			weaponRelease = false;
 		}
 		break;
 	default:
@@ -216,6 +231,7 @@ void FireControlSystem::WeaponControl(void)
 		break;
 	}
 	weaponRelease = false;
+	gunFire = false;
 
 
 	if (coolDownGun <= 0.0f)
@@ -264,11 +280,13 @@ void FireControlSystem::Lock(void)
 	if (targeted == nullptr)
 	{lock = 1.0f; return;}
 
+	static std::wstring pilot = L"AIPilot";
 	Vector3 direction = targeted->transform()->Position() - gameObject->transform()->Position();
 	FLOAT distance = direction.magnitude();
 	direction = direction.normalize();
 	float directionAmount = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMLoadFloat3(&gameObject->transform()->Forward()), DirectX::XMLoadFloat3(&direction)));
 
+	bool canAim = false;
 	switch (selectedWeapon)
 	{
 	case -1: //FCS Locked
@@ -287,6 +305,24 @@ void FireControlSystem::Lock(void)
 	}
 		break;
 	case 1: //uniqueWeapon
+	{
+		UnitType unitType = static_cast<AIPilot*>(targeted->GetComponent(pilot))->LinkObjectInfomation().aircraftInfomation.unitType;
+		switch (unitType)
+		{
+		case GroundUnit:
+			canAim = uniqueMissile->Ground();
+			break;
+		case AirUnit:
+			canAim = uniqueMissile->Air();
+			break;
+		case SeaUnit:
+			canAim = false;
+			break;
+		default:
+			canAim = false;
+			break;
+		}
+		if (!canAim) { lock = 1.0f; break; }
 		if (directionAmount < uniqueMissile->MaximumLockDirection() || distance > uniqueMissile->MaximumLockDistance())
 		{
 			lock += 0.0001f/*deltatime*/ * lockSpeed;
@@ -297,6 +333,7 @@ void FireControlSystem::Lock(void)
 		lock -= 0.0001f/*deltatime*/ * lockSpeed;
 		if (lock < 0.0f) lock = 0.0f;
 		break;
+	}
 	default:
 		lock += 0.001f;
 		break;
@@ -319,4 +356,10 @@ void FireControlSystem::SetUniqueMissile(Missile* missile)
 	uniqueMissileCount = uniqueMissile->MissileCount();
 
 
+}
+
+FireControlSystem::LockedTarget::LockedTarget(Engine::GameObject* target)
+{
+	rmwrParts = static_cast<RMWR*>(target->GetComponent(L"RMWR"));
+	objectInfomation = &static_cast<FCS*>(target->GetComponent(L"FCS"))->LinkMetaData();
 }

@@ -48,7 +48,8 @@ HRESULT StandardMissile::Start(void)
 	if (model == nullptr)
 		return E_FAIL;
 	AddComponent(model, L"StaticModel");
-	DirectX::XMStoreFloat4(&baseRotation, DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(90.0f), 0.0f, 0.0f));
+	//DirectX::XMStoreFloat4(&baseRotation, DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(90.0f), 0.0f, 0.0f));
+	DirectX::XMStoreFloat4(&baseRotation, DirectX::XMQuaternionIdentity());
 
 	debugDraw = Engine::LineDrawer::Create(dxDevice, dxDeviceContext);
 	if (debugDraw == nullptr)
@@ -125,6 +126,7 @@ Missile* StandardMissile::Launch(Engine::GameObject* shooter, Vector3 LaunchOffs
 	StandardMissile* newInstnace = new StandardMissile(*this);
 	Engine::Transform& transform = *shooter->transform();
 	newInstnace->transform()->Synchronization(transform);
+	newInstnace->transform()->SetAngle(Vector3::getDirection(transform.Forward()));
 	Vector3 position = shooter->transform()->Position() + LaunchOffsetPosition;
 	memcpy(&newInstnace->transformComponent->Position(), &position, sizeof(Vector3));
 	newInstnace->transformComponent->UpdateWorldMatrix();
@@ -142,7 +144,6 @@ Missile* StandardMissile::Launch(Engine::GameObject* shooter, Vector3 LaunchOffs
 
 void StandardMissile::Chase(void)
 {
-	static FLOAT detonationDistance = ConvertFeetToWorld(2.5f) * 2.5f;
 	transformComponent->Translate(transformComponent->Forward() * 0.005f/*DeltaTime()*/ * speed);
 
 	if (target == nullptr)

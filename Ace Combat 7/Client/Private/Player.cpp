@@ -17,6 +17,7 @@
 #include "PlayerEar.h"
 #include "TerrainCollision.h"
 #include "WingVaporTrail.h"
+#include "SimpleBullet.h"
 Engine::GameObject* testEnemy = nullptr;
 
 Player::Player(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::GameObject(dxDevice, dxDeviceContext), model(nullptr), boneHandler(nullptr), flightModule(nullptr)
@@ -49,7 +50,7 @@ Player* Player::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceCont
 {
     Player* newInstance = new Player(dxDevice, dxDeviceContext);
     newInstance->objectInfomation = metaData;
-    if (FAILED(newInstance->Start()))
+    if (FAILED(newInstance->Start(newInstance->objectInfomation)))
     {
         Base::Destroy(newInstance);
         return nullptr;
@@ -68,8 +69,8 @@ Engine::GameObject* Player::Clone(void)
     return newInstance;
 }
 
-#define f14d
-//#define f16c
+//#define f14d
+#define f16c
 //#define su33
 
 #include "F16CHandler.h"
@@ -108,7 +109,7 @@ HRESULT Player::Start(ObjectInfomation& objectInfomation)
     if (FAILED(CreateTransform()))
         return E_FAIL;
 
-    transformComponent->Position() = Vector3(1643.0f, 2.0f, 405.0f);
+    //transformComponent->Position() = Vector3(1643.0f, 2.0f, 405.0f);
     transformComponent->Scale() = Vector3::one() * 0.5f;
     //transformComponent->SetAngle(Vector3{ 0.0f, -45.0f, 0.0f });
     //transformComponent->Scale() = Vector3::one() * 0.01f;
@@ -138,8 +139,13 @@ HRESULT Player::Start(ObjectInfomation& objectInfomation)
     AddComponent(flightModule, L"FlightMovement");
 
     fcs = FireControlSystem::Create(dxDevice, dxDeviceContext, objectInfomation);
-    fcs->SetStandardMissile(StandardMissile::Create(dxDevice, dxDeviceContext));
-    fcs->SetUniqueMissile(ARHM::Create(dxDevice, dxDeviceContext));
+    Missile* missile = StandardMissile::Create(dxDevice, dxDeviceContext);
+    missile->SetDetonationDistance(ConvertFeetToWorld(5.0f) * 2.5f);
+    fcs->SetStandardMissile(static_cast<StandardMissile*>(missile));
+    missile = ARHM::Create(dxDevice, dxDeviceContext);
+    missile->SetDetonationDistance(ConvertFeetToWorld(5.0f) * 2.5f);
+    fcs->SetUniqueMissile(missile);
+    fcs->GetBulletOriginal()->SetDamage(10.0f);
     AddComponent(fcs, L"FCS");
 
     Engine::OBB::Description description = Engine::OBB::Description();
@@ -153,12 +159,14 @@ HRESULT Player::Start(ObjectInfomation& objectInfomation)
     AddComponent(collider, L"Collider");
 
     AddComponent(comTest = RMWR::Create(dxDevice, dxDeviceContext), L"RMWR");
+    comTest->SetInvincibility(true);
+    comTest->SetMAXHealth(100.0f);
     playerPilot = PlayerPilot::Create(dxDevice, dxDeviceContext, objectInfomation);
     AddComponent(playerPilot, L"PlayerPilot");
     playerPilot->testEnemyPointer = &testEnemy;
     AddComponent(comTest2 = PlayerEar::Create(dxDevice, dxDeviceContext, metaData), L"PlayerEar");
 
-    Sound()->LoadSound("../Bin/Resources/Sounds/Effects/", "MissileFired.wav");
+    Sound()->LoadSound("../Bin/Resources/Sounds/Effects/", "Weapons.wav");
     terrainCollision = TerrainCollision::Create(dxDevice, dxDeviceContext);
     AddComponent(terrainCollision, L"TerrainCollision");
 
@@ -186,13 +194,13 @@ HRESULT Player::Start(void)
     
     // model setting
     #if defined(f16c)
-    metaData = F16CMetaData();
+    objectInfomation.aircraftInfomation = F16CMetaData();
     #elif defined(f14d)
     objectInfomation.aircraftInfomation = F14DMetaData();
     #elif defined(su33)
-    metaData = SU33MetaData();
+    objectInfomation.aircraftInfomation = SU33MetaData();
     #else
-    metaData = F15EMetaData();
+    objectInfomation.aircraftInfomation = F15EMetaData();
     #endif
     AircraftMetaData& metaData = objectInfomation.aircraftInfomation;
 
@@ -249,12 +257,13 @@ HRESULT Player::Start(void)
 
     AddComponent(comTest = RMWR::Create(dxDevice, dxDeviceContext), L"RMWR");
     comTest->SetInvincibility(true);
+    comTest->SetMAXHealth(100.0f);
     playerPilot = PlayerPilot::Create(dxDevice, dxDeviceContext, objectInfomation);
     AddComponent(playerPilot, L"PlayerPilot");
     playerPilot->testEnemyPointer = &testEnemy;
     AddComponent(comTest2 = PlayerEar::Create(dxDevice, dxDeviceContext, metaData), L"PlayerEar");
 
-    Sound()->LoadSound("../Bin/Resources/Sounds/Effects/", "MissileFired.wav");
+    Sound()->LoadSound("../Bin/Resources/Sounds/Effects/", "Weapons.wav");
     terrainCollision = TerrainCollision::Create(dxDevice, dxDeviceContext);
     AddComponent(terrainCollision, L"TerrainCollision");
 
@@ -323,6 +332,7 @@ void Player::Render(void)
 {
     if (playerPilot->CameraState() == 1)
     {
+        camera->FOV(7.5f);
         const Engine::PipelineStatus& pipeLine = ::GetPipeLineStatus();
         Matrix viewMatrix, identity;
         memcpy(&viewMatrix, &pipeLine.viewMatrix, sizeof(Matrix));
@@ -337,10 +347,11 @@ void Player::Render(void)
         ::SetWorldMatrix(identity);
         model->Render();
 
+        camera->FOV(45.0f);
         ::SetViewProjectionMatrix(viewMatrix, pipeLine.projectionMatrix);
         transformComponent->Render();
     }
-    else
+    else if (playerPilot->CameraState() == 0)
     {
         transformComponent->Render();
         model->Render();

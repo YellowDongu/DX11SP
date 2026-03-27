@@ -1,6 +1,5 @@
 #pragma once
 
-class MainCamera;
 namespace Engine
 {
 	class Collider;

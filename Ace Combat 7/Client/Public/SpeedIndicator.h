@@ -24,5 +24,7 @@ private:
 	Engine::Text* text;
 	UIParts speedMeter;
 	const float* velocity;
+	const bool* warning;
+	float4 color;
 	Vector2 scale;
 };

@@ -68,13 +68,14 @@ void SimpleBullet::Update(void)
 	}
 
 	transformComponent->Position() += transformComponent->Forward() * DeltaTime() * bulletSpeed;
+	transformComponent->UpdateWorldMatrix();
 	collider->Update();
 }
 
 void SimpleBullet::LateUpdate(void)
 {
 	collider->LateUpdate();
-	AddRenderObject(RenderType::NonBlend, this);
+	AddRenderObject(RenderType::NonBlendNonLight, this);
 }
 
 void SimpleBullet::FixedUpdate(void)
@@ -97,7 +98,7 @@ void SimpleBullet::Render(void)
 	SetShader(currentShader->shaderFile);
 	currentShader->PassNumber(0);
 
-	collider->Render();
+	//collider->Render();
 }
 
 SimpleBullet* SimpleBullet::Shoot(Engine::GameObject* shooter, Vector3 offsetPosition, float4 quaternion)

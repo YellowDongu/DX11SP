@@ -36,7 +36,7 @@ private:
 	std::vector<Engine::Layer*> searchLayers;
 	std::vector<std::pair<Vector2, FLOAT>> relativePositions;
 
-
+	Vector2 mapPositionInfomation = {1500.0f, 3000.0f};
 	Vector2 HUDOutlineScale;
 	Vector2 HUDLargeOutlineScale;
 	Vector3 minimumWorldPosition;

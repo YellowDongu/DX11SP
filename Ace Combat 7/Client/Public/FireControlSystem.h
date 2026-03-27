@@ -4,8 +4,20 @@
 
 class Missile;
 class RadarMissileWarningReceiver;
+class SimpleBullet;
 class FireControlSystem : public Engine::Component
 {
+public:
+	struct LockedTarget
+	{
+		Engine::GameObject* gameObject;
+		RadarMissileWarningReceiver* rmwrParts;
+		const ObjectInfomation* objectInfomation;
+
+		LockedTarget(Engine::GameObject* target);
+
+	};
+
 protected:
 	FireControlSystem(void) = delete;
 	FireControlSystem(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext);
@@ -39,6 +51,8 @@ public:
 	RadarMissileWarningReceiver*& LinkTargetRMWR(void) { return targetedRMWR; }
 	float& LinkLockStatus(void) { return lock; }
 	Missile* GetLastMissile(void) { if (activeMissile.empty()) return nullptr; return activeMissile.back(); }
+	Missile* GetUniqueMissile(void) { return uniqueMissile; }
+	SimpleBullet* GetBulletOriginal(void) { return bullet; }
 	const std::list<Missile*>& GetMissiles(void) const { return activeMissile; }
 	void SetForceTargetChange(Engine::GameObject* target) { SetSingleTarget(target); }
 	INT WeaponSelectedStatus(void) { return selectedWeapon; }
@@ -82,9 +96,9 @@ protected:
 
 	Missile* uniqueMissile{ nullptr };
 	class StandardMissile* standardMissile{ nullptr };
-	class SimpleBullet* bullet{ nullptr };
+	SimpleBullet* bullet{ nullptr };
 	std::list<Missile*> activeMissile;
-	std::list<class SimpleBullet*> activeBullet;
+	std::list<SimpleBullet*> activeBullet;
 
 	std::wstring mainTargetEnemy = L"MainTargetEnemy";
 	std::wstring mainTargetEnemyGround = L"MainTargetEnemyGround";

@@ -19,6 +19,7 @@ void PlayerStatusHeadUpDisplay::Free(void)
     uniqueMissileInside.Free();
     aircraft.Free();
     aircraftInside.Free();
+    missionEndParts.Free();
 }
 
 PlayerStatusHeadUpDisplay* PlayerStatusHeadUpDisplay::Create(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, Engine::GameObject* player)
@@ -51,16 +52,47 @@ HRESULT PlayerStatusHeadUpDisplay::Start(void)
     CreateScale(standardMissileInside.texture, scale);
     innerErrorCheck(CreateVertex(standardMissileInside.vertexBuffer, standardMissileInside.indexBuffer, standardMissileInside.indexCount, scale), L"Vertex/Index Create");
 
-    innerErrorCheck(aircraft.LoadUITexture(L"../Bin/Resources/UI/HUD/PrograssBar/Aircraft/hud_acIcon_su33.png"), L"Load texture - hud_acIcon_su33.png");
+    innerErrorCheck(uniqueMissile.LoadUITexture(L"../Bin/Resources/UI/HUD/PrograssBar/Weapons/w_laam_a0.dds"), L"Load texture - w_laam_a0.dds");
+    CreateScale(uniqueMissile.texture, scale);
+    innerErrorCheck(CreateVertex(uniqueMissile.vertexBuffer, uniqueMissile.indexBuffer, uniqueMissile.indexCount, scale), L"Vertex/Index Create");
+
+    innerErrorCheck(uniqueMissileInside.LoadUITexture(L"../Bin/Resources/UI/HUD/PrograssBar/Weapons/w_laam_a0_inside.dds"), L"Load texture - w_laam_a0_inside.dds");
+    CreateScale(uniqueMissileInside.texture, scale);
+    innerErrorCheck(CreateVertex(uniqueMissileInside.vertexBuffer, uniqueMissileInside.indexBuffer, uniqueMissileInside.indexCount, scale), L"Vertex/Index Create");
+
+    if (metaData->AircraftModelName == L"F15E")
+    {
+        innerErrorCheck(aircraft.LoadUITexture(L"../Bin/Resources/UI/HUD/PrograssBar/Aircraft/hud_acIcon_f15e.png"), L"Load texture - hud_acIcon_f15e.png");
+        innerErrorCheck(aircraftInside.LoadUITexture(L"../Bin/Resources/UI/HUD/PrograssBar/Aircraft/hud_acIcon_f15e_inside.png"), L"Load texture - hud_acIcon_f15e_inside.png");
+    }
+    else if (metaData->AircraftModelName == L"F16C")
+    {
+        innerErrorCheck(aircraft.LoadUITexture(L"../Bin/Resources/UI/HUD/PrograssBar/Aircraft/hud_acIcon_f16c.png"), L"Load texture - hud_acIcon_f16c.png");
+        innerErrorCheck(aircraftInside.LoadUITexture(L"../Bin/Resources/UI/HUD/PrograssBar/Aircraft/hud_acIcon_f16c_inside.png"), L"Load texture - hud_acIcon_f16c_inside.png");
+    }
+    else if (metaData->AircraftModelName == L"F14D")
+    {
+        innerErrorCheck(aircraft.LoadUITexture(L"../Bin/Resources/UI/HUD/PrograssBar/Aircraft/hud_acIcon_f14d.png"), L"Load texture - hud_acIcon_f14d.png");
+        innerErrorCheck(aircraftInside.LoadUITexture(L"../Bin/Resources/UI/HUD/PrograssBar/Aircraft/hud_acIcon_f14d_inside.png"), L"Load texture - hud_acIcon_f14d_inside.png");
+    }
+    else /*if (metaData->AircraftModelName == L"SU33") -> For Memo */
+    {
+        innerErrorCheck(aircraft.LoadUITexture(L"../Bin/Resources/UI/HUD/PrograssBar/Aircraft/hud_acIcon_su33.png"), L"Load texture - hud_acIcon_su33.png");
+        innerErrorCheck(aircraftInside.LoadUITexture(L"../Bin/Resources/UI/HUD/PrograssBar/Aircraft/hud_acIcon_su33_inside.png"), L"Load texture - hud_acIcon_su33_inside.png");
+    }
+
     CreateScale(aircraft.texture, scale);
     innerErrorCheck(CreateVertex(aircraft.vertexBuffer, aircraft.indexBuffer, aircraft.indexCount, scale), L"Vertex/Index Create");
 
-    innerErrorCheck(aircraftInside.LoadUITexture(L"../Bin/Resources/UI/HUD/PrograssBar/Aircraft/hud_acIcon_su33_inside.png"), L"Load texture - hud_acIcon_su33_inside.png");
     CreateScale(aircraftInside.texture, scale);
     innerErrorCheck(CreateVertex(aircraftInside.vertexBuffer, aircraftInside.indexBuffer, aircraftInside.indexCount, scale), L"Vertex/Index Create");
     
 
-    text = CreateText(L"../Bin/ACES07.spritefont");
+    innerErrorCheck(missionEndParts.LoadUITexture(L"../Bin/Resources/UI/Menu/CommonWidget/Assets/LensFlare/anamaphoric_ring_3.png"), L"Load texture - anamaphoric_ring_3.png");
+    CreateScale(missionEndParts.texture, missionEndParts.scale);
+    innerErrorCheck(CreateVertex(missionEndParts.vertexBuffer, missionEndParts.indexBuffer, missionEndParts.indexCount, missionEndParts.scale), L"Vertex/Index Create");
+
+    text = ::CreateText(L"../Bin/ACES07.spritefont"); 
     if (text == nullptr)
         return E_FAIL;
 
@@ -90,6 +122,7 @@ void PlayerStatusHeadUpDisplay::Render(void)
 {
     Matrix worldMatrix;
     Vector2 position = { static_cast<FLOAT>(windowSizeX) * 0.35f, static_cast<FLOAT>(windowSizeY) * -0.16f };
+    Engine::Shader* shader = ::GetCurrentShader();
 
     float winY = 16.0f * 1.7f;
     float xStore = position.x, xSecondStore = position.x + 16.0f * 10.0f;
@@ -138,19 +171,19 @@ void PlayerStatusHeadUpDisplay::Render(void)
 
 
     DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, Vector2::one(), 0.0f));
-    SetWorldMatrix(worldMatrix);
-    SetTexture(diffuseTexture, aircraft.texture);
-    GetCurrentShader()->Render(aircraft.indexBuffer, aircraft.vertexBuffer, stride);
+    ::SetWorldMatrix(worldMatrix);
+    ::SetTexture(diffuseTexture, aircraft.texture);
+    shader->Render(aircraft.indexBuffer, aircraft.vertexBuffer, stride);
     dxDeviceContext->DrawIndexed(aircraft.indexCount, 0, 0);
 
-    GetCurrentShader()->PassNumber(1);
+    shader->PassNumber(1);
 
-    GetCurrentShader()->BindVariable("prograss", &prograss, sizeof(FLOAT));
-    SetTexture(diffuseTexture, aircraftInside.texture);
-    GetCurrentShader()->Render(aircraftInside.indexBuffer, aircraftInside.vertexBuffer, stride);
+    shader->BindVariable("prograss", &prograss, sizeof(FLOAT));
+    ::SetTexture(diffuseTexture, aircraftInside.texture);
+    shader->Render(aircraftInside.indexBuffer, aircraftInside.vertexBuffer, stride);
     dxDeviceContext->DrawIndexed(aircraftInside.indexCount, 0, 0);
     //GetCurrentShader()->BindVariable("prograss", &fcs->CoolDownRStandardMissile(), sizeof(FLOAT));
-    GetCurrentShader()->PassNumber(0);
+    shader->PassNumber(0);
 
     if (fcs->WeaponSelectedStatus() == 0)
     {
@@ -173,13 +206,33 @@ void PlayerStatusHeadUpDisplay::Render(void)
 
 
         position.x -= scale.x * 0.75f;
-        RenderMissileStatus(standardMissile, standardMissileInside, fcs->UniqueMissileCoolTime()[0].first, position);
+        RenderMissileStatus(uniqueMissile, uniqueMissileInside, fcs->UniqueMissileCoolTime()[0].first, position);
 
         position.x += scale.x * 0.75f * 2.0f;
-        RenderMissileStatus(standardMissile, standardMissileInside, fcs->UniqueMissileCoolTime()[1].first, position);
+        RenderMissileStatus(uniqueMissile, uniqueMissileInside, fcs->UniqueMissileCoolTime()[1].first, position);
 
 
     }
+
+
+
+    if (missionEnd)
+    {
+        shader->PassNumber(5);
+        static std::string uiColorName = "UIcolor";
+        static float4 green = float4{0.0f, 1.0f, 0.0f, 1.0f};
+        GetCurrentShader()->BindVariable(uiColorName, &green, sizeof(DirectX::XMFLOAT4));
+        DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(Vector2::zero(), Vector2{ 5.0f,3.0f }, 0.0f));
+        ::SetMatrix(world, worldMatrix);
+
+        shader->BindTexture(diffuseTexture, missionEndParts.texture);
+        shader->Render(missionEndParts.indexBuffer, missionEndParts.vertexBuffer, stride);
+        dxDeviceContext->DrawIndexed(missionEndParts.indexCount, 0, 0);
+
+        text->RenderText(L"MISSION SUCCESS", Vector2::zero(), textSize, textColor, 0.0f, true);
+        shader->PassNumber(0);
+    }
+
 }
 
 void PlayerStatusHeadUpDisplay::LinkData(Player* player)

@@ -22,20 +22,27 @@ public:
 
     void LinkData(class Player* player);
     void RenderMissileStatus(UIParts& parts, UIParts& innerParts, FLOAT coolTime, Vector2& Position);
-
+    void MissionEnd(void) { missionEnd = true; }
 private:
-    Engine::Text* text;
+    bool missionEnd{ false };
+    const UINT stride = sizeof(UIVertex);
+
+    Engine::Text* text{nullptr};
+    class FireControlSystem* fcs{nullptr};
+    const AircraftMetaData* metaData{nullptr};
+    class RadarMissileWarningReceiver* rmwr{nullptr};
+
     float2 textSize;
     float4 textColor{ 0.0f, 1.0f, 0.0f, 1.0f };
-    const struct AircraftMetaData* metaData;
-    class FireControlSystem* fcs;
-    class RadarMissileWarningReceiver* rmwr;
 
     UIParts standardMissile, standardMissileInside;
     UIParts uniqueMissile, uniqueMissileInside;
     UIParts aircraft, aircraftInside;
+    UIParts missionEndParts;
 
-    const UINT stride = sizeof(UIVertex);
     std::string diffuseTexture = "diffuseTexture";
     std::string world = "worldMatrix";
+
+
+
 }typedef StatusHUD, PlayerStatudHUD;

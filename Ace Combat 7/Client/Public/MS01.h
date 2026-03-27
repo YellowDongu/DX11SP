@@ -21,9 +21,16 @@ public:
 
 	HRESULT SetTrigger(void);
 	HRESULT SetTerrain(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext, Engine::Layer* layer);
+	void SetPlayerInfomation(ObjectInfomation& infomation) { playerInfomation = infomation; aircraftSelected = true; }
 private:
+	bool aircraftSelected{ false };
+	ObjectInfomation playerInfomation;
 
-
+	class Player* player{ nullptr };
+	class F15E* allyObject{ nullptr };
+	class MainCamera* mainCamera{ nullptr };
+	FMOD::Channel* bgmChannel{ nullptr };
+	FMOD::Sound* bgm{ nullptr };
 };
 
 

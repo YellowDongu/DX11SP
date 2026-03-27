@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Explosion.h"
-
+#include "PlayerEar.h"
 Explosion::Explosion(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::GameObject(dxDevice, dxDeviceContext)
 {
 }
@@ -117,4 +117,8 @@ void Explosion::AddExplosion(Vector3 position, Vector3 scale)
 	infomation.infoSecond = float2{ 0.0f,1.0f };
 
 	ExplosionQueue.push_back({ vertexMatrix, infomation });
+
+	if (playerEar == nullptr)
+		playerEar = static_cast<PlayerEar*>(EngineInstance()->SceneManager()->CurrentScene()->FindLayer(L"Ally")->GetGameObject(L"Player")->GetComponent(L"PlayerEar"));
+	playerEar->Explosion(position);
 }

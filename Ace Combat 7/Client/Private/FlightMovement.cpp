@@ -33,7 +33,7 @@ void FlightMovement::CalculateMovement(void)
 	float newVelocity = (EnginePower * throttle - velocity) - velocity * speedFactor - airbreakPower * static_cast<FLOAT>(airbreakActive) * 3.0f;
 
 	gravity = Vector3(0.0f, -1.0f, 0.0f) * 9.8f * (mass * 0.1f);
-	Lift = transform->Up().normalize() * (1 + speedFactor) * 9.8f * (mass * 0.1f);
+	Lift = transform->Up().normalize() * (1.0f + speedFactor) * 9.8f * (mass * 0.1f);
 	Vector3 newDirection = gravity + Lift;
 	float gravityFactor = newVelocity * (transform->Angle().x / -180.0f);
 	velocity += ((newVelocity + gravityFactor) - 1000.0f * speedFactor * std::abs(finalMenuverForce.x)) * 0.00025f;

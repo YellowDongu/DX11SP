@@ -50,6 +50,7 @@ HRESULT AntiAirFireControlSystem::Start(void)
 
 HRESULT AntiAirFireControlSystem::Awake(void)
 {
+	SetGunRPM(120.0f);
 	return S_OK;
 }
 

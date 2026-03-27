@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "FlightPathMarker.h"
 #include "FlightMovement.h"
+#include "RMWR.h"
 
 FlightPathMarker::FlightPathMarker(ID3D11Device* dxDevice, ID3D11DeviceContext* dxDeviceContext) : Engine::UIObject(dxDevice, dxDeviceContext)
 {
@@ -16,6 +17,7 @@ FlightPathMarker* FlightPathMarker::Create(ID3D11Device* dxDevice, ID3D11DeviceC
 {
 	FlightPathMarker* newInstance = new FlightPathMarker(dxDevice, dxDeviceContext);
 	newInstance->LinkInfomation(static_cast<FlightMovement*>(player->GetComponent(L"FlightMovement")));
+	newInstance->warning = static_cast<RMWR*>(player->GetComponent(L"RMWR"))->LinkMissileWarning();
 	if (FAILED(newInstance->Start()))
 	{
 		Base::Destroy(newInstance);
@@ -44,6 +46,7 @@ HRESULT FlightPathMarker::Start(void)
 	innerErrorCheck(centerMarker.LoadUITexture(L"../Bin/Resources/UI/HUD/whiskyMark.png"), L"Load texture - whiskyMark.png");
 	CreateScale(centerMarker.texture, scale);
 	innerErrorCheck(CreateVertex(centerMarker.vertexBuffer, centerMarker.indexBuffer, centerMarker.indexCount, scale), L"Vertex/Index Create");
+
 	return S_OK;
 }
 
@@ -92,6 +95,13 @@ void FlightPathMarker::Render(void)
 	Vector2 position = Vector2::zero();
 	Vector2 scale = Vector2::one();
 	Matrix worldMatrix;
+
+	if (*warning)
+		color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	else
+		color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+	GetCurrentShader()->BindVariable("UIcolor", &color, sizeof(float4));
 
 	DirectX::XMStoreFloat4x4(&worldMatrix, CreateMatrix(position, scale, 0.0f));
 	SetMatrix(world, worldMatrix);

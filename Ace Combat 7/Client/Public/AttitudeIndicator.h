@@ -22,18 +22,27 @@ public:
 private:
 	Engine::Transform* transform;
 	Vector3* Angle;
-
+	const bool* warning{nullptr};
+	float4 color;
 
 	std::map<std::wstring, UIParts> parts;
 
 	FLOAT indicatorDistance = 30.0f;
 	FLOAT indicatorWidth = 0.0f;
 
-	std::wstring PitchLevel = L"PitchLevel";
-	std::wstring PitchNegative = L"PitchNegative";
-	std::wstring PitchNegativeHalf = L"PitchNegativeHalf";
-	std::wstring PitchPositive = L"PitchPositive";
-	std::wstring PitchPositiveHalf = L"PitchPositiveHalf";
-	std::wstring PitchSide = L"PitchSide";
+	std::wstring PitchLevelName = L"PitchLevelName";
+	std::wstring PitchNegativeName = L"PitchNegativeName";
+	std::wstring PitchNegativeHalfName = L"PitchNegativeHalfName";
+	std::wstring PitchPositiveName = L"PitchPositiveName";
+	std::wstring PitchPositiveHalfName = L"PitchPositiveHalfName";
+	std::wstring PitchSideName = L"PitchSideName";
+
+
+	UIParts PitchLevel;
+	UIParts PitchNegative;
+	UIParts PitchNegativeHalf;
+	UIParts PitchPositive;
+	UIParts PitchPositiveHalf;
+	UIParts PitchSide;
 };
 

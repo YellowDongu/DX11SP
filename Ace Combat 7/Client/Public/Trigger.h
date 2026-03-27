@@ -177,3 +177,27 @@ protected:
 	std::vector<GameObjectSpawnInfomation> spawnTargets;
 	bool altitudeActive{ false };
 };
+
+// 미션 마지막에 작동
+class MS01EndTrigger : public Trigger
+{
+	MS01EndTrigger(void) = default;
+	virtual ~MS01EndTrigger(void) = default;
+	virtual void Free(void) override;
+public:
+	static MS01EndTrigger* Create(void);
+
+	HRESULT Start(void);
+	virtual HRESULT Awake(void) override;
+	virtual void Update(void) override;
+	virtual void LateUpdate(void) override;
+	virtual void ActiveTrigger(void) override;
+
+protected:
+	class ScreenFadeOut* fadeOutScreen{nullptr};
+	class PlayerStatusHeadUpDisplay* psHUD{nullptr};
+	FLOAT timer{ 5.0f }, activeTimer{5.0f};
+
+	FMOD::Sound* missionEndSound{nullptr};
+	Engine::Text* text{ nullptr };
+};
